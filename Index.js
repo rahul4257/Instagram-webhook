@@ -1,2049 +1,939 @@
 const express = require("express");
 
 const app = express();
-
 app.use(express.json());
 
+const PORT = process.env.PORT || 3000;
 
-/* =====================================================
-   ENVIRONMENT VARIABLES
-===================================================== */
-
-const VERIFY_TOKEN =
-  process.env.VERIFY_TOKEN || "instagram_verify_2026";
-
-const OPEN_AI =
-  process.env.OPEN_AI;
-
-const PAGE_ACCESS_TOKEN =
-  process.env.PAGE_ACCESS_TOKEN;
-
-const INSTAGRAM_USER_ID =
-  process.env.INSTAGRAM_USER_ID ||
-  "17841404831696204";
+const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const INSTAGRAM_USER_ID = process.env.INSTAGRAM_USER_ID;
 
 const META_API_VERSION =
-  process.env.META_API_VERSION || "v25.0";
+  process.env.META_API_VERSION || "v24.0";
 
+const OPEN_AI =
+  process.env.OPEN_AI ||
+  process.env.OPENAI_API_KEY;
 
-/* =====================================================
-   CONVERSATION MEMORY
-===================================================== */
+const OPENAI_MODEL =
+  process.env.OPENAI_MODEL || "gpt-5-mini";
+
+const AI_REPLY_MIN_DELAY = 10000;
+const AI_REPLY_MAX_DELAY = 20000;
+
+const REMINDER_DELAY = 2 * 60 * 1000;
 
 const conversations = new Map();
-
-
-/* =====================================================
-   PER-CLIENT MESSAGE QUEUES
-===================================================== */
-
-const queues = new Map();
-
-
-/* =====================================================
-   REMINDER TIMERS
-===================================================== */
-
+const clientQueues = new Map();
 const reminderTimers = new Map();
-
-const REMINDER_DELAY = 120000; // 2 minutes
-
-
-function cancelReminder(senderId) {
-
-  const timer =
-    reminderTimers.get(senderId);
-
-  if (timer) {
-
-    clearTimeout(timer);
-
-    reminderTimers.delete(senderId);
-
-    console.log(
-      "Reminder cancelled for:",
-      senderId
-    );
-
-  }
-
-}
-
-
-function scheduleReminder(
-  senderId,
-  conversation,
-  expectedStage,
-  reminderText
-) {
-
-  cancelReminder(senderId);
-
-
-  const timer =
-    setTimeout(
-      async () => {
-
-        try {
-
-          /*
-            Only send if the client has not
-            changed the conversation stage.
-          */
-
-          if (
-            conversation.stage !==
-            expectedStage
-          ) {
-
-            reminderTimers.delete(
-              senderId
-            );
-
-            return;
-
-          }
-
-
-          await sendInstagramMessage(
-            senderId,
-            reminderText
-          );
-
-
-          saveMessage(
-            conversation,
-            "assistant",
-            reminderText
-          );
-
-
-          console.log(
-            "================================="
-          );
-
-          console.log(
-            "REMINDER SENT"
-          );
-
-          console.log(
-            reminderText
-          );
-
-          console.log(
-            "================================="
-          );
-
-
-          reminderTimers.delete(
-            senderId
-          );
-
-        }
-
-        catch (error) {
-
-          console.error(
-            "REMINDER ERROR:"
-          );
-
-          console.error(
-            error
-          );
-
-          reminderTimers.delete(
-            senderId
-          );
-
-        }
-
-      },
-      REMINDER_DELAY
-    );
-
-
-  reminderTimers.set(
-    senderId,
-    timer
-  );
-
-
-  console.log(
-    "2-minute reminder scheduled for:",
-    senderId
-  );
-
-}
-
-
-/* =====================================================
-   RANDOM 10–12 SECOND DELAY
-===================================================== */
-
-function getRandomDelay() {
-
-  const minimum = 10000;
-  const maximum = 12000;
-
-  return Math.floor(
-    Math.random() *
-      (maximum - minimum + 1)
-  ) + minimum;
-
-}
-
-
-function wait(ms) {
-
-  return new Promise(
-    (resolve) =>
-      setTimeout(resolve, ms)
-  );
-
-}
-
-
-/* =====================================================
-   CLIENT QUEUE
-===================================================== */
-
-function queueForClient(
-  senderId,
-  task
-) {
-
-  const previous =
-    queues.get(senderId) ||
-    Promise.resolve();
-
-
-  const next =
-    previous
-      .catch(() => {})
-      .then(task);
-
-
-  queues.set(
-    senderId,
-    next
-  );
-
-
-  next.finally(() => {
-
-    if (
-      queues.get(senderId) === next
-    ) {
-
-      queues.delete(senderId);
-
-    }
-
-  });
-
-
-  return next;
-
-}
-
-
-/* =====================================================
-   FIXED MESSAGE #1
-===================================================== */
+const outgoingMessages = new Map();
 
 const MESSAGE_ONE =
-`Hey dear ♥️
-I see your profile, its a great content ♥️
-Would you like to get featured on our page?`;
+`Hey! 👋❤️
 
+We help Instagram pages grow with targeted promotion.
 
-/* =====================================================
-   FIXED MESSAGE #2
-===================================================== */
+Would you like to grow your Instagram account? ❤️`;
 
 const MESSAGE_TWO =
-`We are here to spotlight your profile 💫
-@expl.europe
-@expl.canada
-@expl.atlanta
-@expl.miami
+`Yes ❤️ We can definitely help you.
 
-I will upload your post on these pages and from that you will gain 1k to 15k guaranteed followers according to your package. Can I show you our packages ?`;
+We have different promotion packages depending on how much growth you want.
 
-
-/* =====================================================
-   REMINDER MESSAGES
-===================================================== */
-
-const REMINDER_ONE =
-"Are you interested? ❤️";
-
-
-const REMINDER_TWO =
-"Can I show you our packages? ❤️";
-
-
-const REMINDER_THREE =
-"So which package would you like to choose? ❤️";
-
-
-const REMINDER_FOUR =
-"Which mode of payment do you have? ❤️";
-
-
-/* =====================================================
-   FIXED FOLLOWER / GUARANTEE ANSWER
-===================================================== */
-
-const FOLLOWER_GUARANTEE_MESSAGE =
-`Yes ❤️ Our followers are real and organic. We promote your content on our pages and continue promoting according to your selected package until you reach the guaranteed follower result. That is how we provide the guarantee. Would you like me to show you our packages?`;
-
-
-/* =====================================================
-   FIXED ACTIVE AUDIENCE ANSWER
-===================================================== */
-
-const ACTIVE_AUDIENCE_MESSAGE =
-`This is one of the best pickup times because around 85% of our audience is active at this time, so your content has a better opportunity to get noticed.`;
-
-
-/* =====================================================
-   FIXED LATER RESPONSE
-===================================================== */
-
-const LATER_MESSAGE =
-`Of course ❤️ Take your time. Whenever you're ready, just text me and I'll be happy to help you.`;
-
-
-/* =====================================================
-   FIXED THINK RESPONSE
-===================================================== */
-
-const THINK_MESSAGE =
-`Of course ❤️ Take your time and think about it. Whenever you're ready, just let me know and I'll be happy to help.`;
-
-
-/* =====================================================
-   PACKAGE MESSAGE
-===================================================== */
+Can I show you our packages?`;
 
 const PACKAGES_MESSAGE =
-`🎊 Instagram Packages 🎊
+`❤️ Our Instagram Promotion Packages:
 
-1️⃣ BRONZE PACKAGE 📦
-👉 €35 = 2 stories
-🎉 1.5K followers guaranteed
+🥉 BRONZE — $40
+• 2 stories
+• 1,000 followers
 
-2️⃣ SILVER PACKAGE 📦
-👉 €60 = 1 post + 3 stories + 2 highlights
-🎉 4K followers guaranteed
+🥈 SILVER — $75
+• 1 post
+• 3 stories
+• 2,000 followers
 
-3️⃣ GOLD PACKAGE 📦
-👉 €90 = 3 posts + 4 stories + 3 highlights
-🎉 7K followers guaranteed
-⭐ Mostly clients choose this package!
+🥇 GOLD — $140
+• 7 posts
+• 10 stories
+• 5,000 followers
 
-4️⃣ DIAMOND PACKAGE 📦
-👉 €120 = 5 posts + 8 stories + 7 highlights
-🎉 10K followers guaranteed
+💎 DIAMOND — $220
+• 10 posts
+• 20 stories
+• 10,000 followers
 
-We also provide packages for:
-TikTok
-Facebook
-YouTube
+Which package would you like to choose? ❤️`;
 
-💥 Select your package ❤️`;
+const PAYMENT_METHODS = [
+  "none",
+  "paypal",
+  "iban",
+  "revolut",
+  "mbway",
+  "card"
+];
 
-
-/* =====================================================
-   PACKAGE DATA
-===================================================== */
+const PAYMENT_DETAILS = {
+  paypal: process.env.PAYPAL_PAYMENT || "YOUR_PAYPAL",
+  iban: process.env.IBAN_PAYMENT || "YOUR_IBAN",
+  revolut: process.env.REVOLUT_PAYMENT || "YOUR_REVOLUT",
+  mbway: process.env.MBWAY_PAYMENT || "YOUR_MBWAY",
+  card: process.env.CARD_PAYMENT || "YOUR_CARD_PAYMENT"
+};
 
 const PACKAGES = {
-
   bronze: {
     name: "Bronze",
-    price: 35.00,
-    details: "2 stories",
-    followers: "1.5K followers guaranteed"
+    price: 40,
+    details: "2 Instagram stories",
+    followers: "1,000 followers"
   },
 
   silver: {
     name: "Silver",
-    price: 60.00,
-    details: "1 post + 3 stories + 2 highlights",
-    followers: "4K followers guaranteed"
+    price: 75,
+    details: "1 Instagram post + 3 stories",
+    followers: "2,000 followers"
   },
 
   gold: {
     name: "Gold",
-    price: 90.00,
-    details: "3 posts + 4 stories + 3 highlights",
-    followers: "7K followers guaranteed"
+    price: 140,
+    details: "7 Instagram posts + 10 stories",
+    followers: "5,000 followers"
   },
 
   diamond: {
     name: "Diamond",
-    price: 120.00,
-    details: "5 posts + 8 stories + 7 highlights",
-    followers: "10K followers guaranteed"
+    price: 220,
+    details: "10 Instagram posts + 20 stories",
+    followers: "10,000 followers"
   }
-
 };
 
+function getRandomDelay() {
+  const minimum = AI_REPLY_MIN_DELAY;
+  const maximum = AI_REPLY_MAX_DELAY;
 
-/* =====================================================
-   PAYMENT FEE
-===================================================== */
-
-const PAYMENT_FEE_PERCENT = 0.12;
-
-
-function calculatePayment(
-  packageKey
-) {
-
-  const packageInfo =
-    PACKAGES[packageKey];
-
-
-  if (!packageInfo) {
-
-    throw new Error(
-      "Invalid package"
-    );
-
-  }
-
-
-  const price =
-    packageInfo.price;
-
-
-  const fee =
-    Number(
-      (
-        price *
-        PAYMENT_FEE_PERCENT
-      ).toFixed(2)
-    );
-
-
-  const total =
-    Number(
-      (
-        price +
-        fee
-      ).toFixed(2)
-    );
-
-
-  return {
-    price,
-    fee,
-    total
-  };
-
+  return Math.floor(
+    Math.random() * (maximum - minimum + 1)
+  ) + minimum;
 }
 
-
-/* =====================================================
-   PAYMENT DETAILS
-===================================================== */
-
-const PAYPAL_DETAILS = {
-
-  email:
-    "pay@globalpromote.in",
-
-  link:
-    "https://paypal.me/RamanKumar4257"
-
-};
-
-
-const IBAN_DETAILS = {
-
-  name:
-    "Rahul Kumar",
-
-  iban:
-    "BE36967747881581",
-
-  swift:
-    "TRWIBEB1XXX",
-
-  bank:
-    "Wise",
-
-  address:
-    "Rue du Trône 100, 3rd floor, Brussels, 1050, Belgium"
-
-};
-
-
-const REVOLUT_DETAILS = {
-
-  tag:
-    "@clavis02pk",
-
-  link:
-    "https://revolut.me/clavis02pk"
-
-};
-
-
-const MBWAY_DETAILS = {
-
-  number:
-    "+351 968 188 499",
-
-  name:
-    "Andre Santana"
-
-};
-
-
-const CARD_MESSAGE =
-`For Credit/Debit Card payment, our team will assist you shortly ❤️`;
-
-
-/* =====================================================
-   PAYMENT METHOD QUESTION
-===================================================== */
-
-const PAYMENT_METHOD_QUESTION =
-`How would you like to pay? ❤️
-
-PayPal
-IBAN
-Revolut
-MB WAY
-Credit/Debit Card`;
-
-
-/* =====================================================
-   PAYMENT SCREENSHOT MESSAGE
-===================================================== */
-
-const PAYMENT_SCREENSHOT_MESSAGE =
-`Please complete the payment and send me a screenshot after successful payment ❤️`;
-
-
-/* =====================================================
-   GET / CREATE CONVERSATION
-===================================================== */
-
-function getConversation(
-  senderId
-) {
-
-  if (
-    !conversations.has(senderId)
-  ) {
-
-    conversations.set(
-      senderId,
-      {
-
-        stage:
-          "NEW",
-
-        selectedPackage:
-          null,
-
-        paymentMethod:
-          null,
-
-        history: []
-
-      }
-    );
-
-  }
-
-
-  return conversations.get(
-    senderId
+function wait(milliseconds) {
+  return new Promise(resolve =>
+    setTimeout(resolve, milliseconds)
   );
-
 }
 
+function getConversation(senderId) {
+  if (!conversations.has(senderId)) {
+    conversations.set(senderId, {
+      senderId,
+      stage: "NEW",
+      selectedPackage: null,
+      paymentMethod: null,
+      lastOutgoingMessageId: null,
+      lastOutgoingStage: null,
+      clientReplied: false,
+      history: []
+    });
+  }
 
-/* =====================================================
-   SAVE MESSAGE
-===================================================== */
+  return conversations.get(senderId);
+}
 
-function saveMessage(
-  conversation,
-  role,
-  text
-) {
-
+function saveMessage(conversation, role, text) {
   conversation.history.push({
-
     role,
     text,
-    time:
-      new Date().toISOString()
-
+    timestamp: Date.now()
   });
 
-
-  if (
-    conversation.history.length > 30
-  ) {
-
+  if (conversation.history.length > 30) {
     conversation.history =
       conversation.history.slice(-30);
-
   }
-
 }
 
-
-/* =====================================================
-   PAYMENT MESSAGE BUILDER
-===================================================== */
-
-function buildPaymentMessage(
-  packageKey,
-  paymentMethod
-) {
-
-  const packageInfo =
-    PACKAGES[packageKey];
-
-
-  if (!packageInfo) {
-
-    throw new Error(
-      "No package selected"
-    );
-
-  }
-
-
-  const payment =
-    calculatePayment(
-      packageKey
-    );
-
-
-  const amountText =
-`Your ${packageInfo.name} package:
-
-Package price: €${payment.price.toFixed(2)}
-12% payment fee: €${payment.fee.toFixed(2)}
-Total amount: €${payment.total.toFixed(2)}`;
-
-
-  if (
-    paymentMethod === "paypal"
-  ) {
-
-    return `${amountText}
-
-PayPal email:
-${PAYPAL_DETAILS.email}
-
-PayPal:
-${PAYPAL_DETAILS.link}
-
-${PAYMENT_SCREENSHOT_MESSAGE}`;
-
-  }
-
-
-  if (
-    paymentMethod === "iban"
-  ) {
-
-    return `${amountText}
-
-Bank details:
-
-Name:
-${IBAN_DETAILS.name}
-
-IBAN:
-${IBAN_DETAILS.iban}
-
-SWIFT/BIC:
-${IBAN_DETAILS.swift}
-
-Bank:
-${IBAN_DETAILS.bank}
-
-Bank address:
-${IBAN_DETAILS.address}
-
-${PAYMENT_SCREENSHOT_MESSAGE}`;
-
-  }
-
-
-  if (
-    paymentMethod === "revolut"
-  ) {
-
-    return `${amountText}
-
-Revolut:
-
-Tag:
-${REVOLUT_DETAILS.tag}
-
-Link:
-${REVOLUT_DETAILS.link}
-
-${PAYMENT_SCREENSHOT_MESSAGE}`;
-
-  }
-
-
-  if (
-    paymentMethod === "mbway"
-  ) {
-
-    return `${amountText}
-
-MB WAY:
-
-Number:
-${MBWAY_DETAILS.number}
-
-Name:
-${MBWAY_DETAILS.name}
-
-${PAYMENT_SCREENSHOT_MESSAGE}`;
-
-  }
-
-
-  if (
-    paymentMethod === "card"
-  ) {
-
-    return `${amountText}
-
-${CARD_MESSAGE}
-
-${PAYMENT_SCREENSHOT_MESSAGE}`;
-
-  }
-
-
-  return null;
-
-}
-
-
-/* =====================================================
-   EXTRACT INSTAGRAM MESSAGE CONTENT
-===================================================== */
-
-function extractClientMessage(
-  event
-) {
-
-  const message =
-    event.message || {};
-
-
-  const text =
-    typeof message.text === "string"
-      ? message.text.trim()
-      : "";
-
-
-  const attachments =
-    Array.isArray(
-      message.attachments
-    )
-      ? message.attachments
-      : [];
-
-
-  const detectedMedia = [];
-
-
-  for (
-    const attachment of attachments
-  ) {
-
-    const type =
-      attachment?.type ||
-      "unknown";
-
-
-    const payload =
-      attachment?.payload ||
-      {};
-
-
-    const url =
-      payload?.url ||
-      "";
-
-
-    detectedMedia.push({
-
-      type,
-      url
-
+function queueForClient(senderId, task) {
+  const previous =
+    clientQueues.get(senderId) ||
+    Promise.resolve();
+
+  const next = previous
+    .then(task)
+    .catch(error => {
+      console.error("Queue error:", error);
     });
 
-  }
-
-
-  const parts = [];
-
-
-  if (text) {
-
-    parts.push(
-      `TEXT: ${text}`
-    );
-
-  }
-
-
-  if (
-    detectedMedia.length > 0
-  ) {
-
-    for (
-      const media of detectedMedia
-    ) {
-
-      if (
-        media.type === "image"
-      ) {
-
-        parts.push(
-          "CLIENT SENT AN IMAGE/PHOTO."
-        );
-
-      }
-
-      else if (
-        media.type === "video"
-      ) {
-
-        parts.push(
-          "CLIENT SENT A VIDEO."
-        );
-
-      }
-
-      else if (
-        media.type === "audio"
-      ) {
-
-        parts.push(
-          "CLIENT SENT AN AUDIO MESSAGE."
-        );
-
-      }
-
-      else if (
-        media.type === "file"
-      ) {
-
-        parts.push(
-          "CLIENT SENT A FILE."
-        );
-
-      }
-
-      else if (
-        media.type === "share"
-      ) {
-
-        parts.push(
-          "CLIENT SHARED AN INSTAGRAM POST OR REEL."
-        );
-
-      }
-
-      else {
-
-        parts.push(
-          `CLIENT SENT MEDIA TYPE: ${media.type}`
-        );
-
-      }
-
-    }
-
-  }
-
-
-  if (
-    parts.length === 0
-  ) {
-
-    parts.push(
-      "CLIENT SENT A MESSAGE WITHOUT TEXT."
-    );
-
-  }
-
-
-  return {
-
-    text:
-      parts.join("\n"),
-
-    attachments:
-      detectedMedia
-
-  };
-
+  clientQueues.set(senderId, next);
 }
-
-
-/* =====================================================
-   OPENAI RESPONSE TEXT EXTRACTOR
-===================================================== */
-
-function extractOpenAIText(
-  data
-) {
-
-  if (
-    data &&
-    typeof data.output_text === "string" &&
-    data.output_text.trim()
-  ) {
-
-    return data.output_text.trim();
-
-  }
-
-
-  let result = "";
-
-
-  if (
-    data &&
-    Array.isArray(data.output)
-  ) {
-
-    for (
-      const item of data.output
-    ) {
-
-      if (
-        !item ||
-        !Array.isArray(
-          item.content
-        )
-      ) {
-
-        continue;
-
-      }
-
-
-      for (
-        const content of item.content
-      ) {
-
-        if (
-          content &&
-          typeof content.text === "string"
-        ) {
-
-          result +=
-            content.text;
-
-        }
-
-      }
-
-    }
-
-  }
-
-
-  return result.trim();
-
-}
-
-
-/* =====================================================
-   OPENAI CONVERSATION CONTROLLER
-===================================================== */
-
-async function classifyMessage(
-  conversation,
-  clientMessage
-) {
-
-  if (!OPEN_AI) {
-
-    throw new Error(
-      "OPEN_AI environment variable is missing"
-    );
-
-  }
-
-
-  const history =
-    conversation.history
-      .map(
-        (item) =>
-          `${item.role}: ${item.text}`
-      )
-      .join("\n");
-
-
-  const instructions = `
-
-You are the conversation controller for Global Promote.
-
-You DO NOT write fixed messages.
-
-You ONLY choose the correct action.
-
-==================================================
-CURRENT STAGE
-==================================================
-
-${conversation.stage}
-
-Selected package:
-${conversation.selectedPackage || "none"}
-
-Selected payment method:
-${conversation.paymentMethod || "none"}
-
-==================================================
-BUSINESS
-==================================================
-
-Global Promote pages:
-
-@expl.europe
-@expl.canada
-@expl.atlanta
-@expl.miami
-
-Packages:
-
-Bronze:
-€35
-2 stories
-1.5K followers guaranteed
-
-Silver:
-€60
-1 post + 3 stories + 2 highlights
-4K followers guaranteed
-
-Gold:
-€90
-3 posts + 4 stories + 3 highlights
-7K followers guaranteed
-
-Diamond:
-€120
-5 posts + 8 stories + 7 highlights
-10K followers guaranteed
-
-Gold is the package most clients choose.
-
-Payment methods:
-
-PayPal
-IBAN
-Revolut
-MB WAY
-Credit/Debit Card
-
-==================================================
-ACTIONS
-==================================================
-
-OPENING
-Brand-new conversation.
-
-PROMOTION
-Client responds positively and wants to know more.
-
-PACKAGES
-Client asks for packages, prices, plans or options.
-
-FOLLOWER_GUARANTEE
-Client asks whether followers are real, organic,
-guaranteed, or how the guarantee works.
-
-ACTIVE_AUDIENCE
-Client asks about audience activity or best time.
-
-LATER
-Client says they will text later, get back later,
-or let you know later.
-
-THINK
-Client says they need time to think.
-
-PACKAGE_SELECTED
-Client clearly selects Bronze, Silver, Gold or Diamond.
-
-PAYMENT_METHOD_QUESTION
-Client asks how to pay after selecting a package.
-
-PAYMENT
-Client chooses PayPal, IBAN, Revolut, MB WAY or Card.
-
-AI_REPLY
-Client asks another genuine question.
-
-==================================================
-MEDIA
-==================================================
-
-If the client sends only a photo, post, reel, video,
-or other media, do NOT ignore it.
-
-Choose AI_REPLY unless another action clearly matches.
-
-==================================================
-IMPORTANT
-==================================================
-
-Never invent prices.
-
-Never invent payment details.
-
-Never change the 12% payment fee.
-
-One incoming client event = one action.
-
-==================================================
-CLIENT MESSAGE
-==================================================
-
-${clientMessage}
-
-==================================================
-HISTORY
-==================================================
-
-${history}
-`;
-
-
-  const response =
-    await fetch(
-      "https://api.openai.com/v1/responses",
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/json",
-
-          "Authorization":
-            `Bearer ${OPEN_AI}`
-
-        },
-
-        body:
-          JSON.stringify({
-
-            model:
-              "gpt-5-mini",
-
-            instructions,
-
-            input:
-              clientMessage,
-
-            text: {
-
-              format: {
-
-                type:
-                  "json_schema",
-
-                name:
-                  "conversation_action",
-
-                strict:
-                  true,
-
-                schema: {
-
-                  type:
-                    "object",
-
-                  additionalProperties:
-                    false,
-
-                  properties: {
-
-                    action: {
-
-                      type:
-                        "string",
-
-                      enum: [
-
-                        "OPENING",
-                        "PROMOTION",
-                        "PACKAGES",
-                        "FOLLOWER_GUARANTEE",
-                        "ACTIVE_AUDIENCE",
-                        "LATER",
-                        "THINK",
-                        "PACKAGE_SELECTED",
-                        "PAYMENT_METHOD_QUESTION",
-                        "PAYMENT",
-                        "AI_REPLY"
-
-                      ]
-
-                    },
-
-                    package: {
-
-                      type:
-                        "string",
-
-                      enum: [
-
-                        "none",
-                        "bronze",
-                        "silver",
-                        "gold",
-                        "diamond"
-
-                      ]
-
-                    },
-
-                    payment: {
-
-                      type:
-                        "string",
-
-                      enum: [
-
-                        "none",
-                        "paypal",
-                        "iban",
-                        "revolut",
-                        "mbway",
-                        "card"
-
-                      ]
-
-                    }
-
-                  }
-  };
-
-                /* =====================================================
-   FREE-FORM AI ANSWER
-===================================================== */
-
-async function getAIReply(
-  conversation,
-  clientMessage
-) {
-
-  if (!OPEN_AI) {
-
-    throw new Error(
-      "OPEN_AI environment variable is missing"
-    );
-
-  }
-
-
-  const history =
-    conversation.history
-      .map(
-        (item) =>
-          `${item.role}: ${item.text}`
-      )
-      .join("\n");
-
-
-  const instructions = `
-
-You are the natural sales assistant for Global Promote.
-
-Answer the client's actual question.
-
-IMPORTANT BUSINESS INFORMATION:
-
-Bronze = €35
-Silver = €60
-Gold = €90
-Diamond = €120
-
-Gold is the most commonly selected package.
-
-Payment methods:
-PayPal
-IBAN
-Revolut
-MB WAY
-Credit/Debit Card
-
-The payment fee is 12%.
-
-Do not invent prices.
-Do not invent payment details.
-Do not invent discounts.
-Do not invent guarantees beyond the business information.
-
-Be friendly and concise.
-
-Reply in the same language as the client when possible.
-
-If the client sends a photo, post, reel or video without
-text, acknowledge that you received the media and ask
-what they would like help with.
-
-If the client shares an Instagram post or reel, do not
-pretend you watched it if you cannot actually access it.
-
-If you don't know something, don't invent an answer.
-
-If asked whether you are AI, answer honestly.
-
-Previous conversation:
-
-${history}
-
-Client message:
-
-${clientMessage}
-`;
-
-
-  const response =
-    await fetch(
-      "https://api.openai.com/v1/responses",
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/json",
-
-          "Authorization":
-            `Bearer ${OPEN_AI}`
-
-        },
-
-        body:
-          JSON.stringify({
-
-            model:
-              "gpt-5-mini",
-
-            instructions,
-
-            input:
-              clientMessage
-
-          })
-
-      }
-    );
-
-
-  const data =
-    await response.json();
-
-
-  if (
-    !response.ok
-  ) {
-
-    console.error(
-      "OpenAI AI reply error:"
-    );
-
-    console.error(
-      JSON.stringify(
-        data,
-        null,
-        2
-      )
-    );
-
-    throw new Error(
-      "OpenAI AI reply failed"
-    );
-
-  }
-
-
-  const reply =
-    extractOpenAIText(
-      data
-    );
-
-
-  if (!reply) {
-
-    throw new Error(
-      "AI returned no reply"
-    );
-
-  }
-
-
-  return reply.trim();
-
-}
-
-
-/* =====================================================
-   SEND INSTAGRAM MESSAGE
-===================================================== */
 
 async function sendInstagramMessage(
   recipientId,
   text
 ) {
-
-  if (
-    !PAGE_ACCESS_TOKEN
-  ) {
-
+  if (!PAGE_ACCESS_TOKEN) {
     throw new Error(
       "PAGE_ACCESS_TOKEN is missing"
     );
-
   }
 
+  if (!INSTAGRAM_USER_ID) {
+    throw new Error(
+      "INSTAGRAM_USER_ID is missing"
+    );
+  }
 
   const url =
     `https://graph.instagram.com/` +
     `${META_API_VERSION}/` +
     `${INSTAGRAM_USER_ID}/messages`;
 
+  const response = await fetch(url, {
+    method: "POST",
 
-  const response =
-    await fetch(
-      url,
-      {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization":
+        `Bearer ${PAGE_ACCESS_TOKEN}`
+    },
 
-        method:
-          "POST",
+    body: JSON.stringify({
+      recipient: {
+        id: recipientId
+      },
 
-        headers: {
-
-          "Content-Type":
-            "application/json",
-
-          "Authorization":
-            `Bearer ${PAGE_ACCESS_TOKEN}`
-
-        },
-
-        body:
-          JSON.stringify({
-
-            recipient: {
-
-              id:
-                recipientId
-
-            },
-
-            message: {
-
-              text:
-                text
-
-            }
-
-          })
-
+      message: {
+        text
       }
-    );
+    })
+  });
 
+  const data = await response.json();
 
-  const data =
-    await response.json();
-
-
-  if (
-    !response.ok
-  ) {
-
+  if (!response.ok) {
     console.error(
-      "Instagram send error:"
-    );
-
-    console.error(
-      JSON.stringify(
-        data,
-        null,
-        2
-      )
+      "Instagram API error:",
+      JSON.stringify(data, null, 2)
     );
 
     throw new Error(
       "Instagram message failed"
     );
-
   }
 
+  return data;
+}
 
-  console.log(
-    "Instagram message sent successfully."
+function cancelReminder(senderId) {
+  const timer =
+    reminderTimers.get(senderId);
+
+  if (timer) {
+    clearTimeout(timer);
+    reminderTimers.delete(senderId);
+  }
+}
+
+function createReminder(
+  senderId,
+  messageId,
+  reminderText,
+  expectedStage
+) {
+  cancelReminder(senderId);
+
+  const timer = setTimeout(async () => {
+    try {
+      const conversation =
+        getConversation(senderId);
+
+      if (conversation.clientReplied) {
+        return;
+      }
+
+      if (
+        conversation.stage !==
+        expectedStage
+      ) {
+        return;
+      }
+
+      if (
+        conversation.lastOutgoingMessageId !==
+        messageId
+      ) {
+        return;
+      }
+
+      await sendInstagramMessage(
+        senderId,
+        reminderText
+      );
+
+      saveMessage(
+        conversation,
+        "assistant",
+        reminderText
+      );
+
+      conversation.lastOutgoingStage =
+        "REMINDER_SENT";
+
+    } catch (error) {
+      console.error(
+        "Reminder error:",
+        error
+      );
+    } finally {
+      reminderTimers.delete(senderId);
+    }
+  }, REMINDER_DELAY);
+
+  reminderTimers.set(
+    senderId,
+    timer
+  );
+}
+
+async function sendTrackedMessage(
+  senderId,
+  text,
+  conversation,
+  stage
+) {
+  const data =
+    await sendInstagramMessage(
+      senderId,
+      text
+    );
+
+  const messageId =
+    data?.message_id ||
+    data?.id ||
+    null;
+
+  conversation.lastOutgoingMessageId =
+    messageId;
+
+  conversation.lastOutgoingStage =
+    stage;
+
+  if (messageId) {
+    outgoingMessages.set(
+      messageId,
+      {
+        senderId,
+        stage,
+        createdAt: Date.now()
+      }
+    );
+  }
+
+  saveMessage(
+    conversation,
+    "assistant",
+    text
   );
 
+  return messageId;
+}
+
+function buildPaymentMessage(
+  packageKey,
+  paymentMethod
+) {
+  const selected =
+    PACKAGES[packageKey];
+
+  const payment =
+    PAYMENT_DETAILS[paymentMethod];
+
+  return (
+`Perfect ❤️
+
+You've selected our ${selected.name} package.
+
+Price: $${selected.price}
+
+${selected.details}
+${selected.followers}
+
+Payment method: ${paymentMethod.toUpperCase()}
+
+Payment details:
+${payment}
+
+After payment, please send us the payment confirmation/screenshot ❤️`
+  );
+}
+
+function extractOpenAIText(data) {
+  if (
+    typeof data?.output_text ===
+    "string"
+  ) {
+    return data.output_text;
+  }
+
+  let text = "";
+
+  if (Array.isArray(data?.output)) {
+    for (const item of data.output) {
+      if (
+        item.type !== "message" ||
+        !Array.isArray(item.content)
+      ) {
+        continue;
+      }
+
+      for (const content of item.content) {
+        if (
+          content.type === "output_text" &&
+          typeof content.text === "string"
+        ) {
+          text += content.text;
+        }
+      }
+    }
+  }
+
+  return text;
+}
+
+function simpleClassification(message) {
+  const text =
+    String(message || "")
+      .toLowerCase()
+      .trim();
+
+  if (text.includes("bronze")) {
+    return {
+      action: "PACKAGE_SELECTED",
+      package: "bronze",
+      payment: null
+    };
+  }
+
+  if (text.includes("silver")) {
+    return {
+      action: "PACKAGE_SELECTED",
+      package: "silver",
+      payment: null
+    };
+  }
+
+  if (text.includes("gold")) {
+    return {
+      action: "PACKAGE_SELECTED",
+      package: "gold",
+      payment: null
+    };
+  }
+
+  if (text.includes("diamond")) {
+    return {
+      action: "PACKAGE_SELECTED",
+      package: "diamond",
+      payment: null
+    };
+  }
+
+  if (text.includes("paypal")) {
+    return {
+      action: "PAYMENT",
+      package: null,
+      payment: "paypal"
+    };
+  }
+
+  if (text.includes("iban")) {
+    return {
+      action: "PAYMENT",
+      package: null,
+      payment: "iban"
+    };
+  }
+
+  if (text.includes("revolut")) {
+    return {
+      action: "PAYMENT",
+      package: null,
+      payment: "revolut"
+    };
+  }
+
+  if (
+    text.includes("mb way") ||
+    text.includes("mbway")
+  ) {
+    return {
+      action: "PAYMENT",
+      package: null,
+      payment: "mbway"
+    };
+  }
+
+  if (
+    text.includes("card") ||
+    text.includes("credit") ||
+    text.includes("debit")
+  ) {
+    return {
+      action: "PAYMENT",
+      package: null,
+      payment: "card"
+    };
+  }
+
+  if (
+    text.includes("package") ||
+    text.includes("packages") ||
+    text.includes("price") ||
+    text.includes("prices")
+  ) {
+    return {
+      action: "PACKAGES",
+      package: null,
+      payment: null
+    };
+  }
+
+  if (
+    text.includes("guarantee") ||
+    text.includes("guaranteed")
+  ) {
+    return {
+      action: "FOLLOWER_GUARANTEE",
+      package: null,
+      payment: null
+    };
+  }
+
+  if (
+    text.includes("later") ||
+    text.includes("tomorrow")
+  ) {
+    return {
+      action: "LATER",
+      package: null,
+      payment: null
+    };
+  }
+
+  if (text.includes("think")) {
+    return {
+      action: "THINK",
+      package: null,
+      payment: null
+    };
+  }
+
+  return {
+    action: "AI_REPLY",
+    package: null,
+    payment: null
+  };
+     }
+async function classifyMessage(
+  conversation,
+  clientMessage,
+  attachmentInfo
+) {
+  if (!OPEN_AI) {
+    return simpleClassification(
+      clientMessage
+    );
+  }
+
+  const history =
+    conversation.history
+      .slice(-12)
+      .map(
+        item =>
+          `${item.role}: ${item.text}`
+      )
+      .join("\n");
+
+  const prompt =
+`You classify Instagram customer messages.
+
+Return ONLY valid JSON.
+
+Possible actions:
+PROMOTION
+PACKAGES
+FOLLOWER_GUARANTEE
+ACTIVE_AUDIENCE
+LATER
+THINK
+PACKAGE_SELECTED
+PAYMENT_METHOD_QUESTION
+PAYMENT
+OPENING
+AI_REPLY
+
+Package values:
+bronze
+silver
+gold
+diamond
+
+Payment values:
+paypal
+iban
+revolut
+mbway
+card
+
+Conversation:
+${history}
+
+Latest customer message:
+${clientMessage}
+
+Attachment:
+${attachmentInfo || "none"}
+
+Return:
+{
+  "action": "...",
+  "package": null,
+  "payment": null
+}`;
+
+  try {
+    const response =
+      await fetch(
+        "https://api.openai.com/v1/responses",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${OPEN_AI}`
+          },
+
+          body: JSON.stringify({
+            model: OPENAI_MODEL,
+            input: prompt,
+            max_output_tokens: 200
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      return simpleClassification(
+        clientMessage
+      );
+    }
+
+    const text =
+      extractOpenAIText(data)
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim();
+
+    const result =
+      JSON.parse(text);
+
+    return {
+      action:
+        result.action ||
+        "AI_REPLY",
+
+      package:
+        result.package ||
+        null,
+
+      payment:
+        result.payment ||
+        null
+    };
+
+  } catch (error) {
+    console.error(
+      "Classification error:",
+      error
+    );
+
+    return simpleClassification(
+      clientMessage
+    );
+  }
 }
 
 
-/* =====================================================
-   WEBHOOK VERIFICATION
-===================================================== */
-
-app.get(
-  "/webhook",
-  (req, res) => {
-
-    const mode =
-      req.query["hub.mode"];
-
-    const token =
-      req.query["hub.verify_token"];
-
-    const challenge =
-      req.query["hub.challenge"];
-
-
-    if (
-      mode === "subscribe" &&
-      token === VERIFY_TOKEN
-    ) {
-
-      console.log(
-        "Webhook verified."
-      );
-
-      return res
-        .status(200)
-        .send(challenge);
-
-    }
-
-
-    return res.sendStatus(
-      403
-    );
-
+async function getAIReply(
+  conversation,
+  clientMessage,
+  attachmentInfo
+) {
+  if (!OPEN_AI) {
+    return "Of course ❤️ How can I help you?";
   }
-);
 
+  const history =
+    conversation.history
+      .slice(-15)
+      .map(
+        item =>
+          `${item.role}: ${item.text}`
+      )
+      .join("\n");
 
-/* =====================================================
-   INSTAGRAM WEBHOOK
-===================================================== */
+  const prompt =
+`You are an Instagram sales assistant.
 
-app.post(
-  "/webhook",
-  async (req, res) => {
+Business:
+Instagram promotion service.
 
-    const body =
-      req.body;
+Packages:
 
+Bronze: $40 — 2 stories — 1,000 followers
+Silver: $75 — 1 post + 3 stories — 2,000 followers
+Gold: $140 — 7 posts + 10 stories — 5,000 followers
+Diamond: $220 — 10 posts + 20 stories — 10,000 followers
 
-    /*
-      Acknowledge Meta immediately.
-    */
+Payment methods:
+PayPal
+IBAN
+Revolut
+MB WAY
+Credit/Debit Card
 
-    res.sendStatus(
-      200
+Do not invent prices.
+Do not invent payment methods.
+Keep replies short and natural.
+
+Conversation:
+${history}
+
+Customer:
+${clientMessage}
+
+Attachment:
+${attachmentInfo || "none"}`;
+
+  try {
+    const response =
+      await fetch(
+        "https://api.openai.com/v1/responses",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${OPEN_AI}`
+          },
+
+          body: JSON.stringify({
+            model: OPENAI_MODEL,
+            input: prompt,
+            max_output_tokens: 350
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      return "Of course ❤️ How can I help you?";
+    }
+
+    const reply =
+      extractOpenAIText(data).trim();
+
+    return reply ||
+      "Of course ❤️ How can I help you?";
+
+  } catch (error) {
+    console.error(
+      "OpenAI error:",
+      error
     );
 
-
-    if (
-      body.object !== "instagram"
-    ) {
-
-      console.log(
-        "Ignoring non-Instagram webhook."
-      );
-
-      return;
-
-    }
+    return "Of course ❤️ How can I help you?";
+  }
+}
 
 
-    if (
-      !Array.isArray(body.entry)
-    ) {
+function getAttachmentInfo(message) {
+  const parts = [];
 
-      console.log(
-        "No webhook entries."
-      );
-
-      return;
-
-    }
-
-
+  if (
+    Array.isArray(
+      message.attachments
+    )
+  ) {
     for (
-      const entry of body.entry
+      const attachment of
+      message.attachments
     ) {
-
-      if (
-        !Array.isArray(
-          entry.messaging
-        )
-      ) {
-
-        continue;
-
-      }
-
-
-      for (
-        const event of
-        entry.messaging
-      ) {
-
-        /*
-          Ignore events without a message.
-        */
-
-        if (
-          !event.message
-        ) {
-
-          continue;
-
-        }
-
-
-        /*
-          Ignore our own echo messages.
-        */
-
-        if (
-          event.message.is_echo === true
-        ) {
-
-          console.log(
-            "Ignoring echo message."
-          );
-
-          continue;
-
-        }
-
-
-        const senderId =
-          event.sender?.id;
-
-
-        if (!senderId) {
-
-          console.log(
-            "No sender ID."
-          );
-
-          continue;
-
-        }
-
-
-        /*
-          =========================================
-          CLIENT REPLIED
-          CANCEL ANY PENDING REMINDER
-          =========================================
-        */
-
-        cancelReminder(
-          senderId
-        );
-
-
-        /*
-          =========================================
-          EXTRACT TEXT / IMAGE / POST / REEL
-          =========================================
-        */
-
-        const extracted =
-          extractClientMessage(
-            event
-          );
-
-
-        const clientMessage =
-          extracted.text;
-
-
-        console.log(
-          "========================================"
-        );
-
-        console.log(
-          "INSTAGRAM MESSAGE RECEIVED"
-        );
-
-        console.log(
-          "Sender:",
-          senderId
-        );
-
-        console.log(
-          clientMessage
-        );
-
-
-        if (
-          extracted.attachments.length > 0
-        ) {
-
-          console.log(
-            "MEDIA DETECTED:"
-          );
-
-
-          for (
-            const media of
-            extracted.attachments
-          ) {
-
-            console.log(
-              "Type:",
-              media.type
-            );
-
-
-            if (
-              media.url
-            ) {
-
-              console.log(
-                "URL:",
-                media.url
-              );
-
-            }
-
-          }
-
-        }
-
-
-        console.log(
-          "========================================"
-        );
-
-
-        const conversation =
-          getConversation(
-            senderId
-          );
-
-
-        /*
-          =========================================
-          CLIENT QUEUE
-          =========================================
-        */
-
-        queueForClient(
-          senderId,
-          async () => {
-
-            try {
-
-              /*
-                =====================================
-                BRAND NEW CLIENT
-                =====================================
-              */
-
-              if (
-                conversation.stage === "NEW"
-              ) {
-
-                saveMessage(
-                  conversation,
-                  "client",
-                  clientMessage
-                );
-
-
-                const delay =
-                  getRandomDelay();
-
-
-                console.log(
-                  `Waiting ${Math.round(delay / 1000)} seconds before Message #1`
-                );
-
-
-                await wait(
-                  delay
-                );
-
-
-                await sendInstagramMessage(
-                  senderId,
-                  MESSAGE_ONE
-                );
-
-
-                saveMessage(
-                  conversation,
-                  "assistant",
-                  MESSAGE_ONE
-                );
-
-
-                conversation.stage =
-                  "OPENING_SENT";
-
-
-                /*
-                  Schedule first reminder.
-                */
-
-                scheduleReminder(
-                  senderId,
-                  conversation,
-                  "OPENING_SENT",
-                  REMINDER_ONE
-                );
-
-
-                return;
-
-              }
-
-
-              /*
-                =====================================
-                SAVE CLIENT MESSAGE
-                =====================================
-              */
-
-              saveMessage(
-                conversation,
-                "client",
-                clientMessage
-              );
-
-
-              /*
-                =====================================
-                CLASSIFY CLIENT MESSAGE
-                =====================================
-              */
-
-              const result =
-                await classifyMessage(
-                  conversation,
-                  clientMessage
-                );
-
-
-              console.log(
-                "AI ACTION:",
-                result.action
-              );
-
-
-              console.log(
-                "AI PACKAGE:",
-                result.package
-              );
-
-
-              console.log(
-                "AI PAYMENT:",
-                result.payment
-              );
-
-
-              let reply =
-                null;
-
-
-              /*
-                =====================================
-                PROMOTION
-                =====================================
-              */
-
-              if (
-                result.action ===
-                "PROMOTION"
-              ) {
-
-                conversation.stage =
-                  "PROMOTION_SENT";
-
-                reply =
-                  MESSAGE_TWO;
-
-              }
-
-
-              /*
-                =====================================
-                PACKAGES
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "PACKAGES"
-              ) {
-
-                conversation.stage =
-                  "PACKAGES_SHOWN";
-
-                reply =
-                  PACKAGES_MESSAGE;
-
-              }
-
-
-              /*
-                =====================================
-                FOLLOWER GUARANTEE
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "FOLLOWER_GUARANTEE"
-              ) {
-
-                reply =
-                  FOLLOWER_GUARANTEE_MESSAGE;
-
-              }
-
-
-              /*
-                =====================================
-                ACTIVE AUDIENCE
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "ACTIVE_AUDIENCE"
-              ) {
-
-                reply =
-                  ACTIVE_AUDIENCE_MESSAGE;
-
-              }
-
-
-              /*
-                =====================================
-                LATER
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "LATER"
-              ) {
-
-                reply =
-                  LATER_MESSAGE;
-
-              }
-
-
-              /*
-                =====================================
-                THINK
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "THINK"
-              ) {
-
-                reply =
-                  THINK_MESSAGE;
-
-              }
-
-
-              /*
-                =====================================
-                PACKAGE SELECTED
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "PACKAGE_SELECTED"
-              ) {
-
-                const validPackages = [
-
-                  "bronze",
-                  "silver",
-                  "gold",
-                  "diamond"
-
-                ];
-
-
-                if (
-                  validPackages.includes(
-                    result.package
-                  )
-                ) {
-
-                  conversation.selectedPackage =
-                    result.package;
-
-
-                  /*
-                    The next thing we are waiting
-                    for is the payment method.
-                  */
-
-                  conversation.stage =
-                    "PAYMENT_PENDING";
-
-
-                  const selected =
-                    PACKAGES[
-                      result.package
-                    ];
-
-
-                  reply =
+      const type =
+        attachment.type ||
+        "unknown";
+
+      const url =
+        attachment.payload?.url ||
+        attachment.payload?.src ||
+        "";
+
+      parts.push(
+        `type=${type}, url=${url}`
+      );
+    }
+  }
+
+  if (message.share) {
+    parts.push(
+      `shared media=${JSON.stringify(
+        message.share
+      )}`
+    );
+  }
+
+  return parts.join("\n");
+}
+
+
+async function processClientMessage(
+  senderId,
+  clientMessage,
+  attachmentInfo
+) {
+  const conversation =
+    getConversation(senderId);
+
+  conversation.clientReplied = true;
+
+  cancelReminder(senderId);
+
+  saveMessage(
+    conversation,
+    "client",
+    clientMessage || "[media]"
+  );
+
+  const result =
+    await classifyMessage(
+      conversation,
+      clientMessage,
+      attachmentInfo
+    );
+
+  let reply = null;
+
+
+  if (
+    conversation.stage ===
+    "NEW"
+  ) {
+    conversation.stage =
+      "OPENING_SENT";
+
+    reply = MESSAGE_ONE;
+  }
+
+  else if (
+    result.action ===
+    "PROMOTION"
+  ) {
+    conversation.stage =
+      "PROMOTION_SENT";
+
+    reply = MESSAGE_TWO;
+  }
+
+  else if (
+    result.action ===
+    "PACKAGES"
+  ) {
+    conversation.stage =
+      "PACKAGES_SHOWN";
+
+    reply = PACKAGES_MESSAGE;
+  }
+
+  else if (
+    result.action ===
+    "FOLLOWER_GUARANTEE"
+  ) {
+    reply =
+`Yes ❤️ Our packages include a follower guarantee depending on the package you choose.
+
+I can show you all the available packages.`;
+  }
+
+  else if (
+    result.action ===
+    "ACTIVE_AUDIENCE"
+  ) {
+    reply =
+`Yes ❤️ Our promotion is focused on helping you reach an active and relevant audience.
+
+I can show you the available packages.`;
+  }
+
+  else if (
+    result.action ===
+    "LATER"
+  ) {
+    reply =
+`Of course ❤️ No problem.
+
+Whenever you're ready, just message us and we'll be happy to help.`;
+  }
+
+  else if (
+    result.action ===
+    "THINK"
+  ) {
+    reply =
+`Of course ❤️ Take your time.
+
+If you have any questions about the packages, just ask me.`;
+  }
+
+  else if (
+    result.action ===
+    "PACKAGE_SELECTED"
+  ) {
+    const packageKey =
+      result.package;
+
+    if (
+      PACKAGES[packageKey]
+    ) {
+      conversation.selectedPackage =
+        packageKey;
+
+      conversation.stage =
+        "PACKAGE_SELECTED";
+
+      const selected =
+        PACKAGES[packageKey];
+
+      reply =
 `Perfect ❤️ You've selected our ${selected.name} package.
 
-Package price: €${selected.price.toFixed(2)}
+Package price: $${selected.price}
+
 ${selected.details}
 ${selected.followers}
 
@@ -2054,335 +944,324 @@ IBAN
 Revolut
 MB WAY
 Credit/Debit Card`;
+    }
+  }
 
-                }
+  else if (
+    result.action ===
+    "PAYMENT_METHOD_QUESTION"
+  ) {
+    reply =
+`Sure ❤️ How would you like to pay?
 
-              }
+PayPal
+IBAN
+Revolut
+MB WAY
+Credit/Debit Card`;
+  }
 
+  else if (
+    result.action ===
+    "PAYMENT"
+  ) {
+    const payment =
+      result.payment;
 
-              /*
-                =====================================
-                PAYMENT METHOD QUESTION
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "PAYMENT_METHOD_QUESTION"
-              ) {
-
-                if (
-                  conversation.selectedPackage
-                ) {
-
-                  conversation.stage =
-                    "PAYMENT_PENDING";
-
-
-                  reply =
-                    PAYMENT_METHOD_QUESTION;
-
-                }
-
-                else {
-
-                  conversation.stage =
-                    "PACKAGES_SHOWN";
-
-
-                  reply =
-                    PACKAGES_MESSAGE;
-
-                }
-
-              }
-
-
-              /*
-                =====================================
-                PAYMENT
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "PAYMENT"
-              ) {
-
-                const validPayments = [
-
-                  "paypal",
-                  "iban",
-                  "revolut",
-                  "mbway",
-                  "card"
-
-                ];
-
-
-                if (
-                  validPayments.includes(
-                    result.payment
-                  )
-                ) {
-
-                  if (
-                    !conversation.selectedPackage
-                  ) {
-
-                    conversation.stage =
-                      "PACKAGES_SHOWN";
-
-
-                    reply =
+    if (
+      PAYMENT_METHODS.includes(
+        payment
+      ) &&
+      payment !== "none"
+    ) {
+      if (
+        !conversation.selectedPackage
+      ) {
+        reply =
 `Please select your package first ❤️
 
 ${PACKAGES_MESSAGE}`;
-
-                  }
-
-                  else {
-
-                    conversation.paymentMethod =
-                      result.payment;
-
-
-                    conversation.stage =
-                      "PAYMENT_COMPLETE";
-
-
-                    reply =
-                      buildPaymentMessage(
-                        conversation.selectedPackage,
-                        result.payment
-                      );
-
-                  }
-
-                }
-
-              }
-
-
-              /*
-                =====================================
-                OPENING
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "OPENING"
-              ) {
-
-                reply =
-                  MESSAGE_ONE;
-
-
-                conversation.stage =
-                  "OPENING_SENT";
-
-              }
-
-
-              /*
-                =====================================
-                AI REPLY
-                =====================================
-              */
-
-              else if (
-                result.action ===
-                "AI_REPLY"
-              ) {
-
-                reply =
-                  await getAIReply(
-                    conversation,
-                    clientMessage
-                  );
-
-              }
-
-
-              /*
-                =====================================
-                SAFETY FALLBACK
-                =====================================
-              */
-
-              if (
-                !reply
-              ) {
-
-                reply =
-                  "Of course ❤️ How can I help you?";
-
-              }
-
-
-              /*
-                =====================================
-                NORMAL 10–12 SECOND DELAY
-                =====================================
-              */
-
-              const delay =
-                getRandomDelay();
-
-
-              console.log(
-                `Waiting ${Math.round(delay / 1000)} seconds before reply`
-              );
-
-
-              await wait(
-                delay
-              );
-
-
-              /*
-                =====================================
-                SEND REPLY
-                =====================================
-              */
-
-              await sendInstagramMessage(
-                senderId,
-                reply
-              );
-
-
-              /*
-                =====================================
-                SAVE REPLY
-                =====================================
-              */
-
-              saveMessage(
-                conversation,
-                "assistant",
-                reply
-              );
-
-
-              /*
-                =====================================
-                SCHEDULE STAGE REMINDERS
-                =====================================
-              */
-
-              if (
-                conversation.stage ===
-                "PROMOTION_SENT"
-              ) {
-
-                scheduleReminder(
-                  senderId,
-                  conversation,
-                  "PROMOTION_SENT",
-                  REMINDER_TWO
-                );
-
-              }
-
-
-              else if (
-                conversation.stage ===
-                "PACKAGES_SHOWN"
-              ) {
-
-                scheduleReminder(
-                  senderId,
-                  conversation,
-                  "PACKAGES_SHOWN",
-                  REMINDER_THREE
-                );
-
-              }
-
-
-              else if (
-                conversation.stage ===
-                "PAYMENT_PENDING"
-              ) {
-
-                scheduleReminder(
-                  senderId,
-                  conversation,
-                  "PAYMENT_PENDING",
-                  REMINDER_FOUR
-                );
-
-              }
-
-
-              console.log(
-                "Reply sent successfully."
-              );
-
-
-              console.log(
-                "Current stage:",
-                conversation.stage
-              );
-
-
-              console.log(
-                "Selected package:",
-                conversation.selectedPackage
-              );
-
-
-              console.log(
-                "Payment method:",
-                conversation.paymentMethod
-              );
-
-            }
-
-
-            catch (error) {
-
-              console.error(
-                "========================================"
-              );
-
-              console.error(
-                "MESSAGE PROCESSING ERROR"
-              );
-
-              console.error(
-                error
-              );
-
-              console.error(
-                "========================================"
-              );
-
-            }
-
-          }
-        );
-
+      } else {
+        conversation.paymentMethod =
+          payment;
+
+        conversation.stage =
+          "PAYMENT_PENDING";
+
+        reply =
+          buildPaymentMessage(
+            conversation.selectedPackage,
+            payment
+          );
       }
+    }
+  }
 
+  else {
+    reply =
+      await getAIReply(
+        conversation,
+        clientMessage,
+        attachmentInfo
+      );
+  }
+
+  if (!reply) {
+    reply =
+      await getAIReply(
+        conversation,
+        clientMessage,
+        attachmentInfo
+      );
+  }
+
+  conversation.clientReplied = false;
+
+  await wait(
+    getRandomDelay()
+  );
+
+  return sendTrackedMessage(
+    senderId,
+    reply,
+    conversation,
+    conversation.stage
+  );
+}
+
+
+app.get(
+  "/webhook",
+  (req, res) => {
+    const mode =
+      req.query["hub.mode"];
+
+    const token =
+      req.query["hub.verify_token"];
+
+    const challenge =
+      req.query["hub.challenge"];
+
+    if (
+      mode === "subscribe" &&
+      token === VERIFY_TOKEN
+    ) {
+      return res
+        .status(200)
+        .send(challenge);
     }
 
+    return res.sendStatus(403);
   }
 );
 
 
-/* =====================================================
-   HOME PAGE
-===================================================== */
+app.post(
+  "/webhook",
+  async (req, res) => {
+    res.sendStatus(200);
+
+    const body = req.body;
+
+    if (
+      body.object !==
+      "instagram"
+    ) {
+      return;
+    }
+
+    if (
+      !Array.isArray(body.entry)
+    ) {
+      return;
+    }
+
+    for (
+      const entry of body.entry
+    ) {
+      if (
+        !Array.isArray(
+          entry.messaging
+        )
+      ) {
+        continue;
+      }
+
+      for (
+        const event of
+        entry.messaging
+      ) {
+
+        if (
+          event.read &&
+          event.read.mid
+        ) {
+          const messageId =
+            event.read.mid;
+
+          const outgoing =
+            outgoingMessages.get(
+              messageId
+            );
+
+          if (!outgoing) {
+            continue;
+          }
+
+          const senderId =
+            outgoing.senderId;
+
+          const conversation =
+            getConversation(
+              senderId
+            );
+
+          if (
+            conversation.lastOutgoingMessageId !==
+            messageId
+          ) {
+            continue;
+          }
+
+          let reminderText = null;
+
+          if (
+            outgoing.stage ===
+            "OPENING_SENT"
+          ) {
+            reminderText =
+              "Hey ❤️ Are you interested in growing your Instagram?";
+          }
+
+          else if (
+            outgoing.stage ===
+            "PROMOTION_SENT"
+          ) {
+            reminderText =
+              "Just checking in ❤️ Can I show you our packages?";
+          }
+
+          else if (
+            outgoing.stage ===
+            "PACKAGES_SHOWN"
+          ) {
+            reminderText =
+              "So which package would you like to choose? ❤️";
+          }
+
+          else if (
+            outgoing.stage ===
+            "PAYMENT_PENDING"
+          ) {
+            reminderText =
+              "Which payment mode do you have available? ❤️";
+          }
+
+          if (reminderText) {
+            createReminder(
+              senderId,
+              messageId,
+              reminderText,
+              outgoing.stage
+            );
+          }
+
+          continue;
+        }
+
+
+        if (
+          !event.message
+        ) {
+          continue;
+        }
+
+        const senderId =
+          event.sender?.id;
+
+        if (
+          !senderId ||
+          senderId ===
+          INSTAGRAM_USER_ID
+        ) {
+          continue;
+        }
+
+        const clientMessage =
+          event.message?.text ||
+          "";
+
+        const attachmentInfo =
+          getAttachmentInfo(
+            event.message
+          );
+
+        queueForClient(
+          senderId,
+          async () => {
+            try {
+              await processClientMessage(
+                senderId,
+                clientMessage,
+                attachmentInfo
+              );
+            } catch (error) {
+              console.error(
+                "Message processing error:",
+                error
+              );
+            }
+          }
+        );
+      }
+    }
+  }
+);
+
 
 app.get(
   "/",
   (req, res) => {
-
-    res.status(200).send(
+    res.send(
       "Global Promote Instagram AI is running!"
     );
+  }
+);
 
-     }
+
+app.get(
+  "/health",
+  (req, res) => {
+    res.json({
+      status: "ok",
+
+      instagram:
+        Boolean(
+          INSTAGRAM_USER_ID
+        ),
+
+      meta:
+        Boolean(
+          PAGE_ACCESS_TOKEN
+        ),
+
+      openai:
+        Boolean(
+          OPEN_AI
+        ),
+
+      conversations:
+        conversations.size
+    });
+  }
+);
+
+
+app.listen(
+  PORT,
+  () => {
+    console.log(
+      `Server running on port ${PORT}`
+    );
+  }
+);
