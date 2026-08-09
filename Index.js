@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-const INSTAGRAM_USER_ID = process.env.INSTAGRAM_USER_ID;
+const INSTAGRAM_USER_ID = "17841404831696204";
 
 const META_API_VERSION =
   process.env.META_API_VERSION || "v24.0";
