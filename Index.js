@@ -41,16 +41,153 @@ const queues = new Map();
 
 
 /* =====================================================
-   RANDOM DELAY
+   REMINDER TIMERS
+===================================================== */
+
+const reminderTimers = new Map();
+
+const REMINDER_DELAY = 120000; // 2 minutes
+
+
+function cancelReminder(senderId) {
+
+  const timer =
+    reminderTimers.get(senderId);
+
+  if (timer) {
+
+    clearTimeout(timer);
+
+    reminderTimers.delete(senderId);
+
+    console.log(
+      "Reminder cancelled for:",
+      senderId
+    );
+
+  }
+
+}
+
+
+function scheduleReminder(
+  senderId,
+  conversation,
+  expectedStage,
+  reminderText
+) {
+
+  cancelReminder(senderId);
+
+
+  const timer =
+    setTimeout(
+      async () => {
+
+        try {
+
+          /*
+            Only send if the client has not
+            changed the conversation stage.
+          */
+
+          if (
+            conversation.stage !==
+            expectedStage
+          ) {
+
+            reminderTimers.delete(
+              senderId
+            );
+
+            return;
+
+          }
+
+
+          await sendInstagramMessage(
+            senderId,
+            reminderText
+          );
+
+
+          saveMessage(
+            conversation,
+            "assistant",
+            reminderText
+          );
+
+
+          console.log(
+            "================================="
+          );
+
+          console.log(
+            "REMINDER SENT"
+          );
+
+          console.log(
+            reminderText
+          );
+
+          console.log(
+            "================================="
+          );
+
+
+          reminderTimers.delete(
+            senderId
+          );
+
+        }
+
+        catch (error) {
+
+          console.error(
+            "REMINDER ERROR:"
+          );
+
+          console.error(
+            error
+          );
+
+          reminderTimers.delete(
+            senderId
+          );
+
+        }
+
+      },
+      REMINDER_DELAY
+    );
+
+
+  reminderTimers.set(
+    senderId,
+    timer
+  );
+
+
+  console.log(
+    "2-minute reminder scheduled for:",
+    senderId
+  );
+
+}
+
+
+/* =====================================================
+   RANDOM 10–12 SECOND DELAY
 ===================================================== */
 
 function getRandomDelay() {
 
   const minimum = 10000;
-  const maximum = 20000;
+  const maximum = 12000;
 
   return Math.floor(
-    Math.random() * (maximum - minimum + 1)
+    Math.random() *
+      (maximum - minimum + 1)
   ) + minimum;
 
 }
@@ -58,11 +195,10 @@ function getRandomDelay() {
 
 function wait(ms) {
 
-  return new Promise((resolve) => {
-
-    setTimeout(resolve, ms);
-
-  });
+  return new Promise(
+    (resolve) =>
+      setTimeout(resolve, ms)
+  );
 
 }
 
@@ -71,7 +207,10 @@ function wait(ms) {
    CLIENT QUEUE
 ===================================================== */
 
-function queueForClient(senderId, task) {
+function queueForClient(
+  senderId,
+  task
+) {
 
   const previous =
     queues.get(senderId) ||
@@ -133,7 +272,27 @@ I will upload your post on these pages and from that you will gain 1k to 15k gua
 
 
 /* =====================================================
-   FOLLOWER GUARANTEE
+   REMINDER MESSAGES
+===================================================== */
+
+const REMINDER_ONE =
+"Are you interested? ❤️";
+
+
+const REMINDER_TWO =
+"Can I show you our packages? ❤️";
+
+
+const REMINDER_THREE =
+"So which package would you like to choose? ❤️";
+
+
+const REMINDER_FOUR =
+"Which mode of payment do you have? ❤️";
+
+
+/* =====================================================
+   FIXED FOLLOWER / GUARANTEE ANSWER
 ===================================================== */
 
 const FOLLOWER_GUARANTEE_MESSAGE =
@@ -141,7 +300,7 @@ const FOLLOWER_GUARANTEE_MESSAGE =
 
 
 /* =====================================================
-   ACTIVE AUDIENCE
+   FIXED ACTIVE AUDIENCE ANSWER
 ===================================================== */
 
 const ACTIVE_AUDIENCE_MESSAGE =
@@ -149,7 +308,7 @@ const ACTIVE_AUDIENCE_MESSAGE =
 
 
 /* =====================================================
-   LATER
+   FIXED LATER RESPONSE
 ===================================================== */
 
 const LATER_MESSAGE =
@@ -157,7 +316,7 @@ const LATER_MESSAGE =
 
 
 /* =====================================================
-   THINK
+   FIXED THINK RESPONSE
 ===================================================== */
 
 const THINK_MESSAGE =
@@ -165,7 +324,7 @@ const THINK_MESSAGE =
 
 
 /* =====================================================
-   PACKAGES
+   PACKAGE MESSAGE
 ===================================================== */
 
 const PACKAGES_MESSAGE =
@@ -240,7 +399,9 @@ const PACKAGES = {
 const PAYMENT_FEE_PERCENT = 0.12;
 
 
-function calculatePayment(packageKey) {
+function calculatePayment(
+  packageKey
+) {
 
   const packageInfo =
     PACKAGES[packageKey];
@@ -261,15 +422,19 @@ function calculatePayment(packageKey) {
 
   const fee =
     Number(
-      (price * PAYMENT_FEE_PERCENT)
-        .toFixed(2)
+      (
+        price *
+        PAYMENT_FEE_PERCENT
+      ).toFixed(2)
     );
 
 
   const total =
     Number(
-      (price + fee)
-        .toFixed(2)
+      (
+        price +
+        fee
+      ).toFixed(2)
     );
 
 
@@ -358,7 +523,7 @@ Credit/Debit Card`;
 
 
 /* =====================================================
-   PAYMENT SCREENSHOT
+   PAYMENT SCREENSHOT MESSAGE
 ===================================================== */
 
 const PAYMENT_SCREENSHOT_MESSAGE =
@@ -369,7 +534,9 @@ const PAYMENT_SCREENSHOT_MESSAGE =
    GET / CREATE CONVERSATION
 ===================================================== */
 
-function getConversation(senderId) {
+function getConversation(
+  senderId
+) {
 
   if (
     !conversations.has(senderId)
@@ -574,10 +741,11 @@ ${PAYMENT_SCREENSHOT_MESSAGE}`;
 
 /* =====================================================
    EXTRACT INSTAGRAM MESSAGE CONTENT
-   MEDIA FIX
 ===================================================== */
 
-function extractClientMessage(event) {
+function extractClientMessage(
+  event
+) {
 
   const message =
     event.message || {};
@@ -590,7 +758,9 @@ function extractClientMessage(event) {
 
 
   const attachments =
-    Array.isArray(message.attachments)
+    Array.isArray(
+      message.attachments
+    )
       ? message.attachments
       : [];
 
@@ -639,7 +809,9 @@ function extractClientMessage(event) {
   }
 
 
-  if (detectedMedia.length > 0) {
+  if (
+    detectedMedia.length > 0
+  ) {
 
     for (
       const media of detectedMedia
@@ -736,7 +908,9 @@ function extractClientMessage(event) {
    OPENAI RESPONSE TEXT EXTRACTOR
 ===================================================== */
 
-function extractOpenAIText(data) {
+function extractOpenAIText(
+  data
+) {
 
   if (
     data &&
@@ -763,7 +937,9 @@ function extractOpenAIText(data) {
 
       if (
         !item ||
-        !Array.isArray(item.content)
+        !Array.isArray(
+          item.content
+        )
       ) {
 
         continue;
@@ -935,8 +1111,6 @@ or other media, do NOT ignore it.
 
 Choose AI_REPLY unless another action clearly matches.
 
-The server will tell the AI that media was received.
-
 ==================================================
 IMPORTANT
 ==================================================
@@ -1075,112 +1249,7 @@ ${history}
 
                   },
 
-                  required: [
-
-                    "action",
-                    "package",
-                    "payment"
-
-                  ]
-
-                }
-
-              }
-
-            }
-
-          })
-
-      }
-    );
-
-
-  const data =
-    await response.json();
-
-
-  console.log(
-    "OpenAI classifier status:",
-    response.status
-  );
-
-
-  if (
-    !response.ok
-  ) {
-
-    console.error(
-      "OpenAI classifier error:"
-    );
-
-    console.error(
-      JSON.stringify(
-        data,
-        null,
-        2
-      )
-    );
-
-    throw new Error(
-      "OpenAI classifier request failed"
-    );
-
-  }
-
-
-  const rawText =
-    extractOpenAIText(
-      data
-    );
-
-
-  if (!rawText) {
-
-    console.error(
-      "OpenAI returned no classifier text:"
-    );
-
-    console.error(
-      JSON.stringify(
-        data,
-        null,
-        2
-      )
-    );
-
-    throw new Error(
-      "OpenAI returned no classifier text"
-    );
-
-  }
-
-
-  try {
-
-    return JSON.parse(
-      rawText
-    );
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Invalid classifier JSON:"
-    );
-
-    console.error(
-      rawText
-    );
-
-    throw new Error(
-      "Invalid classifier JSON"
-    );
-
-  }
-
-}
-/* =====================================================
+                /* =====================================================
    FREE-FORM AI ANSWER
 ===================================================== */
 
@@ -1232,11 +1301,8 @@ Credit/Debit Card
 The payment fee is 12%.
 
 Do not invent prices.
-
 Do not invent payment details.
-
 Do not invent discounts.
-
 Do not invent guarantees beyond the business information.
 
 Be friendly and concise.
@@ -1502,8 +1568,7 @@ app.post(
 
 
     /*
-      Tell Meta immediately that the webhook
-      was received.
+      Acknowledge Meta immediately.
     */
 
     res.sendStatus(
@@ -1604,7 +1669,19 @@ app.post(
 
         /*
           =========================================
-          EXTRACT TEXT + PHOTO + POST + REEL
+          CLIENT REPLIED
+          CANCEL ANY PENDING REMINDER
+          =========================================
+        */
+
+        cancelReminder(
+          senderId
+        );
+
+
+        /*
+          =========================================
+          EXTRACT TEXT / IMAGE / POST / REEL
           =========================================
         */
 
@@ -1743,6 +1820,18 @@ app.post(
                   "OPENING_SENT";
 
 
+                /*
+                  Schedule first reminder.
+                */
+
+                scheduleReminder(
+                  senderId,
+                  conversation,
+                  "OPENING_SENT",
+                  REMINDER_ONE
+                );
+
+
                 return;
 
               }
@@ -1763,7 +1852,7 @@ app.post(
 
               /*
                 =====================================
-                CLASSIFY
+                CLASSIFY CLIENT MESSAGE
                 =====================================
               */
 
@@ -1935,8 +2024,13 @@ app.post(
                     result.package;
 
 
+                  /*
+                    The next thing we are waiting
+                    for is the payment method.
+                  */
+
                   conversation.stage =
-                    "PACKAGE_SELECTED";
+                    "PAYMENT_PENDING";
 
 
                   const selected =
@@ -1980,12 +2074,20 @@ Credit/Debit Card`;
                   conversation.selectedPackage
                 ) {
 
+                  conversation.stage =
+                    "PAYMENT_PENDING";
+
+
                   reply =
                     PAYMENT_METHOD_QUESTION;
 
                 }
 
                 else {
+
+                  conversation.stage =
+                    "PACKAGES_SHOWN";
+
 
                   reply =
                     PACKAGES_MESSAGE;
@@ -2027,6 +2129,10 @@ Credit/Debit Card`;
                     !conversation.selectedPackage
                   ) {
 
+                    conversation.stage =
+                      "PACKAGES_SHOWN";
+
+
                     reply =
 `Please select your package first ❤️
 
@@ -2041,7 +2147,7 @@ ${PACKAGES_MESSAGE}`;
 
 
                     conversation.stage =
-                      "PAYMENT_PENDING";
+                      "PAYMENT_COMPLETE";
 
 
                     reply =
@@ -2100,7 +2206,7 @@ ${PACKAGES_MESSAGE}`;
 
               /*
                 =====================================
-                FALLBACK
+                SAFETY FALLBACK
                 =====================================
               */
 
@@ -2116,7 +2222,7 @@ ${PACKAGES_MESSAGE}`;
 
               /*
                 =====================================
-                RANDOM DELAY
+                NORMAL 10–12 SECOND DELAY
                 =====================================
               */
 
@@ -2136,7 +2242,7 @@ ${PACKAGES_MESSAGE}`;
 
               /*
                 =====================================
-                SEND ONE MESSAGE
+                SEND REPLY
                 =====================================
               */
 
@@ -2148,7 +2254,7 @@ ${PACKAGES_MESSAGE}`;
 
               /*
                 =====================================
-                SAVE AI MESSAGE
+                SAVE REPLY
                 =====================================
               */
 
@@ -2157,6 +2263,57 @@ ${PACKAGES_MESSAGE}`;
                 "assistant",
                 reply
               );
+
+
+              /*
+                =====================================
+                SCHEDULE STAGE REMINDERS
+                =====================================
+              */
+
+              if (
+                conversation.stage ===
+                "PROMOTION_SENT"
+              ) {
+
+                scheduleReminder(
+                  senderId,
+                  conversation,
+                  "PROMOTION_SENT",
+                  REMINDER_TWO
+                );
+
+              }
+
+
+              else if (
+                conversation.stage ===
+                "PACKAGES_SHOWN"
+              ) {
+
+                scheduleReminder(
+                  senderId,
+                  conversation,
+                  "PACKAGES_SHOWN",
+                  REMINDER_THREE
+                );
+
+              }
+
+
+              else if (
+                conversation.stage ===
+                "PAYMENT_PENDING"
+              ) {
+
+                scheduleReminder(
+                  senderId,
+                  conversation,
+                  "PAYMENT_PENDING",
+                  REMINDER_FOUR
+                );
+
+              }
 
 
               console.log(
@@ -2227,116 +2384,4 @@ app.get(
       "Global Promote Instagram AI is running!"
     );
 
-  }
-);
-
-
-/* =====================================================
-   HEALTH CHECK
-===================================================== */
-
-app.get(
-  "/health",
-  (req, res) => {
-
-    res.status(200).json({
-
-      status:
-        "ok",
-
-      instagram:
-        Boolean(PAGE_ACCESS_TOKEN),
-
-      openai:
-        Boolean(OPEN_AI),
-
-      instagramUserId:
-        INSTAGRAM_USER_ID
-
-    });
-
-  }
-);
-
-
-/* =====================================================
-   AUTH CALLBACK
-===================================================== */
-
-app.get(
-  "/auth/callback",
-  (req, res) => {
-
-    const code =
-      req.query.code;
-
-
-    if (!code) {
-
-      return res
-        .status(400)
-        .send(
-          "Missing authorization code"
-        );
-
-    }
-
-
-    res.send(
-      "Instagram authorization successful"
-    );
-
-  }
-);
-
-
-/* =====================================================
-   START SERVER
-===================================================== */
-
-const PORT =
-  process.env.PORT || 3000;
-
-
-app.listen(
-  PORT,
-  () => {
-
-    console.log(
-      "========================================"
-    );
-
-    console.log(
-      `Server running on port ${PORT}`
-    );
-
-    console.log(
-      "Instagram AI: ENABLED"
-    );
-
-    console.log(
-      "Media detection: ENABLED"
-    );
-
-    console.log(
-      "Photos: ENABLED"
-    );
-
-    console.log(
-      "Posts/Reels: ENABLED"
-    );
-
-    console.log(
-      "AI delay: 10–20 seconds"
-    );
-
-    console.log(
-      "Payment fee: 12%"
-    );
-
-    console.log(
-      "========================================"
-    );
-
-  }
-);
+     }
