@@ -225,7 +225,6 @@ function calculatePayment(
     Math.round(
       price *
       PAYMENT_FEE_PERCENT *
-      100
     ) / 100;
 
   const total =
