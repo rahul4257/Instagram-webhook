@@ -188,13 +188,15 @@ Belgium`;
 */
 
 const MBWAY_DETAILS =
-  process.env.MBWAY_DETAILS ||
-  "MB WAY payment details are not configured.";
+`MB WAY:
+Number: +351 968 188 499
+Name: Andre Santana`;
 
 
 const REVOLUT_DETAILS =
-  process.env.REVOLUT_DETAILS ||
-  "Revolut payment details are not configured.";
+`Revolut:
+Tag: @clavis02pk
+Payment link: https://revolut.me/clavis02pk`;
 
 
 /* =========================================================
