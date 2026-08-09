@@ -80,18 +80,15 @@ function queueForClient(
     queues.get(senderId) ||
     Promise.resolve();
 
-
   const next =
     previous
       .catch(() => {})
       .then(task);
 
-
   queues.set(
     senderId,
     next
   );
-
 
   next.finally(() => {
 
@@ -105,7 +102,6 @@ function queueForClient(
 
   });
 
-
   return next;
 
 }
@@ -113,7 +109,6 @@ function queueForClient(
 
 /* =====================================================
    FIXED MESSAGE #1
-   DO NOT CHANGE
 ===================================================== */
 
 const MESSAGE_ONE =
@@ -124,7 +119,6 @@ Would you like to get featured on our page?`;
 
 /* =====================================================
    FIXED MESSAGE #2
-   DO NOT CHANGE
 ===================================================== */
 
 const MESSAGE_TWO =
@@ -252,7 +246,6 @@ function calculatePayment(
   const packageInfo =
     PACKAGES[packageKey];
 
-
   if (!packageInfo) {
 
     throw new Error(
@@ -261,10 +254,8 @@ function calculatePayment(
 
   }
 
-
   const price =
     packageInfo.price;
-
 
   const fee =
     Number(
@@ -272,13 +263,11 @@ function calculatePayment(
         .toFixed(2)
     );
 
-
   const total =
     Number(
       (price + fee)
         .toFixed(2)
     );
-
 
   return {
     price,
@@ -290,12 +279,8 @@ function calculatePayment(
 
 
 /* =====================================================
-   FIXED PAYMENT DETAILS
+   PAYMENT DETAILS
 ===================================================== */
-
-/*
-   PAYPAL
-*/
 
 const PAYPAL_DETAILS = {
 
@@ -307,10 +292,6 @@ const PAYPAL_DETAILS = {
 
 };
 
-
-/*
-   IBAN / WISE
-*/
 
 const IBAN_DETAILS = {
 
@@ -332,10 +313,6 @@ const IBAN_DETAILS = {
 };
 
 
-/*
-   REVOLUT
-*/
-
 const REVOLUT_DETAILS = {
 
   tag:
@@ -347,10 +324,6 @@ const REVOLUT_DETAILS = {
 };
 
 
-/*
-   MB WAY
-*/
-
 const MBWAY_DETAILS = {
 
   number:
@@ -361,10 +334,6 @@ const MBWAY_DETAILS = {
 
 };
 
-
-/*
-   CARD
-*/
 
 const CARD_MESSAGE =
 `For Credit/Debit Card payment, our team will assist you shortly ❤️`;
@@ -424,7 +393,6 @@ function getConversation(
 
   }
 
-
   return conversations.get(
     senderId
   );
@@ -451,7 +419,6 @@ function saveMessage(
 
   });
 
-
   if (
     conversation.history.length > 30
   ) {
@@ -476,7 +443,6 @@ function buildPaymentMessage(
   const packageInfo =
     PACKAGES[packageKey];
 
-
   if (!packageInfo) {
 
     throw new Error(
@@ -485,12 +451,10 @@ function buildPaymentMessage(
 
   }
 
-
   const payment =
     calculatePayment(
       packageKey
     );
-
 
   const amountText =
 `Your ${packageInfo.name} package:
@@ -617,7 +581,6 @@ async function classifyMessage(
     );
 
   }
-
 
   const history =
     conversation.history
@@ -758,6 +721,27 @@ Credit/Debit Card
 AI_REPLY
 Use only when the client's question genuinely does
 not match one of the fixed actions.
+
+==================================================
+MEDIA MESSAGES
+==================================================
+
+The client may send:
+
+- An image/photo
+- A shared Instagram post
+- A shared Reel
+- A video
+- An attachment
+- Text together with media
+
+Treat media descriptions as part of the client's
+message.
+
+If the client sends only media and there is no question,
+use AI_REPLY and respond naturally.
+
+Do not invent what is inside an image, post or Reel.
 
 ==================================================
 VERY IMPORTANT
@@ -1112,6 +1096,14 @@ Be friendly and concise.
 
 Reply in the same language as the client.
 
+If the client sends an image, post, Reel, video,
+or other attachment without a question, acknowledge
+it naturally and ask what they would like to know
+about it.
+
+Do not claim to have seen or understood visual content
+that is not actually available to you.
+
 If you don't know something, don't invent an answer.
 
 If asked whether you are AI, answer honestly.
@@ -1231,695 +1223,5 @@ ${clientMessage}
 
         }
 
-      }
-
-    }
-
-  }
-
-
-  if (
-    !reply
-  ) {
-
-    throw new Error(
-      "AI returned no reply"
-    );
-
-  }
-
-
-  return reply.trim();
-
-}
-
-
-/* =====================================================
-   SEND INSTAGRAM MESSAGE
-===================================================== */
-
-async function sendInstagramMessage(
-  recipientId,
-  text
-) {
-
-  if (
-    !PAGE_ACCESS_TOKEN
-  ) {
-
-    throw new Error(
-      "PAGE_ACCESS_TOKEN is missing"
-    );
-
-  }
-
-
-  const url =
-  `https://graph.instagram.com/` +
-  `${META_API_VERSION}/` +
-  `${INSTAGRAM_USER_ID}/messages`;
-
-const response =
-  await fetch(
-    url,
-    {
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization":
-          `Bearer ${PAGE_ACCESS_TOKEN}`
-      },
-
-      body: JSON.stringify({
-        recipient: {
-          id: recipientId
-        },
-
-        message: {
-          text: text
-        }
-      })
-    }
-  );
-
-const data =
-  await response.json();
-
-if (!response.ok) {
-
-  console.error(
-    "Instagram error:"
-  );
-
-  console.error(
-    JSON.stringify(
-      data,
-      null,
-      2
-    )
-  );
-
-  throw new Error(
-    "Instagram message failed"
-  );
-}
-
-console.log(
-  "Instagram message sent."
-);
-
-}
-
-
-/* =====================================================
-   WEBHOOK VERIFICATION
-===================================================== */
-
-app.get(
-  "/webhook",
-  (req, res) => {
-
-    const mode =
-      req.query["hub.mode"];
-
-    const token =
-      req.query["hub.verify_token"];
-
-    const challenge =
-      req.query["hub.challenge"];
-
-    if (
-      mode === "subscribe" &&
-      token === VERIFY_TOKEN
-    ) {
-
-      console.log(
-        "Webhook verified."
-      );
-
-      return res
-        .status(200)
-        .send(challenge);
-    }
-
-    return res.sendStatus(403);
-  }
-);
-
-
-/* =====================================================
-   INSTAGRAM WEBHOOK
-===================================================== */
-
-app.post(
-  "/webhook",
-  async (req, res) => {
-
-    const body =
-      req.body;
-
-    // Acknowledge Meta immediately
-    res.sendStatus(200);
-
-    if (
-      body.object !== "instagram"
-    ) {
-      return;
-    }
-
-    if (
-      !Array.isArray(body.entry)
-    ) {
-      return;
-    }
-
-    for (
-      const entry of body.entry
-    ) {
-
-      if (
-        !Array.isArray(entry.messaging)
-      ) {
-        continue;
-      }
-
-      for (
-        const event of entry.messaging
-      ) {
-
-        if (!event.message) {
-          continue;
-        }
-
-        const senderId =
-          event.sender?.id;
-
-        const clientMessage =
-          event.message?.text;
-
-        if (
-          !senderId ||
-          !clientMessage
-        ) {
-          continue;
-        }
-
-        console.log(
-          "================================="
-        );
-
-        console.log(
-          "CLIENT MESSAGE:"
-        );
-
-        console.log(
-          clientMessage
-        );
-
-        console.log(
-          "================================="
-        );
-
-        const conversation =
-          getConversation(senderId);
-
-        queueForClient(
-          senderId,
-          async () => {
-
-            try {
-
-              /*
-                BRAND NEW CLIENT
-              */
-
-              if (
-                conversation.stage === "NEW"
-              ) {
-
-                const delay =
-                  getRandomDelay();
-
-                console.log(
-                  `Waiting ${Math.round(delay / 1000)} seconds before Message #1`
-                );
-
-                await wait(delay);
-
-                await sendInstagramMessage(
-                  senderId,
-                  MESSAGE_ONE
-                );
-
-                saveMessage(
-                  conversation,
-                  "client",
-                  clientMessage
-                );
-
-                saveMessage(
-                  conversation,
-                  "assistant",
-                  MESSAGE_ONE
-                );
-
-                conversation.stage =
-                  "OPENING_SENT";
-
-                return;
-              }
-
-
-              /*
-                SAVE CLIENT MESSAGE
-              */
-
-              saveMessage(
-                conversation,
-                "client",
-                clientMessage
-              );
-
-
-              /*
-                CLASSIFY MESSAGE
-              */
-
-              const result =
-                await classifyMessage(
-                  conversation,
-                  clientMessage
-                );
-
-              console.log(
-                "AI ACTION:",
-                result.action
-              );
-
-              let reply = null;
-
-
-              /*
-                PROMOTION
-              */
-
-              if (
-                result.action === "PROMOTION"
-              ) {
-
-                conversation.stage =
-                  "PROMOTION_SENT";
-
-                reply =
-                  MESSAGE_TWO;
-              }
-
-
-              /*
-                PACKAGES
-              */
-
-              else if (
-                result.action === "PACKAGES"
-              ) {
-
-                conversation.stage =
-                  "PACKAGES_SHOWN";
-
-                reply =
-                  PACKAGES_MESSAGE;
-              }
-
-
-              /*
-                FOLLOWER GUARANTEE
-              */
-
-              else if (
-                result.action ===
-                "FOLLOWER_GUARANTEE"
-              ) {
-
-                reply =
-                  FOLLOWER_GUARANTEE_MESSAGE;
-              }
-
-
-              /*
-                ACTIVE AUDIENCE
-              */
-
-              else if (
-                result.action ===
-                "ACTIVE_AUDIENCE"
-              ) {
-
-                reply =
-                  ACTIVE_AUDIENCE_MESSAGE;
-              }
-
-
-              /*
-                LATER
-              */
-
-              else if (
-                result.action === "LATER"
-              ) {
-
-                reply =
-                  LATER_MESSAGE;
-              }
-
-
-              /*
-                THINK
-              */
-
-              else if (
-                result.action === "THINK"
-              ) {
-
-                reply =
-                  THINK_MESSAGE;
-              }
-
-
-              /*
-                PACKAGE SELECTED
-              */
-
-              else if (
-                result.action ===
-                "PACKAGE_SELECTED"
-              ) {
-
-                if (
-                  result.package === "bronze" ||
-                  result.package === "silver" ||
-                  result.package === "gold" ||
-                  result.package === "diamond"
-                ) {
-
-                  conversation.selectedPackage =
-                    result.package;
-
-                  conversation.stage =
-                    "PACKAGE_SELECTED";
-
-                  const selected =
-                    PACKAGES[
-                      result.package
-                    ];
-
-                  reply =
-`Perfect ❤️ You've selected our ${selected.name} package.
-
-Package price: €${selected.price.toFixed(2)}
-${selected.details}
-${selected.followers}
-
-How would you like to pay? ❤️
-
-PayPal
-IBAN
-Revolut
-MB WAY
-Credit/Debit Card`;
-                }
-              }
-
-
-              /*
-                PAYMENT METHOD QUESTION
-              */
-
-              else if (
-                result.action ===
-                "PAYMENT_METHOD_QUESTION"
-              ) {
-
-                if (
-                  conversation.selectedPackage
-                ) {
-
-                  reply =
-                    PAYMENT_METHOD_QUESTION;
-
-                } else {
-
-                  reply =
-                    PACKAGES_MESSAGE;
-                }
-              }
-
-
-              /*
-                PAYMENT
-              */
-
-              else if (
-                result.action === "PAYMENT"
-              ) {
-
-                const selectedPayment =
-                  result.payment;
-
-                const validPayments = [
-                  "paypal",
-                  "iban",
-                  "revolut",
-                  "mbway",
-                  "card"
-                ];
-
-                if (
-                  validPayments.includes(
-                    selectedPayment
-                  )
-                ) {
-
-                  if (
-                    !conversation.selectedPackage
-                  ) {
-
-                    reply =
-`Please select your package first ❤️
-
-${PACKAGES_MESSAGE}`;
-
-                  } else {
-
-                    conversation.paymentMethod =
-                      selectedPayment;
-
-                    conversation.stage =
-                      "PAYMENT_PENDING";
-
-                    reply =
-                      buildPaymentMessage(
-                        conversation.selectedPackage,
-                        selectedPayment
-                      );
-                  }
-                }
-              }
-
-
-              /*
-                OPENING
-              */
-
-              else if (
-                result.action === "OPENING"
-              ) {
-
-                reply =
-                  MESSAGE_ONE;
-
-                conversation.stage =
-                  "OPENING_SENT";
-              }
-
-
-              /*
-                AI REPLY
-              */
-
-              else if (
-                result.action === "AI_REPLY"
-              ) {
-
-                reply =
-                  await getAIReply(
-                    conversation,
-                    clientMessage
-                  );
-              }
-
-
-              /*
-                SAFETY FALLBACK
-              */
-
-              if (!reply) {
-
-                reply =
-                  "Of course ❤️ How can I help you?";
-              }
-
-
-              /*
-                RANDOM DELAY
-              */
-
-              const delay =
-                getRandomDelay();
-
-              console.log(
-                `Waiting ${Math.round(delay / 1000)} seconds before reply`
-              );
-
-              await wait(delay);
-
-
-              /*
-                SEND ONE MESSAGE
-              */
-
-              await sendInstagramMessage(
-                senderId,
-                reply
-              );
-
-              saveMessage(
-                conversation,
-                "assistant",
-                reply
-              );
-
-              console.log(
-                "Reply sent successfully."
-              );
-
-              console.log(
-                "Current stage:",
-                conversation.stage
-              );
-
-              console.log(
-                "Selected package:",
-                conversation.selectedPackage
-              );
-
-              console.log(
-                "Payment method:",
-                conversation.paymentMethod
-              );
-
-            }
-            catch (error) {
-
-              console.error(
-                "================================="
-              );
-
-              console.error(
-                "MESSAGE PROCESSING ERROR"
-              );
-
-              console.error(error);
-
-              console.error(
-                "================================="
-              );
-            }
-
-          }
-        );
-
-      }
-    }
-  }
-);
-
-
-/* =====================================================
-   HOME PAGE
-===================================================== */
-
-app.get(
-  "/",
-  (req, res) => {
-
-    res.send(
-      "Global Promote Instagram AI is running!"
-    );
-
-  }
-);
-
-
-/* =====================================================
-   AUTH CALLBACK
-===================================================== */
-
-app.get(
-  "/auth/callback",
-  (req, res) => {
-
-    const code =
-      req.query.code;
-
-    if (!code) {
-
-      return res
-        .status(400)
-        .send(
-          "Missing authorization code"
-        );
-
-    }
-
-    res.send(
-      "Instagram authorization successful"
-    );
-
-  }
-);
-
-
-/* =====================================================
-   START SERVER
-===================================================== */
-
-const PORT =
-  process.env.PORT || 3000;
-
-app.listen(
-  PORT,
-  () => {
-
-    console.log(
-      "================================="
-    );
-
-    console.log(
-      `Server running on port ${PORT}`
-    );
-
-    console.log(
-      "AI delay: 10–20 seconds"
-    );
-
-    console.log(
-      "Payment fee: 12%"
-    );
-
-    console.log(
-      "================================="
-    );
-
-  }
-);
+         }
+   
