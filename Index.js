@@ -1225,3 +1225,836 @@ ${clientMessage}
 
          }
    
+}
+    }
+  }
+
+  if (!reply) {
+
+    throw new Error(
+      "AI returned no reply"
+    );
+
+  }
+
+  return reply.trim();
+
+}
+
+
+/* =====================================================
+   SEND INSTAGRAM MESSAGE
+===================================================== */
+
+async function sendInstagramMessage(
+  recipientId,
+  text
+) {
+
+  if (!PAGE_ACCESS_TOKEN) {
+
+    throw new Error(
+      "PAGE_ACCESS_TOKEN is missing"
+    );
+
+  }
+
+  const url =
+    `https://graph.instagram.com/` +
+    `${META_API_VERSION}/` +
+    `${INSTAGRAM_USER_ID}/messages`;
+
+  const response =
+    await fetch(
+      url,
+      {
+
+        method: "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${PAGE_ACCESS_TOKEN}`
+
+        },
+
+        body:
+          JSON.stringify({
+
+            recipient: {
+              id: recipientId
+            },
+
+            message: {
+              text: text
+            }
+
+          })
+
+      }
+    );
+
+  const data =
+    await response.json();
+
+  if (!response.ok) {
+
+    console.error(
+      "Instagram error:"
+    );
+
+    console.error(
+      JSON.stringify(
+        data,
+        null,
+        2
+      )
+    );
+
+    throw new Error(
+      "Instagram message failed"
+    );
+
+  }
+
+  console.log(
+    "Instagram message sent."
+  );
+
+}
+
+
+/* =====================================================
+   WEBHOOK VERIFICATION
+===================================================== */
+
+app.get(
+  "/webhook",
+  (req, res) => {
+
+    const mode =
+      req.query["hub.mode"];
+
+    const token =
+      req.query["hub.verify_token"];
+
+    const challenge =
+      req.query["hub.challenge"];
+
+    if (
+      mode === "subscribe" &&
+      token === VERIFY_TOKEN
+    ) {
+
+      console.log(
+        "Webhook verified."
+      );
+
+      return res
+        .status(200)
+        .send(challenge);
+
+    }
+
+    return res.sendStatus(403);
+
+  }
+);
+
+
+/* =====================================================
+   INSTAGRAM WEBHOOK
+===================================================== */
+
+app.post(
+  "/webhook",
+  async (req, res) => {
+
+    const body =
+      req.body;
+
+    // Acknowledge Meta immediately
+    res.sendStatus(200);
+
+    if (
+      body.object !== "instagram"
+    ) {
+      return;
+    }
+
+    if (
+      !Array.isArray(body.entry)
+    ) {
+      return;
+    }
+
+    for (
+      const entry of body.entry
+    ) {
+
+      if (
+        !Array.isArray(entry.messaging)
+      ) {
+        continue;
+      }
+
+      for (
+        const event of entry.messaging
+      ) {
+
+        if (!event.message) {
+          continue;
+        }
+
+        const senderId =
+          event.sender?.id;
+
+        if (!senderId) {
+          continue;
+        }
+
+
+        /* =============================================
+           TEXT
+        ============================================= */
+
+        const text =
+          typeof event.message.text === "string"
+            ? event.message.text.trim()
+            : "";
+
+
+        /* =============================================
+           ATTACHMENTS
+        ============================================= */
+
+        const attachments =
+          Array.isArray(
+            event.message.attachments
+          )
+            ? event.message.attachments
+            : [];
+
+
+        const attachmentInfo =
+          attachments.map(
+            (attachment) => {
+
+              const type =
+                attachment?.type ||
+                "unknown";
+
+              const payload =
+                attachment?.payload ||
+                {};
+
+              return {
+
+                type,
+
+                url:
+                  payload?.url || "",
+
+                id:
+                  payload?.id || ""
+
+              };
+
+            }
+          );
+
+
+        /* =============================================
+           CREATE CLIENT MESSAGE
+        ============================================= */
+
+        let clientMessage =
+          text;
+
+
+        if (
+          !clientMessage &&
+          attachmentInfo.length > 0
+        ) {
+
+          clientMessage =
+            attachmentInfo
+              .map(
+                (attachment) => {
+
+                  if (
+                    attachment.type === "image"
+                  ) {
+
+                    return (
+                      `[Client sent an image${
+                        attachment.url
+                          ? `: ${attachment.url}`
+                          : ""
+                      }]`
+                    );
+
+                  }
+
+                  if (
+                    attachment.type === "video"
+                  ) {
+
+                    return (
+                      `[Client sent a video${
+                        attachment.url
+                          ? `: ${attachment.url}`
+                          : ""
+                      }]`
+                    );
+
+                  }
+
+                  if (
+                    attachment.type === "ig_reel" ||
+                    attachment.type === "reel"
+                  ) {
+
+                    return (
+                      `[Client shared an Instagram Reel${
+                        attachment.url
+                          ? `: ${attachment.url}`
+                          : ""
+                      }]`
+                    );
+
+                  }
+
+                  if (
+                    attachment.type === "share"
+                  ) {
+
+                    return (
+                      `[Client shared an Instagram post${
+                        attachment.url
+                          ? `: ${attachment.url}`
+                          : ""
+                      }]`
+                    );
+
+                  }
+
+                  return (
+                    `[Client sent an attachment: ${
+                      attachment.type
+                    }${
+                      attachment.url
+                        ? ` - ${attachment.url}`
+                        : ""
+                    }]`
+                  );
+
+                }
+              )
+              .join("\n");
+
+        }
+
+
+        /* =============================================
+           TEXT + MEDIA
+        ============================================= */
+
+        if (
+          text &&
+          attachmentInfo.length > 0
+        ) {
+
+          const mediaText =
+            attachmentInfo
+              .map(
+                (attachment) =>
+                  `[Attachment: ${attachment.type}${
+                    attachment.url
+                      ? ` - ${attachment.url}`
+                      : ""
+                  }]`
+              )
+              .join("\n");
+
+          clientMessage =
+`${text}
+
+${mediaText}`;
+
+        }
+
+
+        if (!clientMessage) {
+          continue;
+        }
+
+
+        console.log(
+          "================================="
+        );
+
+        console.log(
+          "CLIENT MESSAGE:"
+        );
+
+        console.log(
+          clientMessage
+        );
+
+        if (
+          attachmentInfo.length > 0
+        ) {
+
+          console.log(
+            "CLIENT ATTACHMENTS:"
+          );
+
+          console.log(
+            JSON.stringify(
+              attachmentInfo,
+              null,
+              2
+            )
+          );
+
+        }
+
+        console.log(
+          "================================="
+        );
+
+
+        const conversation =
+          getConversation(
+            senderId
+          );
+
+
+        queueForClient(
+          senderId,
+          async () => {
+
+            try {
+
+              /* =====================================
+                 NEW CLIENT
+              ===================================== */
+
+              if (
+                conversation.stage === "NEW"
+              ) {
+
+                const delay =
+                  getRandomDelay();
+
+                console.log(
+                  `Waiting ${Math.round(delay / 1000)} seconds before Message #1`
+                );
+
+                await wait(delay);
+
+                await sendInstagramMessage(
+                  senderId,
+                  MESSAGE_ONE
+                );
+
+                saveMessage(
+                  conversation,
+                  "client",
+                  clientMessage
+                );
+
+                saveMessage(
+                  conversation,
+                  "assistant",
+                  MESSAGE_ONE
+                );
+
+                conversation.stage =
+                  "OPENING_SENT";
+
+                return;
+
+              }
+
+
+              /* =====================================
+                 SAVE MESSAGE
+              ===================================== */
+
+              saveMessage(
+                conversation,
+                "client",
+                clientMessage
+              );
+
+
+              /* =====================================
+                 CLASSIFY
+              ===================================== */
+
+              const result =
+                await classifyMessage(
+                  conversation,
+                  clientMessage
+                );
+
+              console.log(
+                "AI ACTION:",
+                result.action
+              );
+
+              let reply = null;
+
+
+              /* =====================================
+                 ACTIONS
+              ===================================== */
+
+              if (
+                result.action === "PROMOTION"
+              ) {
+
+                conversation.stage =
+                  "PROMOTION_SENT";
+
+                reply =
+                  MESSAGE_TWO;
+
+              }
+
+              else if (
+                result.action === "PACKAGES"
+              ) {
+
+                conversation.stage =
+                  "PACKAGES_SHOWN";
+
+                reply =
+                  PACKAGES_MESSAGE;
+
+              }
+
+              else if (
+                result.action ===
+                "FOLLOWER_GUARANTEE"
+              ) {
+
+                reply =
+                  FOLLOWER_GUARANTEE_MESSAGE;
+
+              }
+
+              else if (
+                result.action ===
+                "ACTIVE_AUDIENCE"
+              ) {
+
+                reply =
+                  ACTIVE_AUDIENCE_MESSAGE;
+
+              }
+
+              else if (
+                result.action === "LATER"
+              ) {
+
+                reply =
+                  LATER_MESSAGE;
+
+              }
+
+              else if (
+                result.action === "THINK"
+              ) {
+
+                reply =
+                  THINK_MESSAGE;
+
+              }
+
+              else if (
+                result.action ===
+                "PACKAGE_SELECTED"
+              ) {
+
+                if (
+                  [
+                    "bronze",
+                    "silver",
+                    "gold",
+                    "diamond"
+                  ].includes(
+                    result.package
+                  )
+                ) {
+
+                  conversation.selectedPackage =
+                    result.package;
+
+                  conversation.stage =
+                    "PACKAGE_SELECTED";
+
+                  const selected =
+                    PACKAGES[
+                      result.package
+                    ];
+
+                  reply =
+`Perfect ❤️ You've selected our ${selected.name} package.
+
+Package price: €${selected.price.toFixed(2)}
+${selected.details}
+${selected.followers}
+
+How would you like to pay? ❤️
+
+PayPal
+IBAN
+Revolut
+MB WAY
+Credit/Debit Card`;
+
+                }
+
+              }
+
+              else if (
+                result.action ===
+                "PAYMENT_METHOD_QUESTION"
+              ) {
+
+                reply =
+                  conversation.selectedPackage
+                    ? PAYMENT_METHOD_QUESTION
+                    : PACKAGES_MESSAGE;
+
+              }
+
+              else if (
+                result.action === "PAYMENT"
+              ) {
+
+                const selectedPayment =
+                  result.payment;
+
+                const validPayments = [
+                  "paypal",
+                  "iban",
+                  "revolut",
+                  "mbway",
+                  "card"
+                ];
+
+                if (
+                  validPayments.includes(
+                    selectedPayment
+                  )
+                ) {
+
+                  if (
+                    !conversation.selectedPackage
+                  ) {
+
+                    reply =
+`Please select your package first ❤️
+
+${PACKAGES_MESSAGE}`;
+
+                  }
+                  else {
+
+                    conversation.paymentMethod =
+                      selectedPayment;
+
+                    conversation.stage =
+                      "PAYMENT_PENDING";
+
+                    reply =
+                      buildPaymentMessage(
+                        conversation.selectedPackage,
+                        selectedPayment
+                      );
+
+                  }
+
+                }
+
+              }
+
+              else if (
+                result.action === "OPENING"
+              ) {
+
+                reply =
+                  MESSAGE_ONE;
+
+                conversation.stage =
+                  "OPENING_SENT";
+
+              }
+
+              else if (
+                result.action === "AI_REPLY"
+              ) {
+
+                reply =
+                  await getAIReply(
+                    conversation,
+                    clientMessage
+                  );
+
+              }
+
+
+              if (!reply) {
+
+                reply =
+                  "Of course ❤️ How can I help you?";
+
+              }
+
+
+              /* =====================================
+                 DELAY
+              ===================================== */
+
+              const delay =
+                getRandomDelay();
+
+              console.log(
+                `Waiting ${Math.round(delay / 1000)} seconds before reply`
+              );
+
+              await wait(delay);
+
+
+              /* =====================================
+                 SEND
+              ===================================== */
+
+              await sendInstagramMessage(
+                senderId,
+                reply
+              );
+
+
+              saveMessage(
+                conversation,
+                "assistant",
+                reply
+              );
+
+
+              console.log(
+                "Reply sent successfully."
+              );
+
+            }
+            catch (error) {
+
+              console.error(
+                "MESSAGE PROCESSING ERROR"
+              );
+
+              console.error(error);
+
+            }
+
+          }
+        );
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   HOME PAGE
+===================================================== */
+
+app.get(
+  "/",
+  (req, res) => {
+
+    res.send(
+      "Global Promote Instagram AI is running!"
+    );
+
+  }
+);
+
+
+/* =====================================================
+   AUTH CALLBACK
+===================================================== */
+
+app.get(
+  "/auth/callback",
+  (req, res) => {
+
+    const code =
+      req.query.code;
+
+    if (!code) {
+
+      return res
+        .status(400)
+        .send(
+          "Missing authorization code"
+        );
+
+    }
+
+    res.send(
+      "Instagram authorization successful"
+    );
+
+  }
+);
+
+
+/* =====================================================
+   START SERVER
+===================================================== */
+
+const PORT =
+  process.env.PORT || 3000;
+
+app.listen(
+  PORT,
+  () => {
+
+    console.log(
+      "================================="
+    );
+
+    console.log(
+      `Server running on port ${PORT}`
+    );
+
+    console.log(
+      "AI delay: 10–20 seconds"
+    );
+
+    console.log(
+      "Payment fee: 12%"
+    );
+
+    console.log(
+      "Media detection: ENABLED"
+    );
+
+    console.log(
+      "================================="
+    );
+
+  }
+);
