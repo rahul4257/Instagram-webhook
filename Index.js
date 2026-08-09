@@ -1224,5 +1224,25 @@ ${history}
       const item of data.output
     ) {
 
-      if (
-        item.type === "
+   if (
+  item.type === "message" &&
+  Array.isArray(item.content)
+) {
+
+  for (
+    const content of item.content
+  ) {
+
+    if (
+      content.type === "output_text" &&
+      typeof content.text === "string"
+    ) {
+
+      reply +=
+        content.text;
+
+    }
+
+  }
+
+   }
