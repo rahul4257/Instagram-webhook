@@ -46,21 +46,21 @@ Can I show you our packages?`;
 const PACKAGES_MESSAGE =
 `❤️ Our Instagram Promotion Packages:
 
-🥉 BRONZE — $40
+🥉 BRONZE — €35
 • 2 stories
 • 1,000 followers
 
-🥈 SILVER — $75
+🥈 SILVER — €60
 • 1 post
 • 3 stories
-• 2,000 followers
+• 4,000 followers
 
-🥇 GOLD — $140
+🥇 GOLD — €99
 • 7 posts
 • 10 stories
-• 5,000 followers
+• 7,000 followers
 
-💎 DIAMOND — $220
+💎 DIAMOND — €120
 • 10 posts
 • 20 stories
 • 10,000 followers
