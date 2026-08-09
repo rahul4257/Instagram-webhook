@@ -41,7 +41,7 @@ const queues = new Map();
 
 
 /* =====================================================
-   RANDOM 10–20 SECOND DELAY
+   RANDOM DELAY
 ===================================================== */
 
 function getRandomDelay() {
@@ -50,8 +50,7 @@ function getRandomDelay() {
   const maximum = 20000;
 
   return Math.floor(
-    Math.random() *
-      (maximum - minimum + 1)
+    Math.random() * (maximum - minimum + 1)
   ) + minimum;
 
 }
@@ -59,9 +58,11 @@ function getRandomDelay() {
 
 function wait(ms) {
 
-  return new Promise(
-    (resolve) => setTimeout(resolve, ms)
-  );
+  return new Promise((resolve) => {
+
+    setTimeout(resolve, ms);
+
+  });
 
 }
 
@@ -70,24 +71,24 @@ function wait(ms) {
    CLIENT QUEUE
 ===================================================== */
 
-function queueForClient(
-  senderId,
-  task
-) {
+function queueForClient(senderId, task) {
 
   const previous =
     queues.get(senderId) ||
     Promise.resolve();
+
 
   const next =
     previous
       .catch(() => {})
       .then(task);
 
+
   queues.set(
     senderId,
     next
   );
+
 
   next.finally(() => {
 
@@ -100,6 +101,7 @@ function queueForClient(
     }
 
   });
+
 
   return next;
 
@@ -131,7 +133,7 @@ I will upload your post on these pages and from that you will gain 1k to 15k gua
 
 
 /* =====================================================
-   FIXED FOLLOWER / GUARANTEE ANSWER
+   FOLLOWER GUARANTEE
 ===================================================== */
 
 const FOLLOWER_GUARANTEE_MESSAGE =
@@ -139,7 +141,7 @@ const FOLLOWER_GUARANTEE_MESSAGE =
 
 
 /* =====================================================
-   FIXED 85% AUDIENCE ANSWER
+   ACTIVE AUDIENCE
 ===================================================== */
 
 const ACTIVE_AUDIENCE_MESSAGE =
@@ -147,7 +149,7 @@ const ACTIVE_AUDIENCE_MESSAGE =
 
 
 /* =====================================================
-   FIXED LATER RESPONSE
+   LATER
 ===================================================== */
 
 const LATER_MESSAGE =
@@ -155,7 +157,7 @@ const LATER_MESSAGE =
 
 
 /* =====================================================
-   FIXED THINK RESPONSE
+   THINK
 ===================================================== */
 
 const THINK_MESSAGE =
@@ -163,7 +165,7 @@ const THINK_MESSAGE =
 
 
 /* =====================================================
-   FIXED PACKAGE MESSAGE
+   PACKAGES
 ===================================================== */
 
 const PACKAGES_MESSAGE =
@@ -238,12 +240,11 @@ const PACKAGES = {
 const PAYMENT_FEE_PERCENT = 0.12;
 
 
-function calculatePayment(
-  packageKey
-) {
+function calculatePayment(packageKey) {
 
   const packageInfo =
     PACKAGES[packageKey];
+
 
   if (!packageInfo) {
 
@@ -253,8 +254,10 @@ function calculatePayment(
 
   }
 
+
   const price =
     packageInfo.price;
+
 
   const fee =
     Number(
@@ -262,11 +265,13 @@ function calculatePayment(
         .toFixed(2)
     );
 
+
   const total =
     Number(
       (price + fee)
         .toFixed(2)
     );
+
 
   return {
     price,
@@ -353,7 +358,7 @@ Credit/Debit Card`;
 
 
 /* =====================================================
-   PAYMENT SCREENSHOT MESSAGE
+   PAYMENT SCREENSHOT
 ===================================================== */
 
 const PAYMENT_SCREENSHOT_MESSAGE =
@@ -364,9 +369,7 @@ const PAYMENT_SCREENSHOT_MESSAGE =
    GET / CREATE CONVERSATION
 ===================================================== */
 
-function getConversation(
-  senderId
-) {
+function getConversation(senderId) {
 
   if (
     !conversations.has(senderId)
@@ -391,6 +394,7 @@ function getConversation(
     );
 
   }
+
 
   return conversations.get(
     senderId
@@ -418,6 +422,7 @@ function saveMessage(
 
   });
 
+
   if (
     conversation.history.length > 30
   ) {
@@ -442,6 +447,7 @@ function buildPaymentMessage(
   const packageInfo =
     PACKAGES[packageKey];
 
+
   if (!packageInfo) {
 
     throw new Error(
@@ -450,10 +456,12 @@ function buildPaymentMessage(
 
   }
 
+
   const payment =
     calculatePayment(
       packageKey
     );
+
 
   const amountText =
 `Your ${packageInfo.name} package:
@@ -565,251 +573,226 @@ ${PAYMENT_SCREENSHOT_MESSAGE}`;
 
 
 /* =====================================================
-   EXTRACT MEDIA ATTACHMENTS
+   EXTRACT INSTAGRAM MESSAGE CONTENT
+   MEDIA FIX
 ===================================================== */
 
-function extractAttachments(
-  message
-) {
+function extractClientMessage(event) {
 
-  if (
-    !Array.isArray(
-      message?.attachments
-    )
-  ) {
-
-    return [];
-
-  }
+  const message =
+    event.message || {};
 
 
-  return message.attachments
-    .map(
-      (attachment) => {
-
-        const payload =
-          attachment?.payload || {};
-
-        return {
-
-          type:
-            attachment?.type ||
-            "unknown",
-
-          url:
-            payload?.url ||
-            "",
-
-          id:
-            payload?.id ||
-            ""
-
-        };
-
-      }
-    )
-    .filter(
-      (attachment) =>
-        attachment.type ||
-        attachment.url ||
-        attachment.id
-    );
-
-}
-
-
-/* =====================================================
-   BUILD MEDIA DESCRIPTION
-===================================================== */
-
-function buildClientMessage(
-  text,
-  attachments
-) {
-
-  const cleanText =
-    typeof text === "string"
-      ? text.trim()
+  const text =
+    typeof message.text === "string"
+      ? message.text.trim()
       : "";
 
 
-  const mediaLines =
-    attachments.map(
-      (attachment) => {
-
-        const type =
-          attachment.type;
-
-        if (
-          type === "image"
-        ) {
-
-          return (
-            `[Client sent an image` +
-            `${attachment.url
-              ? `: ${attachment.url}`
-              : ""}]`
-          );
-
-        }
+  const attachments =
+    Array.isArray(message.attachments)
+      ? message.attachments
+      : [];
 
 
-        if (
-          type === "video"
-        ) {
-
-          return (
-            `[Client sent a video` +
-            `${attachment.url
-              ? `: ${attachment.url}`
-              : ""}]`
-          );
-
-        }
-
-
-        if (
-          type === "ig_reel" ||
-          type === "reel"
-        ) {
-
-          return (
-            `[Client shared an Instagram Reel` +
-            `${attachment.url
-              ? `: ${attachment.url}`
-              : ""}]`
-          );
-
-        }
-
-
-        if (
-          type === "share"
-        ) {
-
-          return (
-            `[Client shared an Instagram post/media` +
-            `${attachment.url
-              ? `: ${attachment.url}`
-              : ""}]`
-          );
-
-        }
-
-
-        if (
-          type === "story_mention"
-        ) {
-
-          return (
-            `[Client shared or mentioned a story` +
-            `${attachment.url
-              ? `: ${attachment.url}`
-              : ""}]`
-          );
-
-        }
-
-
-        return (
-          `[Client sent an attachment of type ${type}` +
-          `${attachment.url
-            ? `: ${attachment.url}`
-            : ""}]`
-        );
-
-      }
-    );
-
-
-  if (
-    cleanText &&
-    mediaLines.length
-  ) {
-
-    return (
-      cleanText +
-      "\n\n" +
-      mediaLines.join("\n")
-    );
-
-  }
-
-
-  if (
-    mediaLines.length
-  ) {
-
-    return mediaLines.join("\n");
-
-  }
-
-
-  return cleanText;
-
-}
-
-
-/* =====================================================
-   BUILD OPENAI INPUT
-   IMAGE ATTACHMENTS ARE PASSED AS IMAGES
-===================================================== */
-
-function buildResponsesInput(
-  clientMessage,
-  attachments
-) {
-
-  const content = [
-
-    {
-      type:
-        "input_text",
-
-      text:
-        clientMessage
-
-    }
-
-  ];
+  const detectedMedia = [];
 
 
   for (
     const attachment of attachments
   ) {
 
-    if (
-      attachment.type === "image" &&
-      attachment.url
+    const type =
+      attachment?.type ||
+      "unknown";
+
+
+    const payload =
+      attachment?.payload ||
+      {};
+
+
+    const url =
+      payload?.url ||
+      "";
+
+
+    detectedMedia.push({
+
+      type,
+      url
+
+    });
+
+  }
+
+
+  const parts = [];
+
+
+  if (text) {
+
+    parts.push(
+      `TEXT: ${text}`
+    );
+
+  }
+
+
+  if (detectedMedia.length > 0) {
+
+    for (
+      const media of detectedMedia
     ) {
 
-      content.push({
+      if (
+        media.type === "image"
+      ) {
 
-        type:
-          "input_image",
+        parts.push(
+          "CLIENT SENT AN IMAGE/PHOTO."
+        );
 
-        image_url:
-          attachment.url
+      }
 
-      });
+      else if (
+        media.type === "video"
+      ) {
+
+        parts.push(
+          "CLIENT SENT A VIDEO."
+        );
+
+      }
+
+      else if (
+        media.type === "audio"
+      ) {
+
+        parts.push(
+          "CLIENT SENT AN AUDIO MESSAGE."
+        );
+
+      }
+
+      else if (
+        media.type === "file"
+      ) {
+
+        parts.push(
+          "CLIENT SENT A FILE."
+        );
+
+      }
+
+      else if (
+        media.type === "share"
+      ) {
+
+        parts.push(
+          "CLIENT SHARED AN INSTAGRAM POST OR REEL."
+        );
+
+      }
+
+      else {
+
+        parts.push(
+          `CLIENT SENT MEDIA TYPE: ${media.type}`
+        );
+
+      }
 
     }
 
   }
 
 
-  return [
+  if (
+    parts.length === 0
+  ) {
 
-    {
+    parts.push(
+      "CLIENT SENT A MESSAGE WITHOUT TEXT."
+    );
 
-      role:
-        "user",
+  }
 
-      content
+
+  return {
+
+    text:
+      parts.join("\n"),
+
+    attachments:
+      detectedMedia
+
+  };
+
+}
+
+
+/* =====================================================
+   OPENAI RESPONSE TEXT EXTRACTOR
+===================================================== */
+
+function extractOpenAIText(data) {
+
+  if (
+    data &&
+    typeof data.output_text === "string" &&
+    data.output_text.trim()
+  ) {
+
+    return data.output_text.trim();
+
+  }
+
+
+  let result = "";
+
+
+  if (
+    data &&
+    Array.isArray(data.output)
+  ) {
+
+    for (
+      const item of data.output
+    ) {
+
+      if (
+        !item ||
+        !Array.isArray(item.content)
+      ) {
+
+        continue;
+
+      }
+
+
+      for (
+        const content of item.content
+      ) {
+
+        if (
+          content &&
+          typeof content.text === "string"
+        ) {
+
+          result +=
+            content.text;
+
+        }
+
+      }
 
     }
 
-  ];
+  }
+
+
+  return result.trim();
 
 }
 
@@ -847,7 +830,7 @@ You are the conversation controller for Global Promote.
 
 You DO NOT write fixed messages.
 
-You ONLY choose what action the server should perform.
+You ONLY choose the correct action.
 
 ==================================================
 CURRENT STAGE
@@ -905,121 +888,66 @@ MB WAY
 Credit/Debit Card
 
 ==================================================
-FIXED ACTIONS
+ACTIONS
 ==================================================
 
 OPENING
-Use only for a brand-new conversation.
+Brand-new conversation.
 
 PROMOTION
-Use when the client responds positively to the
-opening and wants to know more.
+Client responds positively and wants to know more.
 
 PACKAGES
-Use when the client asks for packages, prices,
-plans, options or package details.
+Client asks for packages, prices, plans or options.
 
 FOLLOWER_GUARANTEE
-Use when the client asks whether followers are real,
-organic, guaranteed, or how the guarantee works.
+Client asks whether followers are real, organic,
+guaranteed, or how the guarantee works.
 
 ACTIVE_AUDIENCE
-Use when the client asks about the best pickup time,
-posting time, audience activity or when most people
-are active.
+Client asks about audience activity or best time.
 
 LATER
-Use when client says things like:
-
-"I'll text you later"
-"I will text you later"
-"I'll let you know"
-"I will let you know"
-"I'll get back to you"
-"Maybe later"
+Client says they will text later, get back later,
+or let you know later.
 
 THINK
-Use when client says:
-
-"Let me think"
-"I need to think"
-"I need some time"
-"I'll think about it"
-"Let me consider"
+Client says they need time to think.
 
 PACKAGE_SELECTED
-Use when client clearly chooses:
-
-Bronze
-Silver
-Gold
-Diamond
+Client clearly selects Bronze, Silver, Gold or Diamond.
 
 PAYMENT_METHOD_QUESTION
-Use when a package has been selected and the client
-has not yet selected a payment method.
+Client asks how to pay after selecting a package.
 
 PAYMENT
-Use when client chooses:
-
-PayPal
-IBAN
-Revolut
-MB WAY
-Credit/Debit Card
+Client chooses PayPal, IBAN, Revolut, MB WAY or Card.
 
 AI_REPLY
-Use only when the client's question genuinely does
-not match one of the fixed actions.
+Client asks another genuine question.
 
 ==================================================
 MEDIA
 ==================================================
 
-The client may send:
+If the client sends only a photo, post, reel, video,
+or other media, do NOT ignore it.
 
-- Photos
-- Images
-- Videos
-- Shared Instagram posts
-- Shared Reels
-- Other attachments
-- Text + media
+Choose AI_REPLY unless another action clearly matches.
 
-If the client sends only media and no clear question,
-use AI_REPLY.
-
-Do not invent what is inside a post or Reel.
-
-If an image is actually provided to the AI,
-you may analyze what is visible in that image.
+The server will tell the AI that media was received.
 
 ==================================================
-VERY IMPORTANT
+IMPORTANT
 ==================================================
 
-The server owns all fixed text.
+Never invent prices.
 
-Never rewrite:
+Never invent payment details.
 
-Message #1
-Message #2
-Follower guarantee answer
-85% audience answer
-Later response
-Think response
-Package prices
-Package details
-Payment details
-Payment fee calculation
+Never change the 12% payment fee.
 
-Do not invent any price.
-
-Do not invent payment information.
-
-Do not change the 12% fee.
-
-One incoming client message = one action.
+One incoming client event = one action.
 
 ==================================================
 CLIENT MESSAGE
@@ -1172,7 +1100,7 @@ ${history}
 
 
   console.log(
-    "OpenAI status:",
+    "OpenAI classifier status:",
     response.status
   );
 
@@ -1182,7 +1110,7 @@ ${history}
   ) {
 
     console.error(
-      "OpenAI error:"
+      "OpenAI classifier error:"
     );
 
     console.error(
@@ -1194,62 +1122,34 @@ ${history}
     );
 
     throw new Error(
-      "OpenAI request failed"
+      "OpenAI classifier request failed"
     );
 
   }
 
 
-  let rawText =
-    "";
+  const rawText =
+    extractOpenAIText(
+      data
+    );
 
 
-  if (
-    typeof data.output_text ===
-    "string"
-  ) {
+  if (!rawText) {
 
-    rawText =
-      data.output_text.trim();
+    console.error(
+      "OpenAI returned no classifier text:"
+    );
 
-  }
-
-
-  if (
-    !rawText &&
-    Array.isArray(data.output)
-  ) {
-
-    for (
-      const item of data.output
-    ) {
-
-   if (
-  item.type === "message" &&
-  Array.isArray(item.content)
-) {
-
-  for (
-    const content of item.content
-  ) {
-
-    if (
-      content.type === "output_text" &&
-      typeof content.text === "string"
-    ) {
-
-      reply +=
-        content.text;
-
-    }
-
-  }
-
-   }
-if (!rawText) {
+    console.error(
+      JSON.stringify(
+        data,
+        null,
+        2
+      )
+    );
 
     throw new Error(
-      "OpenAI returned no text"
+      "OpenAI returned no classifier text"
     );
 
   }
@@ -1261,10 +1161,12 @@ if (!rawText) {
       rawText
     );
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
-      "OpenAI invalid JSON:"
+      "Invalid classifier JSON:"
     );
 
     console.error(
@@ -1272,9 +1174,1169 @@ if (!rawText) {
     );
 
     throw new Error(
-      "Invalid OpenAI response"
+      "Invalid classifier JSON"
     );
 
   }
 
+}
+/* =====================================================
+   FREE-FORM AI ANSWER
+===================================================== */
+
+async function getAIReply(
+  conversation,
+  clientMessage
+) {
+
+  if (!OPEN_AI) {
+
+    throw new Error(
+      "OPEN_AI environment variable is missing"
+    );
+
+  }
+
+
+  const history =
+    conversation.history
+      .map(
+        (item) =>
+          `${item.role}: ${item.text}`
+      )
+      .join("\n");
+
+
+  const instructions = `
+
+You are the natural sales assistant for Global Promote.
+
+Answer the client's actual question.
+
+IMPORTANT BUSINESS INFORMATION:
+
+Bronze = €35
+Silver = €60
+Gold = €90
+Diamond = €120
+
+Gold is the most commonly selected package.
+
+Payment methods:
+PayPal
+IBAN
+Revolut
+MB WAY
+Credit/Debit Card
+
+The payment fee is 12%.
+
+Do not invent prices.
+
+Do not invent payment details.
+
+Do not invent discounts.
+
+Do not invent guarantees beyond the business information.
+
+Be friendly and concise.
+
+Reply in the same language as the client when possible.
+
+If the client sends a photo, post, reel or video without
+text, acknowledge that you received the media and ask
+what they would like help with.
+
+If the client shares an Instagram post or reel, do not
+pretend you watched it if you cannot actually access it.
+
+If you don't know something, don't invent an answer.
+
+If asked whether you are AI, answer honestly.
+
+Previous conversation:
+
+${history}
+
+Client message:
+
+${clientMessage}
+`;
+
+
+  const response =
+    await fetch(
+      "https://api.openai.com/v1/responses",
+      {
+
+        method:
+          "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${OPEN_AI}`
+
+        },
+
+        body:
+          JSON.stringify({
+
+            model:
+              "gpt-5-mini",
+
+            instructions,
+
+            input:
+              clientMessage
+
+          })
+
+      }
+    );
+
+
+  const data =
+    await response.json();
+
+
+  if (
+    !response.ok
+  ) {
+
+    console.error(
+      "OpenAI AI reply error:"
+    );
+
+    console.error(
+      JSON.stringify(
+        data,
+        null,
+        2
+      )
+    );
+
+    throw new Error(
+      "OpenAI AI reply failed"
+    );
+
+  }
+
+
+  const reply =
+    extractOpenAIText(
+      data
+    );
+
+
+  if (!reply) {
+
+    throw new Error(
+      "AI returned no reply"
+    );
+
+  }
+
+
+  return reply.trim();
+
+}
+
+
+/* =====================================================
+   SEND INSTAGRAM MESSAGE
+===================================================== */
+
+async function sendInstagramMessage(
+  recipientId,
+  text
+) {
+
+  if (
+    !PAGE_ACCESS_TOKEN
+  ) {
+
+    throw new Error(
+      "PAGE_ACCESS_TOKEN is missing"
+    );
+
+  }
+
+
+  const url =
+    `https://graph.instagram.com/` +
+    `${META_API_VERSION}/` +
+    `${INSTAGRAM_USER_ID}/messages`;
+
+
+  const response =
+    await fetch(
+      url,
+      {
+
+        method:
+          "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${PAGE_ACCESS_TOKEN}`
+
+        },
+
+        body:
+          JSON.stringify({
+
+            recipient: {
+
+              id:
+                recipientId
+
+            },
+
+            message: {
+
+              text:
+                text
+
+            }
+
+          })
+
+      }
+    );
+
+
+  const data =
+    await response.json();
+
+
+  if (
+    !response.ok
+  ) {
+
+    console.error(
+      "Instagram send error:"
+    );
+
+    console.error(
+      JSON.stringify(
+        data,
+        null,
+        2
+      )
+    );
+
+    throw new Error(
+      "Instagram message failed"
+    );
+
+  }
+
+
+  console.log(
+    "Instagram message sent successfully."
+  );
+
+}
+
+
+/* =====================================================
+   WEBHOOK VERIFICATION
+===================================================== */
+
+app.get(
+  "/webhook",
+  (req, res) => {
+
+    const mode =
+      req.query["hub.mode"];
+
+    const token =
+      req.query["hub.verify_token"];
+
+    const challenge =
+      req.query["hub.challenge"];
+
+
+    if (
+      mode === "subscribe" &&
+      token === VERIFY_TOKEN
+    ) {
+
+      console.log(
+        "Webhook verified."
+      );
+
+      return res
+        .status(200)
+        .send(challenge);
+
     }
+
+
+    return res.sendStatus(
+      403
+    );
+
+  }
+);
+
+
+/* =====================================================
+   INSTAGRAM WEBHOOK
+===================================================== */
+
+app.post(
+  "/webhook",
+  async (req, res) => {
+
+    const body =
+      req.body;
+
+
+    /*
+      Tell Meta immediately that the webhook
+      was received.
+    */
+
+    res.sendStatus(
+      200
+    );
+
+
+    if (
+      body.object !== "instagram"
+    ) {
+
+      console.log(
+        "Ignoring non-Instagram webhook."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !Array.isArray(body.entry)
+    ) {
+
+      console.log(
+        "No webhook entries."
+      );
+
+      return;
+
+    }
+
+
+    for (
+      const entry of body.entry
+    ) {
+
+      if (
+        !Array.isArray(
+          entry.messaging
+        )
+      ) {
+
+        continue;
+
+      }
+
+
+      for (
+        const event of
+        entry.messaging
+      ) {
+
+        /*
+          Ignore events without a message.
+        */
+
+        if (
+          !event.message
+        ) {
+
+          continue;
+
+        }
+
+
+        /*
+          Ignore our own echo messages.
+        */
+
+        if (
+          event.message.is_echo === true
+        ) {
+
+          console.log(
+            "Ignoring echo message."
+          );
+
+          continue;
+
+        }
+
+
+        const senderId =
+          event.sender?.id;
+
+
+        if (!senderId) {
+
+          console.log(
+            "No sender ID."
+          );
+
+          continue;
+
+        }
+
+
+        /*
+          =========================================
+          EXTRACT TEXT + PHOTO + POST + REEL
+          =========================================
+        */
+
+        const extracted =
+          extractClientMessage(
+            event
+          );
+
+
+        const clientMessage =
+          extracted.text;
+
+
+        console.log(
+          "========================================"
+        );
+
+        console.log(
+          "INSTAGRAM MESSAGE RECEIVED"
+        );
+
+        console.log(
+          "Sender:",
+          senderId
+        );
+
+        console.log(
+          clientMessage
+        );
+
+
+        if (
+          extracted.attachments.length > 0
+        ) {
+
+          console.log(
+            "MEDIA DETECTED:"
+          );
+
+
+          for (
+            const media of
+            extracted.attachments
+          ) {
+
+            console.log(
+              "Type:",
+              media.type
+            );
+
+
+            if (
+              media.url
+            ) {
+
+              console.log(
+                "URL:",
+                media.url
+              );
+
+            }
+
+          }
+
+        }
+
+
+        console.log(
+          "========================================"
+        );
+
+
+        const conversation =
+          getConversation(
+            senderId
+          );
+
+
+        /*
+          =========================================
+          CLIENT QUEUE
+          =========================================
+        */
+
+        queueForClient(
+          senderId,
+          async () => {
+
+            try {
+
+              /*
+                =====================================
+                BRAND NEW CLIENT
+                =====================================
+              */
+
+              if (
+                conversation.stage === "NEW"
+              ) {
+
+                saveMessage(
+                  conversation,
+                  "client",
+                  clientMessage
+                );
+
+
+                const delay =
+                  getRandomDelay();
+
+
+                console.log(
+                  `Waiting ${Math.round(delay / 1000)} seconds before Message #1`
+                );
+
+
+                await wait(
+                  delay
+                );
+
+
+                await sendInstagramMessage(
+                  senderId,
+                  MESSAGE_ONE
+                );
+
+
+                saveMessage(
+                  conversation,
+                  "assistant",
+                  MESSAGE_ONE
+                );
+
+
+                conversation.stage =
+                  "OPENING_SENT";
+
+
+                return;
+
+              }
+
+
+              /*
+                =====================================
+                SAVE CLIENT MESSAGE
+                =====================================
+              */
+
+              saveMessage(
+                conversation,
+                "client",
+                clientMessage
+              );
+
+
+              /*
+                =====================================
+                CLASSIFY
+                =====================================
+              */
+
+              const result =
+                await classifyMessage(
+                  conversation,
+                  clientMessage
+                );
+
+
+              console.log(
+                "AI ACTION:",
+                result.action
+              );
+
+
+              console.log(
+                "AI PACKAGE:",
+                result.package
+              );
+
+
+              console.log(
+                "AI PAYMENT:",
+                result.payment
+              );
+
+
+              let reply =
+                null;
+
+
+              /*
+                =====================================
+                PROMOTION
+                =====================================
+              */
+
+              if (
+                result.action ===
+                "PROMOTION"
+              ) {
+
+                conversation.stage =
+                  "PROMOTION_SENT";
+
+                reply =
+                  MESSAGE_TWO;
+
+              }
+
+
+              /*
+                =====================================
+                PACKAGES
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "PACKAGES"
+              ) {
+
+                conversation.stage =
+                  "PACKAGES_SHOWN";
+
+                reply =
+                  PACKAGES_MESSAGE;
+
+              }
+
+
+              /*
+                =====================================
+                FOLLOWER GUARANTEE
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "FOLLOWER_GUARANTEE"
+              ) {
+
+                reply =
+                  FOLLOWER_GUARANTEE_MESSAGE;
+
+              }
+
+
+              /*
+                =====================================
+                ACTIVE AUDIENCE
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "ACTIVE_AUDIENCE"
+              ) {
+
+                reply =
+                  ACTIVE_AUDIENCE_MESSAGE;
+
+              }
+
+
+              /*
+                =====================================
+                LATER
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "LATER"
+              ) {
+
+                reply =
+                  LATER_MESSAGE;
+
+              }
+
+
+              /*
+                =====================================
+                THINK
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "THINK"
+              ) {
+
+                reply =
+                  THINK_MESSAGE;
+
+              }
+
+
+              /*
+                =====================================
+                PACKAGE SELECTED
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "PACKAGE_SELECTED"
+              ) {
+
+                const validPackages = [
+
+                  "bronze",
+                  "silver",
+                  "gold",
+                  "diamond"
+
+                ];
+
+
+                if (
+                  validPackages.includes(
+                    result.package
+                  )
+                ) {
+
+                  conversation.selectedPackage =
+                    result.package;
+
+
+                  conversation.stage =
+                    "PACKAGE_SELECTED";
+
+
+                  const selected =
+                    PACKAGES[
+                      result.package
+                    ];
+
+
+                  reply =
+`Perfect ❤️ You've selected our ${selected.name} package.
+
+Package price: €${selected.price.toFixed(2)}
+${selected.details}
+${selected.followers}
+
+How would you like to pay? ❤️
+
+PayPal
+IBAN
+Revolut
+MB WAY
+Credit/Debit Card`;
+
+                }
+
+              }
+
+
+              /*
+                =====================================
+                PAYMENT METHOD QUESTION
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "PAYMENT_METHOD_QUESTION"
+              ) {
+
+                if (
+                  conversation.selectedPackage
+                ) {
+
+                  reply =
+                    PAYMENT_METHOD_QUESTION;
+
+                }
+
+                else {
+
+                  reply =
+                    PACKAGES_MESSAGE;
+
+                }
+
+              }
+
+
+              /*
+                =====================================
+                PAYMENT
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "PAYMENT"
+              ) {
+
+                const validPayments = [
+
+                  "paypal",
+                  "iban",
+                  "revolut",
+                  "mbway",
+                  "card"
+
+                ];
+
+
+                if (
+                  validPayments.includes(
+                    result.payment
+                  )
+                ) {
+
+                  if (
+                    !conversation.selectedPackage
+                  ) {
+
+                    reply =
+`Please select your package first ❤️
+
+${PACKAGES_MESSAGE}`;
+
+                  }
+
+                  else {
+
+                    conversation.paymentMethod =
+                      result.payment;
+
+
+                    conversation.stage =
+                      "PAYMENT_PENDING";
+
+
+                    reply =
+                      buildPaymentMessage(
+                        conversation.selectedPackage,
+                        result.payment
+                      );
+
+                  }
+
+                }
+
+              }
+
+
+              /*
+                =====================================
+                OPENING
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "OPENING"
+              ) {
+
+                reply =
+                  MESSAGE_ONE;
+
+
+                conversation.stage =
+                  "OPENING_SENT";
+
+              }
+
+
+              /*
+                =====================================
+                AI REPLY
+                =====================================
+              */
+
+              else if (
+                result.action ===
+                "AI_REPLY"
+              ) {
+
+                reply =
+                  await getAIReply(
+                    conversation,
+                    clientMessage
+                  );
+
+              }
+
+
+              /*
+                =====================================
+                FALLBACK
+                =====================================
+              */
+
+              if (
+                !reply
+              ) {
+
+                reply =
+                  "Of course ❤️ How can I help you?";
+
+              }
+
+
+              /*
+                =====================================
+                RANDOM DELAY
+                =====================================
+              */
+
+              const delay =
+                getRandomDelay();
+
+
+              console.log(
+                `Waiting ${Math.round(delay / 1000)} seconds before reply`
+              );
+
+
+              await wait(
+                delay
+              );
+
+
+              /*
+                =====================================
+                SEND ONE MESSAGE
+                =====================================
+              */
+
+              await sendInstagramMessage(
+                senderId,
+                reply
+              );
+
+
+              /*
+                =====================================
+                SAVE AI MESSAGE
+                =====================================
+              */
+
+              saveMessage(
+                conversation,
+                "assistant",
+                reply
+              );
+
+
+              console.log(
+                "Reply sent successfully."
+              );
+
+
+              console.log(
+                "Current stage:",
+                conversation.stage
+              );
+
+
+              console.log(
+                "Selected package:",
+                conversation.selectedPackage
+              );
+
+
+              console.log(
+                "Payment method:",
+                conversation.paymentMethod
+              );
+
+            }
+
+
+            catch (error) {
+
+              console.error(
+                "========================================"
+              );
+
+              console.error(
+                "MESSAGE PROCESSING ERROR"
+              );
+
+              console.error(
+                error
+              );
+
+              console.error(
+                "========================================"
+              );
+
+            }
+
+          }
+        );
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   HOME PAGE
+===================================================== */
+
+app.get(
+  "/",
+  (req, res) => {
+
+    res.status(200).send(
+      "Global Promote Instagram AI is running!"
+    );
+
+  }
+);
+
+
+/* =====================================================
+   HEALTH CHECK
+===================================================== */
+
+app.get(
+  "/health",
+  (req, res) => {
+
+    res.status(200).json({
+
+      status:
+        "ok",
+
+      instagram:
+        Boolean(PAGE_ACCESS_TOKEN),
+
+      openai:
+        Boolean(OPEN_AI),
+
+      instagramUserId:
+        INSTAGRAM_USER_ID
+
+    });
+
+  }
+);
+
+
+/* =====================================================
+   AUTH CALLBACK
+===================================================== */
+
+app.get(
+  "/auth/callback",
+  (req, res) => {
+
+    const code =
+      req.query.code;
+
+
+    if (!code) {
+
+      return res
+        .status(400)
+        .send(
+          "Missing authorization code"
+        );
+
+    }
+
+
+    res.send(
+      "Instagram authorization successful"
+    );
+
+  }
+);
+
+
+/* =====================================================
+   START SERVER
+===================================================== */
+
+const PORT =
+  process.env.PORT || 3000;
+
+
+app.listen(
+  PORT,
+  () => {
+
+    console.log(
+      "========================================"
+    );
+
+    console.log(
+      `Server running on port ${PORT}`
+    );
+
+    console.log(
+      "Instagram AI: ENABLED"
+    );
+
+    console.log(
+      "Media detection: ENABLED"
+    );
+
+    console.log(
+      "Photos: ENABLED"
+    );
+
+    console.log(
+      "Posts/Reels: ENABLED"
+    );
+
+    console.log(
+      "AI delay: 10–20 seconds"
+    );
+
+    console.log(
+      "Payment fee: 12%"
+    );
+
+    console.log(
+      "========================================"
+    );
+
+  }
+);
