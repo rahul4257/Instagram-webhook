@@ -27,7 +27,15 @@ app.post("/webhook", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Instagram webhook is running!");
 });
+app.get("/auth/callback", (req, res) => {
+  const code = req.query.code;
 
+  if (!code) {
+    return res.status(400).send("Missing authorization code");
+  }
+
+  res.send("Instagram authorization successful!");
+});
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
