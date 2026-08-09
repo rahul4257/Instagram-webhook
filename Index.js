@@ -19,7 +19,26 @@ app.get("/webhook", (req, res) => {
 
 app.post("/webhook", (req, res) => {
   console.log("Instagram webhook received:");
-  console.log(JSON.stringify(req.body, null, 2));
+
+  const body = req.body;
+
+  console.log(JSON.stringify(body, null, 2));
+
+  if (body.entry) {
+    body.entry.forEach((entry) => {
+      if (entry.messaging) {
+        entry.messaging.forEach((event) => {
+          const senderId = event.sender?.id;
+          const messageText = event.message?.text;
+
+          if (senderId && messageText) {
+            console.log("Sender ID:", senderId);
+            console.log("Message:", messageText);
+          }
+        });
+      }
+    });
+  }
 
   res.sendStatus(200);
 });
