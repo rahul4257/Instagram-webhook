@@ -1246,3 +1246,35 @@ ${history}
   }
 
    }
+if (!rawText) {
+
+    throw new Error(
+      "OpenAI returned no text"
+    );
+
+  }
+
+
+  try {
+
+    return JSON.parse(
+      rawText
+    );
+
+  } catch (error) {
+
+    console.error(
+      "OpenAI invalid JSON:"
+    );
+
+    console.error(
+      rawText
+    );
+
+    throw new Error(
+      "Invalid OpenAI response"
+    );
+
+  }
+
+    }
