@@ -639,28 +639,72 @@ Return:
       );
     }
 
-    const text =
-      extractOpenAIText(data)
-        .replace(/```json/gi, "")
-        .replace(/```/g, "")
-        .trim();
+    let text =
+  extractOpenAIText(data)
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
 
-    const result =
-      JSON.parse(text);
+if (!text) {
+  console.error(
+    "OpenAI classification returned empty text:",
+    JSON.stringify(data, null, 2)
+  );
 
-    return {
-      action:
-        result.action ||
-        "AI_REPLY",
+  return simpleClassification(
+    clientMessage
+  );
+}
 
-      package:
-        result.package ||
-        null,
+let result;
 
-      payment:
-        result.payment ||
-        null
-    };
+try {
+  result = JSON.parse(text);
+} catch (parseError) {
+  console.error(
+    "Classification JSON parse failed. Raw text:",
+    text
+  );
+
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+
+  if (start === -1 || end === -1 || end <= start) {
+    return simpleClassification(
+      clientMessage
+    );
+  }
+
+  const jsonText =
+    text.slice(start, end + 1);
+
+  try {
+    result = JSON.parse(jsonText);
+  } catch (secondParseError) {
+    console.error(
+      "Second JSON parse failed:",
+      secondParseError
+    );
+
+    return simpleClassification(
+      clientMessage
+    );
+  }
+}
+
+return {
+  action:
+    result.action ||
+    "AI_REPLY",
+
+  package:
+    result.package ||
+    null,
+
+  payment:
+    result.payment ||
+    null
+};
 
   } catch (error) {
     console.error(
