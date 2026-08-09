@@ -222,11 +222,11 @@ function calculatePayment(
     selected.price;
 
   const fee =
-    Math.round(
-      price *
-      PAYMENT_FEE_PERCENT *
-    ) / 100;
-
+  Math.round(
+    price *
+    PAYMENT_FEE_PERCENT
+  ) / 100;
+   
   const total =
     Math.round(
       (price + fee) *
