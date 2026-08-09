@@ -1,6 +1,7 @@
 const express = require("express");
 
 const app = express();
+
 app.use(express.json());
 
 /* =========================================================
@@ -34,7 +35,7 @@ const ADMIN_SECRET =
 
 /* =========================================================
    FIXED SALES MESSAGES
-   AI IS NOT ALLOWED TO MODIFY THESE
+   AI NEVER CHANGES THESE
 ========================================================= */
 
 const MESSAGE_ONE =
@@ -81,10 +82,21 @@ const PACKAGES_MESSAGE =
 
 
 /* =========================================================
+   GUARANTEE MESSAGE
+========================================================= */
+
+const FOLLOWER_GUARANTEE_MESSAGE =
+`Yes ❤️ The followers are guaranteed because we upload your content on our pages and continue the promotion until you receive the followers included in your package.
+
+If you don't gain the guaranteed followers, the amount will be refunded according to our guarantee policy. ❤️`;
+
+
+/* =========================================================
    PACKAGES
 ========================================================= */
 
 const PACKAGES = {
+
   bronze: {
     name: "Bronze",
     price: 35,
@@ -120,11 +132,12 @@ const PACKAGES = {
     followers:
       "10K followers guaranteed"
   }
+
 };
 
 
 /* =========================================================
-   PAYMENT DETAILS
+   PAYMENT METHODS
 ========================================================= */
 
 const PAYMENT_METHODS = [
@@ -136,9 +149,9 @@ const PAYMENT_METHODS = [
 ];
 
 
-/*
-  Exact details recovered from your previous setup.
-*/
+/* =========================================================
+   PAYMENT DETAILS
+========================================================= */
 
 const PAYPAL_DETAILS =
 `PayPal:
@@ -146,12 +159,18 @@ pay@globalpromote.in
 https://paypal.me/RamanKumar4257`;
 
 
+/*
+   Your bank / IBAN information
+*/
+
 const IBAN_DETAILS =
 `Bank / Wise:
+
 Account name: Rahul Kumar
 IBAN: BE36967747881581
 SWIFT/BIC: TRWIBEB1XXX
 Bank: Wise
+
 Bank address:
 Rue du Trône 100, 3rd floor
 Brussels, 1050
@@ -159,21 +178,23 @@ Belgium`;
 
 
 /*
-  I will NOT invent these values.
-  Put your real details in Render environment variables:
+   Put your exact MB WAY details in Render:
 
-  MBWAY_DETAILS
-  REVOLUT_DETAILS
+   MBWAY_DETAILS
+
+   Put your exact Revolut details in Render:
+
+   REVOLUT_DETAILS
 */
 
 const MBWAY_DETAILS =
   process.env.MBWAY_DETAILS ||
-  "MB WAY payment details are not configured yet.";
+  "MB WAY payment details are not configured.";
 
 
 const REVOLUT_DETAILS =
   process.env.REVOLUT_DETAILS ||
-  "Revolut payment details are not configured yet.";
+  "Revolut payment details are not configured.";
 
 
 /* =========================================================
@@ -184,7 +205,9 @@ const PAYMENT_FEE_PERCENT =
   12;
 
 
-function calculatePayment(packageKey) {
+function calculatePayment(
+  packageKey
+) {
 
   const selected =
     PACKAGES[packageKey];
@@ -199,13 +222,14 @@ function calculatePayment(packageKey) {
   const fee =
     Math.round(
       price *
-      PAYMENT_FEE_PERCENT
-    * 100
+      PAYMENT_FEE_PERCENT *
+      100
     ) / 100;
 
   const total =
     Math.round(
-      (price + fee) * 100
+      (price + fee) *
+      100
     ) / 100;
 
   return {
@@ -217,7 +241,7 @@ function calculatePayment(packageKey) {
 
 
 /* =========================================================
-   PAYMENT MESSAGE
+   BUILD PAYMENT MESSAGE
 ========================================================= */
 
 function buildPaymentMessage(
@@ -233,9 +257,12 @@ function buildPaymentMessage(
   }
 
   const payment =
-    calculatePayment(packageKey);
+    calculatePayment(
+      packageKey
+    );
 
   let details = "";
+
 
   if (
     paymentMethod ===
@@ -245,7 +272,10 @@ function buildPaymentMessage(
     details =
       PAYPAL_DETAILS;
 
-  } else if (
+  }
+
+
+  else if (
     paymentMethod ===
     "iban"
   ) {
@@ -253,7 +283,10 @@ function buildPaymentMessage(
     details =
       IBAN_DETAILS;
 
-  } else if (
+  }
+
+
+  else if (
     paymentMethod ===
     "mbway"
   ) {
@@ -261,7 +294,10 @@ function buildPaymentMessage(
     details =
       MBWAY_DETAILS;
 
-  } else if (
+  }
+
+
+  else if (
     paymentMethod ===
     "revolut"
   ) {
@@ -269,20 +305,25 @@ function buildPaymentMessage(
     details =
       REVOLUT_DETAILS;
 
-  } else if (
+  }
+
+
+  else if (
     paymentMethod ===
     "card"
   ) {
 
     details =
-`Our team will assist you with the Credit/Debit Card payment shortly ❤️`;
+`Our team will assist you with the Credit/Debit Card payment ❤️`;
   }
+
 
   return (
 `Perfect ❤️
 
 Package: ${selected.name}
-Package price: €${payment.price}
+
+Package price: €${payment.price.toFixed(2)}
 
 12% payment fee: €${payment.fee.toFixed(2)}
 
@@ -298,7 +339,7 @@ After successful payment, please send us your payment screenshot ❤️`
 
 
 /* =========================================================
-   CONVERSATION STORAGE
+   CONVERSATIONS
 ========================================================= */
 
 const conversations =
@@ -318,26 +359,38 @@ function getConversation(
     conversations.set(
       senderId,
       {
-        stage: "NEW",
 
-        history: [],
+        stage:
+          "NEW",
 
-        selectedPackage: null,
+        history:
+          [],
 
-        paymentMethod: null,
+        selectedPackage:
+          null,
 
-        clientReplied: false,
+        paymentMethod:
+          null,
 
-        humanMode: false,
+        lastOutgoingMessageId:
+          null,
 
-        lastOutgoingMessageId: null,
+        lastOutgoingStage:
+          null,
 
-        lastOutgoingStage: null,
+        reminderTimer:
+          null,
 
-        reminderTimer: null
+        humanMode:
+          false,
+
+        clientReplied:
+          false
+
       }
     );
   }
+
 
   return conversations.get(
     senderId
@@ -346,7 +399,7 @@ function getConversation(
 
 
 /* =========================================================
-   MESSAGE HISTORY
+   SAVE MESSAGE
 ========================================================= */
 
 function saveMessage(
@@ -356,17 +409,22 @@ function saveMessage(
 ) {
 
   conversation.history.push({
+
     role,
+
     text
+
   });
+
 
   if (
     conversation.history.length >
-    30
+    40
   ) {
+
     conversation.history =
       conversation.history.slice(
-        -30
+        -40
       );
   }
 }
@@ -377,6 +435,7 @@ function saveMessage(
 ========================================================= */
 
 function wait(ms) {
+
   return new Promise(
     resolve =>
       setTimeout(
@@ -401,18 +460,17 @@ function getRandomDelay() {
 
   return Math.floor(
     Math.random() *
-      (
-        maximum -
-        minimum +
-        1
-      )
+    (
+      maximum -
+      minimum +
+      1
+    )
   ) + minimum;
 }
 
 
 /* =========================================================
-   CLIENT MESSAGE QUEUES
-   Prevents multiple chats being processed together
+   CLIENT QUEUE
 ========================================================= */
 
 const clientQueues =
@@ -427,17 +485,21 @@ function queueForClient(
   const previous =
     clientQueues.get(
       senderId
-    ) || Promise.resolve();
+    ) ||
+    Promise.resolve();
+
 
   const next =
     previous
       .catch(() => {})
       .then(task);
 
+
   clientQueues.set(
     senderId,
     next
   );
+
 
   next.finally(() => {
 
@@ -446,12 +508,375 @@ function queueForClient(
         senderId
       ) === next
     ) {
+
       clientQueues.delete(
         senderId
       );
+
     }
 
   });
+}
+
+
+/* =========================================================
+   DUPLICATE MESSAGE PROTECTION
+========================================================= */
+
+const processedMessageIds =
+  new Set();
+
+
+/* =========================================================
+   OUTGOING MESSAGE STORAGE
+========================================================= */
+
+const outgoingMessages =
+  new Map();
+
+
+/* =========================================================
+   NORMALIZE TEXT
+========================================================= */
+
+function normalizeText(
+  text
+) {
+
+  return (
+    text ||
+    ""
+  )
+    .toLowerCase()
+    .trim()
+    .replace(
+      /[.,!?]/g,
+      " "
+    )
+    .replace(
+      /\s+/g,
+      " "
+    );
+}
+
+
+/* =========================================================
+   PACKAGE DETECTION
+========================================================= */
+
+function detectPackageSelection(
+  text,
+  conversation
+) {
+
+  /*
+    Only interpret 1/2/3/4 as packages
+    when packages are currently being shown.
+  */
+
+  if (
+    conversation.stage !==
+    "PACKAGES_SHOWN"
+  ) {
+
+    return null;
+  }
+
+
+  const t =
+    normalizeText(text);
+
+
+  /* =========================
+     BRONZE
+  ========================= */
+
+  if (
+
+    t === "1" ||
+
+    t === "1st" ||
+
+    t === "first" ||
+
+    t === "first package" ||
+
+    t === "package 1" ||
+
+    t === "package one" ||
+
+    t === "option 1" ||
+
+    t === "option one" ||
+
+    /\bbronze\b/.test(t)
+
+  ) {
+
+    return "bronze";
+  }
+
+
+  /* =========================
+     SILVER
+  ========================= */
+
+  if (
+
+    t === "2" ||
+
+    t === "2nd" ||
+
+    t === "second" ||
+
+    t === "second package" ||
+
+    t === "package 2" ||
+
+    t === "package two" ||
+
+    t === "option 2" ||
+
+    t === "option two" ||
+
+    /\bsilver\b/.test(t)
+
+  ) {
+
+    return "silver";
+  }
+
+
+  /* =========================
+     GOLD
+  ========================= */
+
+  if (
+
+    t === "3" ||
+
+    t === "3rd" ||
+
+    t === "third" ||
+
+    t === "third package" ||
+
+    t === "package 3" ||
+
+    t === "package three" ||
+
+    t === "option 3" ||
+
+    t === "option three" ||
+
+    /\bgold\b/.test(t)
+
+  ) {
+
+    return "gold";
+  }
+
+
+  /* =========================
+     DIAMOND
+  ========================= */
+
+  if (
+
+    t === "4" ||
+
+    t === "4th" ||
+
+    t === "fourth" ||
+
+    t === "fourth package" ||
+
+    t === "package 4" ||
+
+    t === "package four" ||
+
+    t === "option 4" ||
+
+    t === "option four" ||
+
+    /\bdiamond\b/.test(t)
+
+  ) {
+
+    return "diamond";
+  }
+
+
+  return null;
+}
+
+
+/* =========================================================
+   PAYMENT DETECTION
+========================================================= */
+
+function detectPaymentMethod(
+  text
+) {
+
+  const t =
+    normalizeText(text);
+
+
+  if (
+    /\bpaypal\b/.test(t)
+  ) {
+
+    return "paypal";
+  }
+
+
+  if (
+    /\biban\b/.test(t) ||
+    /\bwise\b/.test(t) ||
+    /\bbank\b/.test(t)
+  ) {
+
+    return "iban";
+  }
+
+
+  if (
+    /\brevolut\b/.test(t)
+  ) {
+
+    return "revolut";
+  }
+
+
+  if (
+    /\bmb\s*way\b/.test(t) ||
+    /\bmbway\b/.test(t)
+  ) {
+
+    return "mbway";
+  }
+
+
+  if (
+    /\bcredit\s*card\b/.test(t) ||
+    /\bdebit\s*card\b/.test(t) ||
+    /\bcard\b/.test(t)
+  ) {
+
+    return "card";
+  }
+
+
+  return null;
+}
+
+
+/* =========================================================
+   GUARANTEE DETECTION
+========================================================= */
+
+function isGuaranteeQuestion(
+  text
+) {
+
+  const t =
+    normalizeText(text);
+
+
+  return (
+
+    /\bguarantee\b/.test(t) ||
+
+    /\bguaranteed\b/.test(t) ||
+
+    /\brefund\b/.test(t) ||
+
+    /\brefunded\b/.test(t) ||
+
+    /\bwhat if.*followers\b/.test(t) ||
+
+    /\bhow.*followers.*guarantee\b/.test(t) ||
+
+    /\bhow.*guarantee.*followers\b/.test(t) ||
+
+    /\bwhy.*guaranteed\b/.test(t)
+
+  );
+}
+
+
+/* =========================================================
+   POSITIVE / INTEREST DETECTION
+========================================================= */
+
+function isPositiveInterest(
+  text
+) {
+
+  const t =
+    normalizeText(text);
+
+
+  return (
+
+    t === "yes" ||
+
+    t === "yeah" ||
+
+    t === "yep" ||
+
+    t === "sure" ||
+
+    t === "okay" ||
+
+    t === "ok" ||
+
+    t === "yes please" ||
+
+    t === "sure show me" ||
+
+    t === "show me" ||
+
+    t === "interested" ||
+
+    t === "i am interested" ||
+
+    t === "im interested" ||
+
+    t === "interested yes"
+
+  );
+}
+
+
+/* =========================================================
+   NEGATIVE DETECTION
+========================================================= */
+
+function isNegative(
+  text
+) {
+
+  const t =
+    normalizeText(text);
+
+
+  return (
+
+    t === "no" ||
+
+    t === "no thanks" ||
+
+    t === "not interested" ||
+
+    t === "im not interested" ||
+
+    t === "i am not interested" ||
+
+    /\bnot interested\b/.test(t)
+
+  );
 }
 
 
@@ -467,10 +892,13 @@ function extractOpenAIText(
     typeof data?.output_text ===
     "string"
   ) {
-    return data.output_text;
+
+    return data.output_text.trim();
   }
 
+
   let result = "";
+
 
   if (
     Array.isArray(
@@ -488,8 +916,10 @@ function extractOpenAIText(
           item.content
         )
       ) {
+
         continue;
       }
+
 
       for (
         const content of
@@ -506,9 +936,13 @@ function extractOpenAIText(
           result +=
             content.text;
         }
+
       }
+
     }
+
   }
+
 
   return result.trim();
 }
@@ -522,7 +956,9 @@ function getAttachmentInfo(
   message
 ) {
 
-  const parts = [];
+  const parts =
+    [];
+
 
   if (
     Array.isArray(
@@ -539,10 +975,12 @@ function getAttachmentInfo(
         attachment.type ||
         "unknown";
 
+
       const url =
         attachment.payload?.url ||
         attachment.payload?.src ||
         "";
+
 
       parts.push(
         `type=${type}, url=${url}`
@@ -550,16 +988,18 @@ function getAttachmentInfo(
     }
   }
 
+
   if (
     message.share
   ) {
 
     parts.push(
-      `shared media=${JSON.stringify(
+      `shared=${JSON.stringify(
         message.share
       )}`
     );
   }
+
 
   return parts.join(
     "\n"
@@ -568,8 +1008,8 @@ function getAttachmentInfo(
 
 
 /* =========================================================
-   OPENAI CLASSIFICATION
-   AI CLASSIFIES ONLY.
+   OPENAI CLASSIFIER
+   AI ANALYZES ONLY.
    IT DOES NOT WRITE FIXED SALES MESSAGES.
 ========================================================= */
 
@@ -582,307 +1022,17 @@ async function classifyMessage(
   if (!OPEN_AI) {
 
     return {
-      action: "AI_REPLY",
-      package: null,
-      payment: null
+      action:
+        "NO_REPLY",
+
+      package:
+        null,
+
+      payment:
+        null
     };
   }
 
-  const history =
-    conversation.history
-      .slice(-12)
-      .map(
-        item =>
-          `${item.role}: ${item.text}`
-      )
-      .join("\n");
-
-  const prompt =
-`You are ONLY a classifier for an Instagram sales assistant.
-
-Do NOT write a customer reply.
-
-Return ONLY the classification JSON.
-
-Possible actions:
-
-PROMOTION
-PACKAGES
-PACKAGE_SELECTED
-PAYMENT_METHOD_QUESTION
-PAYMENT
-QUESTION
-NEGATIVE
-LATER
-THINK
-PAYMENT_PROOF
-
-Package values:
-bronze
-silver
-gold
-diamond
-
-Payment values:
-paypal
-iban
-revolut
-mbway
-card
-
-Rules:
-
-If customer shows interest in promotion:
-PROMOTION
-
-If customer asks to see packages:
-PACKAGES
-
-If customer clearly chooses a package:
-PACKAGE_SELECTED
-
-If customer asks how to pay:
-PAYMENT_METHOD_QUESTION
-
-If customer chooses a payment method:
-PAYMENT
-
-If customer says they paid or sends payment proof:
-PAYMENT_PROOF
-
-If customer asks a normal question:
-QUESTION
-
-If customer says no/not interested:
-NEGATIVE
-
-If customer says later:
-LATER
-
-If customer says they need to think:
-THINK
-
-IMPORTANT:
-Do not invent a package.
-Do not invent a payment method.
-
-Conversation:
-${history}
-
-Latest customer message:
-${clientMessage || "[media]"}
-
-Attachment:
-${attachmentInfo || "none"}
-
-Return exactly:
-
-{
-  "action": "AI_REPLY",
-  "package": null,
-  "payment": null
-}`;
-
-
-  try {
-
-    const response =
-      await fetch(
-        "https://api.openai.com/v1/responses",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            "Authorization":
-              `Bearer ${OPEN_AI}`
-          },
-
-          body:
-            JSON.stringify({
-
-              model:
-                OPENAI_MODEL,
-
-              input:
-                prompt,
-
-              text: {
-                format: {
-                  type:
-                    "json_schema",
-
-                  name:
-                    "instagram_classification",
-
-                  strict:
-                    true,
-
-                  schema: {
-                    type:
-                      "object",
-
-                    properties: {
-
-                      action: {
-                        type:
-                          "string",
-
-                        enum: [
-                          "PROMOTION",
-                          "PACKAGES",
-                          "PACKAGE_SELECTED",
-                          "PAYMENT_METHOD_QUESTION",
-                          "PAYMENT",
-                          "QUESTION",
-                          "NEGATIVE",
-                          "LATER",
-                          "THINK",
-                          "PAYMENT_PROOF",
-                          "AI_REPLY"
-                        ]
-                      },
-
-                      package: {
-                        type:
-                          [
-                            "string",
-                            "null"
-                          ],
-
-                        enum: [
-                          "bronze",
-                          "silver",
-                          "gold",
-                          "diamond",
-                          null
-                        ]
-                      },
-
-                      payment: {
-                        type:
-                          [
-                            "string",
-                            "null"
-                          ],
-
-                        enum: [
-                          "paypal",
-                          "iban",
-                          "revolut",
-                          "mbway",
-                          "card",
-                          null
-                        ]
-                      }
-                    },
-
-                    required: [
-                      "action",
-                      "package",
-                      "payment"
-                    ],
-
-                    additionalProperties:
-                      false
-                  }
-                }
-              },
-
-              max_output_tokens:
-                200
-            })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-    if (!response.ok) {
-
-      console.error(
-        "OpenAI classification error:",
-        data
-      );
-
-      return {
-        action: "AI_REPLY",
-        package: null,
-        payment: null
-      };
-    }
-
-
-    const text =
-      extractOpenAIText(
-        data
-      ).trim();
-
-
-    if (!text) {
-
-      return {
-        action: "AI_REPLY",
-        package: null,
-        payment: null
-      };
-    }
-
-
-    try {
-
-      return JSON.parse(
-        text
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Classification JSON parse failed:",
-        text
-      );
-
-      return {
-        action: "AI_REPLY",
-        package: null,
-        payment: null
-      };
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Classification error:",
-      error
-    );
-
-    return {
-      action: "AI_REPLY",
-      package: null,
-      payment: null
-    };
-  }
-}
-
-
-/* =========================================================
-   FREE-FORM AI ANSWER
-   USED ONLY FOR QUESTIONS / NON-FIXED CONVERSATION
-========================================================= */
-
-async function getAIReply(
-  conversation,
-  clientMessage,
-  attachmentInfo
-) {
-
-  if (!OPEN_AI) {
-
-    return "Of course ❤️ How can I help you?";
-  }
 
   const history =
     conversation.history
@@ -895,24 +1045,408 @@ async function getAIReply(
 
 
   const prompt =
-`You are the customer support assistant for Global Promote.
+`You are the classification brain for a sales assistant.
+
+DO NOT write a customer reply.
+
+Return ONLY JSON.
+
+The system already controls the exact sales messages.
+
+Possible actions:
+
+PACKAGE_SELECTED
+PAYMENT
+FOLLOWER_GUARANTEE
+AI_REPLY
+NO_REPLY
+PAYMENT_PROOF
+NEGATIVE
+LATER
+THINK
+
+Package values:
+
+bronze
+silver
+gold
+diamond
+
+Payment values:
+
+paypal
+iban
+revolut
+mbway
+card
+
+Rules:
+
+PACKAGE_SELECTED:
+Use when the customer clearly chooses a package.
+
+PAYMENT:
+Use when the customer chooses a payment method.
+
+FOLLOWER_GUARANTEE:
+Use when the customer asks how followers are guaranteed,
+whether followers are guaranteed,
+what happens if they do not receive the guaranteed followers,
+or asks about refund/guarantee.
+
+PAYMENT_PROOF:
+Use when the customer says they paid or sends payment proof.
+
+AI_REPLY:
+Use only for a genuine customer question that requires an answer.
+
+NO_REPLY:
+Use when the meaning is unclear or you are not confident.
+
+Do not invent package names.
+Do not invent payment methods.
+
+Conversation stage:
+${conversation.stage}
+
+Conversation:
+${history}
+
+Latest customer message:
+${clientMessage || "[media]"}
+
+Attachment:
+${attachmentInfo || "none"}
+
+Return exactly this structure:
+
+{
+  "action": "NO_REPLY",
+  "package": null,
+  "payment": null
+}`;
+
+
+  try {
+
+    const response =
+      await fetch(
+        "https://api.openai.com/v1/responses",
+        {
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "Authorization":
+              `Bearer ${OPEN_AI}`
+
+          },
+
+          body:
+            JSON.stringify({
+
+              model:
+                OPENAI_MODEL,
+
+              input:
+                prompt,
+
+              text: {
+
+                format: {
+
+                  type:
+                    "json_schema",
+
+                  name:
+                    "instagram_message_classification",
+
+                  strict:
+                    true,
+
+                  schema: {
+
+                    type:
+                      "object",
+
+                    properties: {
+
+                      action: {
+
+                        type:
+                          "string",
+
+                        enum: [
+
+                          "PACKAGE_SELECTED",
+
+                          "PAYMENT",
+
+                          "FOLLOWER_GUARANTEE",
+
+                          "AI_REPLY",
+
+                          "NO_REPLY",
+
+                          "PAYMENT_PROOF",
+
+                          "NEGATIVE",
+
+                          "LATER",
+
+                          "THINK"
+
+                        ]
+
+                      },
+
+                      package: {
+
+                        type:
+                          [
+                            "string",
+                            "null"
+                          ],
+
+                        enum: [
+
+                          "bronze",
+
+                          "silver",
+
+                          "gold",
+
+                          "diamond",
+
+                          null
+
+                        ]
+
+                      },
+
+                      payment: {
+
+                        type:
+                          [
+                            "string",
+                            "null"
+                          ],
+
+                        enum: [
+
+                          "paypal",
+
+                          "iban",
+
+                          "revolut",
+
+                          "mbway",
+
+                          "card",
+
+                          null
+
+                        ]
+
+                      }
+
+                    },
+
+                    required: [
+
+                      "action",
+
+                      "package",
+
+                      "payment"
+
+                    ],
+
+                    additionalProperties:
+                      false
+
+                  }
+
+                }
+
+              },
+
+              max_output_tokens:
+                200
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      console.error(
+        "OpenAI classifier error:",
+        data
+      );
+
+      return {
+        action:
+          "NO_REPLY",
+
+        package:
+          null,
+
+        payment:
+          null
+      };
+    }
+
+
+    const text =
+      extractOpenAIText(
+        data
+      );
+
+
+    if (
+      !text
+    ) {
+
+      return {
+        action:
+          "NO_REPLY",
+
+        package:
+          null,
+
+        payment:
+          null
+      };
+    }
+
+
+    try {
+
+      const result =
+        JSON.parse(
+          text
+        );
+
+
+      return {
+
+        action:
+          result.action ||
+          "NO_REPLY",
+
+        package:
+          result.package ||
+          null,
+
+        payment:
+          result.payment ||
+          null
+
+      };
+
+    } catch (
+      error
+    ) {
+
+      console.error(
+        "Classifier JSON error:",
+        text
+      );
+
+
+      return {
+
+        action:
+          "NO_REPLY",
+
+        package:
+          null,
+
+        payment:
+          null
+
+      };
+    }
+
+  } catch (
+    error
+  ) {
+
+    console.error(
+      "Classification error:",
+      error
+    );
+
+
+    return {
+
+      action:
+        "NO_REPLY",
+
+      package:
+        null,
+
+      payment:
+        null
+
+    };
+  }
+}
+/* =========================================================
+   AI REPLY
+   ONLY USED FOR GENUINE CUSTOMER QUESTIONS
+========================================================= */
+
+async function getAIReply(
+  conversation,
+  clientMessage,
+  attachmentInfo
+) {
+
+  if (!OPEN_AI) {
+    return null;
+  }
+
+  const history =
+    conversation.history
+      .slice(-15)
+      .map(
+        item =>
+          `${item.role}: ${item.text}`
+      )
+      .join("\n");
+
+  const prompt =
+`You are a customer support assistant for Global Promote.
 
 IMPORTANT:
-The following fixed sales messages already belong to the system.
-NEVER rewrite them.
-NEVER replace them.
-NEVER create alternative versions of them.
+You are NOT responsible for the fixed sales messages.
 
-The system itself controls:
-1. Opening message
-2. Second promotion message
-3. Packages
-4. Package confirmation
-5. Payment method message
-6. Payment details
-7. Two-minute reminders
+The system already sends:
+- Message 1
+- Message 2
+- Packages
+- Package confirmation
+- Payment question
+- Payment details
+- Reminder messages
 
-You only answer questions that are not covered by those fixed messages.
+Do not replace or rewrite those messages.
+
+Only answer the customer's genuine question.
 
 Packages:
 
@@ -947,11 +1481,15 @@ Credit/Debit Card
 
 There is a 12% payment fee.
 
-Be short, natural and friendly.
-Reply in the client's language.
-Never invent prices.
-Never invent payment details.
-Never change the fixed messages.
+Rules:
+- Be short and natural.
+- Reply in the customer's language.
+- Do not invent information.
+- Do not change prices.
+- Do not invent payment details.
+- Do not make promises not provided by the business.
+- If you are not confident, return exactly NO_REPLY.
+- Do not send greetings when the customer asked a specific question.
 
 Conversation:
 ${history}
@@ -962,14 +1500,14 @@ ${clientMessage || "[media]"}
 Attachment:
 ${attachmentInfo || "none"}`;
 
-
   try {
 
     const response =
       await fetch(
         "https://api.openai.com/v1/responses",
         {
-          method: "POST",
+          method:
+            "POST",
 
           headers: {
             "Content-Type":
@@ -981,26 +1519,20 @@ ${attachmentInfo || "none"}`;
 
           body:
             JSON.stringify({
-
               model:
                 OPENAI_MODEL,
-
-              instructions:
-                "Answer only the customer's question. Do not replace any fixed sales message.",
 
               input:
                 prompt,
 
               max_output_tokens:
-                300
+                250
             })
         }
       );
 
-
     const data =
       await response.json();
-
 
     if (!response.ok) {
 
@@ -1009,29 +1541,31 @@ ${attachmentInfo || "none"}`;
         data
       );
 
-      return "Of course ❤️ How can I help you?";
+      return null;
     }
-
 
     const reply =
       extractOpenAIText(
         data
       ).trim();
 
+    if (
+      !reply ||
+      reply === "NO_REPLY"
+    ) {
+      return null;
+    }
 
-    return (
-      reply ||
-      "Of course ❤️ How can I help you?"
-    );
+    return reply;
 
   } catch (error) {
 
     console.error(
-      "OpenAI error:",
+      "AI reply error:",
       error
     );
 
-    return "Of course ❤️ How can I help you?";
+    return null;
   }
 }
 
@@ -1045,16 +1579,23 @@ async function sendInstagramMessage(
   text
 ) {
 
+  if (!PAGE_ACCESS_TOKEN) {
+
+    throw new Error(
+      "PAGE_ACCESS_TOKEN is missing"
+    );
+  }
+
   const url =
     `https://graph.instagram.com/${INSTAGRAM_API_VERSION}` +
     `/${INSTAGRAM_USER_ID}/messages`;
-
 
   const response =
     await fetch(
       url,
       {
-        method: "POST",
+        method:
+          "POST",
 
         headers: {
           "Content-Type":
@@ -1074,14 +1615,13 @@ async function sendInstagramMessage(
             message: {
               text: text
             }
+
           })
       }
     );
 
-
   const data =
     await response.json();
-
 
   if (!response.ok) {
 
@@ -1091,13 +1631,12 @@ async function sendInstagramMessage(
     );
 
     throw new Error(
-      "Instagram message could not be sent"
+      "Instagram message failed"
     );
   }
 
-
   console.log(
-    "Instagram reply sent successfully"
+    "Instagram message sent successfully"
   );
 
   console.log(
@@ -1108,16 +1647,13 @@ async function sendInstagramMessage(
     )
   );
 
-
   return data;
-    }
+}
+
+
 /* =========================================================
    REMINDER SYSTEM
 ========================================================= */
-
-const outgoingMessages =
-  new Map();
-
 
 function cancelReminder(
   senderId
@@ -1142,10 +1678,61 @@ function cancelReminder(
 }
 
 
-function createReminder(
+function getReminderText(
+  stage
+) {
+
+  if (
+    stage ===
+    "OPENING_SENT"
+  ) {
+
+    return (
+      "Are you interested? ❤️"
+    );
+  }
+
+
+  if (
+    stage ===
+    "PROMOTION_SENT"
+  ) {
+
+    return (
+      "Can I show you our packages? ❤️"
+    );
+  }
+
+
+  if (
+    stage ===
+    "PACKAGES_SHOWN"
+  ) {
+
+    return (
+      "So which package would you like to choose? ❤️"
+    );
+  }
+
+
+  if (
+    stage ===
+    "PACKAGE_SELECTED"
+  ) {
+
+    return (
+      "Which mode of payment do you have? ❤️"
+    );
+  }
+
+
+  return null;
+}
+
+
+function scheduleReminder(
   senderId,
   messageId,
-  reminderText,
   stage
 ) {
 
@@ -1154,10 +1741,20 @@ function createReminder(
       senderId
     );
 
-
   cancelReminder(
     senderId
   );
+
+  const reminderText =
+    getReminderText(
+      stage
+    );
+
+  if (
+    !reminderText
+  ) {
+    return;
+  }
 
 
   conversation.reminderTimer =
@@ -1169,39 +1766,29 @@ function createReminder(
 
 
         /*
-          Do not send reminder if:
-          - human has taken over
-          - client has replied
-          - conversation moved to another stage
-          - another outgoing message replaced this one
+          If another outgoing message
+          has already been sent, this
+          reminder is no longer valid.
         */
-
-        if (
-          conversation.humanMode
-        ) {
-          return;
-        }
-
-
-        if (
-          conversation.clientReplied
-        ) {
-          return;
-        }
-
 
         if (
           conversation.lastOutgoingMessageId !==
           messageId
         ) {
+
           return;
         }
 
 
+        /*
+          If human mode is active,
+          never send an AI reminder.
+        */
+
         if (
-          conversation.stage !==
-          stage
+          conversation.humanMode
         ) {
+
           return;
         }
 
@@ -1209,14 +1796,43 @@ function createReminder(
         try {
 
           console.log(
-            "Sending 2-minute reminder:",
-            senderId
+            "Sending 2-minute reminder:"
           );
 
+          console.log(
+            reminderText
+          );
+
+
+          /*
+            Same 10–12 second delay
+            before the reminder.
+          */
 
           await wait(
             getRandomDelay()
           );
+
+
+          /*
+            Check again after delay.
+          */
+
+          if (
+            conversation.humanMode
+          ) {
+
+            return;
+          }
+
+
+          if (
+            conversation.lastOutgoingMessageId !==
+            messageId
+          ) {
+
+            return;
+          }
 
 
           await sendInstagramMessage(
@@ -1233,7 +1849,7 @@ function createReminder(
 
 
           console.log(
-            "Reminder sent successfully"
+            "Reminder sent."
           );
 
         } catch (error) {
@@ -1248,119 +1864,6 @@ function createReminder(
 
       2 * 60 * 1000
     );
-}
-
-
-/* =========================================================
-   TRACK OUTGOING MESSAGE
-========================================================= */
-
-async function sendTrackedMessage(
-  senderId,
-  text,
-  conversation,
-  stage
-) {
-
-  const data =
-    await sendInstagramMessage(
-      senderId,
-      text
-    );
-
-
-  const messageId =
-    data.message_id ||
-    data.id ||
-    null;
-
-
-  conversation.lastOutgoingMessageId =
-    messageId;
-
-  conversation.lastOutgoingStage =
-    stage;
-
-
-  saveMessage(
-    conversation,
-    "assistant",
-    text
-  );
-
-
-  if (
-    messageId
-  ) {
-
-    outgoingMessages.set(
-      messageId,
-      {
-        senderId,
-        stage,
-        text,
-        createdAt:
-          Date.now()
-      }
-    );
-
-  } else {
-
-    console.log(
-      "Warning: Instagram did not return a message ID. Read reminder may not be possible."
-    );
-  }
-
-
-  return data;
-}
-
-
-/* =========================================================
-   FIXED REMINDER TEXT
-========================================================= */
-
-function getReminderText(
-  stage
-) {
-
-  if (
-    stage ===
-    "OPENING_SENT"
-  ) {
-
-    return "Are you interested? ❤️";
-  }
-
-
-  if (
-    stage ===
-    "PROMOTION_SENT"
-  ) {
-
-    return "Can I show you our packages? ❤️";
-  }
-
-
-  if (
-    stage ===
-    "PACKAGES_SHOWN"
-  ) {
-
-    return "So which package would you like to choose? ❤️";
-  }
-
-
-  if (
-    stage ===
-    "PAYMENT_PENDING"
-  ) {
-
-    return "Which mode of payment do you have? ❤️";
-  }
-
-
-  return null;
 }
 
 
@@ -1389,8 +1892,7 @@ async function processClientMessage(
   ) {
 
     console.log(
-      "Human mode active. AI skipped:",
-      senderId
+      "Human mode active."
     );
 
     return;
@@ -1399,7 +1901,7 @@ async function processClientMessage(
 
   /*
     Client replied.
-    Cancel any pending reminder.
+    Cancel pending reminder.
   */
 
   conversation.clientReplied =
@@ -1423,7 +1925,6 @@ async function processClientMessage(
 
   /* =======================================================
      NEW CLIENT
-     FIRST MESSAGE IS ALWAYS FIXED MESSAGE ONE
   ======================================================= */
 
   if (
@@ -1441,7 +1942,7 @@ async function processClientMessage(
 
   /* =======================================================
      CLIENT REPLIED TO MESSAGE ONE
-     ALWAYS SEND FIXED MESSAGE TWO
+     ALWAYS MESSAGE TWO
   ======================================================= */
 
   else if (
@@ -1449,17 +1950,43 @@ async function processClientMessage(
     "OPENING_SENT"
   ) {
 
-    conversation.stage =
-      "PROMOTION_SENT";
+    /*
+      Guarantee question gets the guarantee
+      answer instead of moving the client
+      forward.
+    */
 
-    reply =
-      MESSAGE_TWO;
+    if (
+      isGuaranteeQuestion(
+        clientMessage
+      )
+    ) {
+
+      reply =
+        FOLLOWER_GUARANTEE_MESSAGE;
+
+    } else if (
+      isNegative(
+        clientMessage
+      )
+    ) {
+
+      reply =
+`No problem ❤️ If you ever change your mind, just message us and we'll be happy to help.`;
+
+    } else {
+
+      conversation.stage =
+        "PROMOTION_SENT";
+
+      reply =
+        MESSAGE_TWO;
+    }
   }
 
 
   /* =======================================================
      CLIENT REPLIED TO MESSAGE TWO
-     ALWAYS SEND PACKAGES
   ======================================================= */
 
   else if (
@@ -1467,16 +1994,48 @@ async function processClientMessage(
     "PROMOTION_SENT"
   ) {
 
-    conversation.stage =
-      "PACKAGES_SHOWN";
+    if (
+      isGuaranteeQuestion(
+        clientMessage
+      )
+    ) {
 
-    reply =
-      PACKAGES_MESSAGE;
+      reply =
+        FOLLOWER_GUARANTEE_MESSAGE;
+
+    } else if (
+      isNegative(
+        clientMessage
+      )
+    ) {
+
+      reply =
+`No problem ❤️ If you ever change your mind, just message us and we'll be happy to help.`;
+
+    } else {
+
+      /*
+        Any normal positive response such as:
+        Yes
+        Sure
+        Okay
+        Show me
+        Interested
+
+        sends the FIXED package message.
+      */
+
+      conversation.stage =
+        "PACKAGES_SHOWN";
+
+      reply =
+        PACKAGES_MESSAGE;
+    }
   }
 
 
   /* =======================================================
-     PACKAGE SCREEN
+     PACKAGES ARE SHOWN
   ======================================================= */
 
   else if (
@@ -1484,25 +2043,34 @@ async function processClientMessage(
     "PACKAGES_SHOWN"
   ) {
 
-    const result =
-      await classifyMessage(
-        conversation,
+    /*
+      FIRST:
+      Detect package locally.
+
+      This supports:
+      Bronze
+      1
+      first
+      first package
+      package 1
+      option 1
+
+      etc.
+    */
+
+    const packageKey =
+      detectPackageSelection(
         clientMessage,
-        attachmentInfo
+        conversation
       );
 
 
     if (
-      result.action ===
-      "PACKAGE_SELECTED" &&
-      result.package &&
-      PACKAGES[
-        result.package
-      ]
+      packageKey
     ) {
 
       conversation.selectedPackage =
-        result.package;
+        packageKey;
 
 
       conversation.stage =
@@ -1511,24 +2079,14 @@ async function processClientMessage(
 
       const selected =
         PACKAGES[
-          result.package
+          packageKey
         ];
-
-
-      const payment =
-        calculatePayment(
-          result.package
-        );
 
 
       reply =
 `Perfect ❤️ You've selected our ${selected.name} package.
 
-Package price: €${payment.price}
-
-12% payment fee: €${payment.fee.toFixed(2)}
-
-Total: €${payment.total.toFixed(2)}
+Package price: €${selected.price.toFixed(2)}
 
 ${selected.details}
 ${selected.followers}
@@ -1541,19 +2099,131 @@ Revolut
 MB WAY
 Credit/Debit Card`;
 
-    } else {
+    }
 
-      /*
-        If the client asks a normal question
-        about the package, AI may answer.
-      */
 
-      reply =
-        await getAIReply(
+    /*
+      Not an obvious package selection.
+      Now ask AI to ANALYZE the message.
+    */
+
+    else {
+
+      const result =
+        await classifyMessage(
           conversation,
           clientMessage,
           attachmentInfo
         );
+
+
+      if (
+        result.action ===
+        "FOLLOWER_GUARANTEE"
+      ) {
+
+        reply =
+          FOLLOWER_GUARANTEE_MESSAGE;
+
+      }
+
+
+      else if (
+        result.action ===
+          "PACKAGE_SELECTED" &&
+        result.package &&
+        PACKAGES[
+          result.package
+        ]
+      ) {
+
+        const key =
+          result.package;
+
+
+        conversation.selectedPackage =
+          key;
+
+
+        conversation.stage =
+          "PACKAGE_SELECTED";
+
+
+        const selected =
+          PACKAGES[key];
+
+
+        reply =
+`Perfect ❤️ You've selected our ${selected.name} package.
+
+Package price: €${selected.price.toFixed(2)}
+
+${selected.details}
+${selected.followers}
+
+How would you like to pay? ❤️
+
+PayPal
+IBAN
+Revolut
+MB WAY
+Credit/Debit Card`;
+
+      }
+
+
+      else if (
+        result.action ===
+        "AI_REPLY"
+      ) {
+
+        reply =
+          await getAIReply(
+            conversation,
+            clientMessage,
+            attachmentInfo
+          );
+
+      }
+
+
+      else if (
+        result.action ===
+        "NEGATIVE"
+      ) {
+
+        reply =
+`No problem ❤️ If you ever change your mind, just message us.`;
+
+      }
+
+
+      else if (
+        result.action ===
+        "LATER"
+      ) {
+
+        reply =
+`Of course ❤️ Take your time. Just message us whenever you're ready.`;
+
+      }
+
+
+      else if (
+        result.action ===
+        "THINK"
+      ) {
+
+        reply =
+`Of course ❤️ Take your time. If you have any questions, just ask me.`;
+
+      }
+
+
+      /*
+        NO_REPLY means:
+        SEND NOTHING.
+      */
     }
   }
 
@@ -1568,25 +2238,22 @@ Credit/Debit Card`;
     "PACKAGE_SELECTED"
   ) {
 
-    const result =
-      await classifyMessage(
-        conversation,
-        clientMessage,
-        attachmentInfo
+    /*
+      First detect payment locally.
+    */
+
+    const paymentMethod =
+      detectPaymentMethod(
+        clientMessage
       );
 
 
     if (
-      result.action ===
-        "PAYMENT" &&
-      result.payment &&
-      PAYMENT_METHODS.includes(
-        result.payment
-      )
+      paymentMethod
     ) {
 
       conversation.paymentMethod =
-        result.payment;
+        paymentMethod;
 
 
       conversation.stage =
@@ -1596,17 +2263,85 @@ Credit/Debit Card`;
       reply =
         buildPaymentMessage(
           conversation.selectedPackage,
-          result.payment
+          paymentMethod
         );
 
-    } else {
+    }
+
+
+    else if (
+      isGuaranteeQuestion(
+        clientMessage
+      )
+    ) {
 
       reply =
-        await getAIReply(
+        FOLLOWER_GUARANTEE_MESSAGE;
+
+    }
+
+
+    else {
+
+      const result =
+        await classifyMessage(
           conversation,
           clientMessage,
           attachmentInfo
         );
+
+
+      if (
+        result.action ===
+          "PAYMENT" &&
+        result.payment &&
+        PAYMENT_METHODS.includes(
+          result.payment
+        )
+      ) {
+
+        conversation.paymentMethod =
+          result.payment;
+
+
+        conversation.stage =
+          "PAYMENT_PENDING";
+
+
+        reply =
+          buildPaymentMessage(
+            conversation.selectedPackage,
+            result.payment
+          );
+
+      }
+
+
+      else if (
+        result.action ===
+        "FOLLOWER_GUARANTEE"
+      ) {
+
+        reply =
+          FOLLOWER_GUARANTEE_MESSAGE;
+
+      }
+
+
+      else if (
+        result.action ===
+        "AI_REPLY"
+      ) {
+
+        reply =
+          await getAIReply(
+            conversation,
+            clientMessage,
+            attachmentInfo
+          );
+
+      }
+
     }
   }
 
@@ -1620,96 +2355,201 @@ Credit/Debit Card`;
     "PAYMENT_PENDING"
   ) {
 
-    const result =
-      await classifyMessage(
-        conversation,
-        clientMessage,
-        attachmentInfo
-      );
-
-
     if (
-      result.action ===
-      "PAYMENT_PROOF"
+      isGuaranteeQuestion(
+        clientMessage
+      )
     ) {
 
       reply =
-`Thank you ❤️
-
-Please allow our team to verify your payment.
-
-We will confirm it with you shortly.`;
+        FOLLOWER_GUARANTEE_MESSAGE;
 
     } else {
 
-      reply =
-        await getAIReply(
+      const result =
+        await classifyMessage(
           conversation,
           clientMessage,
           attachmentInfo
         );
+
+
+      if (
+        result.action ===
+        "PAYMENT_PROOF"
+      ) {
+
+        reply =
+`Thank you ❤️
+
+We will verify the payment and our team will confirm it with you shortly.`;
+
+      }
+
+
+      else if (
+        result.action ===
+        "AI_REPLY"
+      ) {
+
+        reply =
+          await getAIReply(
+            conversation,
+            clientMessage,
+            attachmentInfo
+          );
+      }
+
     }
   }
 
 
   /* =======================================================
-     FALLBACK
+     NO RANDOM FALLBACK
   ======================================================= */
 
-  else {
+  if (
+    !reply
+  ) {
 
-    reply =
-      await getAIReply(
-        conversation,
-        clientMessage,
-        attachmentInfo
-      );
+    console.log(
+      "No confident response. Nothing sent."
+    );
+
+    conversation.clientReplied =
+      false;
+
+    return;
   }
 
 
-  if (!reply) {
-
-    reply =
-      "Of course ❤️ How can I help you?";
-  }
-
-
-  conversation.clientReplied =
-    false;
-
-
   /*
-    10–12 second human-like delay
-  */
-
-  await wait(
-    getRandomDelay()
-  );
-
-
-  /*
-    Human mode could have been activated
-    while AI was waiting.
+    Client may have switched to human
+    while processing.
   */
 
   if (
     conversation.humanMode
   ) {
 
-    console.log(
-      "Human mode activated during delay. Message cancelled."
-    );
+    conversation.clientReplied =
+      false;
 
     return;
   }
 
 
-  return sendTrackedMessage(
-    senderId,
-    reply,
+  /* =======================================================
+     RANDOM 10–12 SECOND DELAY
+  ======================================================= */
+
+  const delay =
+    getRandomDelay();
+
+
+  console.log(
+    `Waiting ${Math.round(
+      delay / 1000
+    )} seconds before reply`
+  );
+
+
+  await wait(
+    delay
+  );
+
+
+  /*
+    Check human mode again after delay.
+  */
+
+  if (
+    conversation.humanMode
+  ) {
+
+    conversation.clientReplied =
+      false;
+
+    return;
+  }
+
+
+  /* =======================================================
+     SEND MESSAGE
+  ======================================================= */
+
+  const data =
+    await sendInstagramMessage(
+      senderId,
+      reply
+    );
+
+
+  saveMessage(
     conversation,
+    "assistant",
+    reply
+  );
+
+
+  /*
+    Save outgoing message ID.
+  */
+
+  const outgoingMessageId =
+    data?.message_id ||
+    data?.id ||
+    null;
+
+
+  if (
+    outgoingMessageId
+  ) {
+
+    conversation.lastOutgoingMessageId =
+      outgoingMessageId;
+
+    conversation.lastOutgoingStage =
+      conversation.stage;
+
+
+    outgoingMessages.set(
+      outgoingMessageId,
+      {
+        senderId,
+        stage:
+          conversation.stage
+      }
+    );
+
+  }
+
+
+  console.log(
+    "Reply sent successfully."
+  );
+
+
+  console.log(
+    "Stage:",
     conversation.stage
   );
+
+
+  console.log(
+    "Package:",
+    conversation.selectedPackage
+  );
+
+
+  console.log(
+    "Payment:",
+    conversation.paymentMethod
+  );
+
+
+  conversation.clientReplied =
+    false;
 }
 
 
@@ -1745,18 +2585,15 @@ app.get(
     ) {
 
       console.log(
-        "Webhook verification successful"
+        "Webhook verified."
       );
 
       return res
         .status(200)
-        .send(challenge);
+        .send(
+          challenge
+        );
     }
-
-
-    console.log(
-      "Webhook verification failed"
-    );
 
 
     return res.sendStatus(
@@ -1770,16 +2607,15 @@ app.get(
    INSTAGRAM WEBHOOK
 ========================================================= */
 
-const processedMessageIds =
-  new Set();
-
-
 app.post(
   "/webhook",
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
 
     /*
-      Respond to Meta immediately.
+      Acknowledge Meta immediately.
     */
 
     res.sendStatus(
@@ -1817,6 +2653,7 @@ app.post(
       body.object !==
       "instagram"
     ) {
+
       return;
     }
 
@@ -1826,6 +2663,7 @@ app.post(
         body.entry
       )
     ) {
+
       return;
     }
 
@@ -1846,6 +2684,7 @@ app.post(
           entry.messaging
         )
       ) {
+
         continue;
       }
 
@@ -1878,6 +2717,7 @@ app.post(
           if (
             !outgoing
           ) {
+
             continue;
           }
 
@@ -1888,22 +2728,11 @@ app.post(
             );
 
 
-          /*
-            Only create reminder for
-            the latest outgoing message.
-          */
-
           if (
             conversation.lastOutgoingMessageId !==
             messageId
           ) {
-            continue;
-          }
 
-
-          if (
-            conversation.clientReplied
-          ) {
             continue;
           }
 
@@ -1911,6 +2740,7 @@ app.post(
           if (
             conversation.humanMode
           ) {
+
             continue;
           }
 
@@ -1925,16 +2755,15 @@ app.post(
             reminderText
           ) {
 
-            createReminder(
+            scheduleReminder(
               outgoing.senderId,
               messageId,
-              reminderText,
               outgoing.stage
             );
 
+
             console.log(
-              "2-minute reminder scheduled:",
-              outgoing.senderId,
+              "Reminder scheduled:",
               outgoing.stage
             );
           }
@@ -1951,6 +2780,7 @@ app.post(
         if (
           !event.message
         ) {
+
           continue;
         }
 
@@ -1967,27 +2797,34 @@ app.post(
           event.message?.mid;
 
 
+        /*
+          Ignore messages that do not have
+          a sender.
+        */
+
         if (
           !senderId
         ) {
+
           continue;
         }
 
 
         /*
-          Never process our own messages.
+          Ignore our own messages.
         */
 
         if (
           senderId ===
           INSTAGRAM_USER_ID
         ) {
+
           continue;
         }
 
 
         /* =================================================
-           DUPLICATE MESSAGE PROTECTION
+           DUPLICATE PROTECTION
         ================================================= */
 
         if (
@@ -2027,6 +2864,10 @@ app.post(
         }
 
 
+        /* =================================================
+           MESSAGE CONTENT
+        ================================================= */
+
         const clientMessage =
           event.message?.text ||
           "";
@@ -2042,20 +2883,24 @@ app.post(
           "----- CLIENT MESSAGE -----"
         );
 
+
         console.log(
-          "Sender:",
+          "Sender ID:",
           senderId
         );
 
+
         console.log(
-          "Recipient:",
+          "Recipient ID:",
           recipientId
         );
+
 
         console.log(
           "Message:",
           clientMessage
         );
+
 
         console.log(
           "Attachment:",
@@ -2064,8 +2909,7 @@ app.post(
 
 
         /*
-          Ignore only if there is
-          absolutely nothing to process.
+          Ignore completely empty events.
         */
 
         if (
@@ -2073,13 +2917,13 @@ app.post(
           !attachmentInfo
         ) {
 
-          console.log(
-            "Empty message ignored."
-          );
-
           continue;
         }
 
+
+        /* =================================================
+           PROCESS IN ORDER FOR THIS CLIENT
+        ================================================= */
 
         queueForClient(
           senderId,
@@ -2093,13 +2937,19 @@ app.post(
                 attachmentInfo
               );
 
-            } catch (error) {
+            } catch (
+              error
+            ) {
 
               console.error(
-                "Message processing error:",
+                "Message processing error:"
+              );
+
+              console.error(
                 error
               );
             }
+
           }
         );
       }
@@ -2113,12 +2963,16 @@ app.post(
 ========================================================= */
 
 /*
-  POST /human/SENDER_ID
+  POST:
+
+  /human/CLIENT_SENDER_ID
 
   Header:
+
   x-admin-secret: YOUR_ADMIN_SECRET
 
-  This stops AI for that particular chat.
+  This completely stops AI and reminders
+  for that client.
 */
 
 app.post(
@@ -2162,18 +3016,32 @@ app.post(
 
 
     res.json({
-      success: true,
+
+      success:
+        true,
+
       senderId,
-      humanMode: true
+
+      humanMode:
+        true
+
     });
   }
 );
 
 
-/*
-  POST /ai/SENDER_ID
+/* =========================================================
+   TURN AI BACK ON
+========================================================= */
 
-  Turns AI back on.
+/*
+  POST:
+
+  /ai/CLIENT_SENDER_ID
+
+  Header:
+
+  x-admin-secret: YOUR_ADMIN_SECRET
 */
 
 app.post(
@@ -2212,9 +3080,15 @@ app.post(
 
 
     res.json({
-      success: true,
+
+      success:
+        true,
+
       senderId,
-      humanMode: false
+
+      humanMode:
+        false
+
     });
   }
 );
@@ -2236,7 +3110,7 @@ app.get(
 
 
 /* =========================================================
-   HEALTH
+   HEALTH CHECK
 ========================================================= */
 
 app.get(
@@ -2266,7 +3140,7 @@ app.get(
       conversations:
         conversations.size,
 
-      aiModel:
+      model:
         OPENAI_MODEL
 
     });
@@ -2312,6 +3186,10 @@ app.listen(
   () => {
 
     console.log(
+      "================================="
+    );
+
+    console.log(
       `Server running on port ${PORT}`
     );
 
@@ -2324,5 +3202,22 @@ app.listen(
       "OpenAI model:",
       OPENAI_MODEL
     );
+
+    console.log(
+      "Reply delay: 10–12 seconds"
+    );
+
+    console.log(
+      "Reminder delay: 2 minutes"
+    );
+
+    console.log(
+      "Payment fee: 12%"
+    );
+
+    console.log(
+      "================================="
+    );
   }
 );
+            
