@@ -4,6 +4,7 @@ const app = express();
 
 app.use(express.json());
 
+
 /* =========================================================
    ENVIRONMENT VARIABLES
 ========================================================= */
@@ -159,10 +160,6 @@ pay@globalpromote.in
 https://paypal.me/RamanKumar4257`;
 
 
-/*
-   Your bank / IBAN information
-*/
-
 const IBAN_DETAILS =
 `Bank / Wise:
 
@@ -176,16 +173,6 @@ Rue du Trône 100, 3rd floor
 Brussels, 1050
 Belgium`;
 
-
-/*
-   Put your exact MB WAY details in Render:
-
-   MBWAY_DETAILS
-
-   Put your exact Revolut details in Render:
-
-   REVOLUT_DETAILS
-*/
 
 const MBWAY_DETAILS =
 `MB WAY:
@@ -222,11 +209,11 @@ function calculatePayment(
     selected.price;
 
   const fee =
-  Math.round(
-    price *
-    PAYMENT_FEE_PERCENT
-  ) / 100;
-   
+    Math.round(
+      price *
+      PAYMENT_FEE_PERCENT
+    ) / 100;
+
   const total =
     Math.round(
       (price + fee) *
@@ -316,6 +303,7 @@ function buildPaymentMessage(
 
     details =
 `Our team will assist you with the Credit/Debit Card payment ❤️`;
+
   }
 
 
@@ -343,8 +331,69 @@ After successful payment, please send us your payment screenshot ❤️`
    CONVERSATIONS
 ========================================================= */
 
+/*
+   IMPORTANT:
+
+   Each Instagram sender ID gets its own conversation.
+
+   The stage is the MAIN protection against sending
+   MESSAGE_ONE again.
+
+   NEW
+      ↓
+   OPENING_SENT
+      ↓
+   PROMOTION_SENT
+      ↓
+   PACKAGES_SHOWN
+      ↓
+   PACKAGE_SELECTED
+      ↓
+   PAYMENT_PENDING
+*/
+
 const conversations =
   new Map();
+
+
+function createNewConversation() {
+
+  return {
+
+    stage:
+      "NEW",
+
+    history:
+      [],
+
+    selectedPackage:
+      null,
+
+    paymentMethod:
+      null,
+
+    lastOutgoingMessageId:
+      null,
+
+    lastOutgoingStage:
+      null,
+
+    reminderTimer:
+      null,
+
+    humanMode:
+      false,
+
+    /*
+      This means the client has replied
+      at least once during the current
+      conversation.
+    */
+    clientReplied:
+      false
+
+  };
+}
 
 
 function getConversation(
@@ -359,36 +408,12 @@ function getConversation(
 
     conversations.set(
       senderId,
-      {
+      createNewConversation()
+    );
 
-        stage:
-          "NEW",
-
-        history:
-          [],
-
-        selectedPackage:
-          null,
-
-        paymentMethod:
-          null,
-
-        lastOutgoingMessageId:
-          null,
-
-        lastOutgoingStage:
-          null,
-
-        reminderTimer:
-          null,
-
-        humanMode:
-          false,
-
-        clientReplied:
-          false
-
-      }
+    console.log(
+      "Created NEW conversation for:",
+      senderId
     );
   }
 
@@ -413,7 +438,10 @@ function saveMessage(
 
     role,
 
-    text
+    text,
+
+    timestamp:
+      new Date().toISOString()
 
   });
 
@@ -558,9 +586,7 @@ function normalizeText(
       /\s+/g,
       " "
     );
-}
-
-
+     }
 /* =========================================================
    PACKAGE DETECTION
 ========================================================= */
@@ -569,11 +595,6 @@ function detectPackageSelection(
   text,
   conversation
 ) {
-
-  /*
-    Only interpret 1/2/3/4 as packages
-    when packages are currently being shown.
-  */
 
   if (
     conversation.stage !==
@@ -588,120 +609,64 @@ function detectPackageSelection(
     normalizeText(text);
 
 
-  /* =========================
-     BRONZE
-  ========================= */
-
   if (
-
     t === "1" ||
-
     t === "1st" ||
-
     t === "first" ||
-
     t === "first package" ||
-
     t === "package 1" ||
-
     t === "package one" ||
-
     t === "option 1" ||
-
     t === "option one" ||
-
     /\bbronze\b/.test(t)
-
   ) {
 
     return "bronze";
   }
 
 
-  /* =========================
-     SILVER
-  ========================= */
-
   if (
-
     t === "2" ||
-
     t === "2nd" ||
-
     t === "second" ||
-
     t === "second package" ||
-
     t === "package 2" ||
-
     t === "package two" ||
-
     t === "option 2" ||
-
     t === "option two" ||
-
     /\bsilver\b/.test(t)
-
   ) {
 
     return "silver";
   }
 
 
-  /* =========================
-     GOLD
-  ========================= */
-
   if (
-
     t === "3" ||
-
     t === "3rd" ||
-
     t === "third" ||
-
     t === "third package" ||
-
     t === "package 3" ||
-
     t === "package three" ||
-
     t === "option 3" ||
-
     t === "option three" ||
-
     /\bgold\b/.test(t)
-
   ) {
 
     return "gold";
   }
 
 
-  /* =========================
-     DIAMOND
-  ========================= */
-
   if (
-
     t === "4" ||
-
     t === "4th" ||
-
     t === "fourth" ||
-
     t === "fourth package" ||
-
     t === "package 4" ||
-
     t === "package four" ||
-
     t === "option 4" ||
-
     t === "option four" ||
-
     /\bdiamond\b/.test(t)
-
   ) {
 
     return "diamond";
@@ -822,29 +787,17 @@ function isPositiveInterest(
   return (
 
     t === "yes" ||
-
     t === "yeah" ||
-
     t === "yep" ||
-
     t === "sure" ||
-
     t === "okay" ||
-
     t === "ok" ||
-
     t === "yes please" ||
-
     t === "sure show me" ||
-
     t === "show me" ||
-
     t === "interested" ||
-
     t === "i am interested" ||
-
     t === "im interested" ||
-
     t === "interested yes"
 
   );
@@ -866,15 +819,10 @@ function isNegative(
   return (
 
     t === "no" ||
-
     t === "no thanks" ||
-
     t === "not interested" ||
-
     t === "im not interested" ||
-
     t === "i am not interested" ||
-
     /\bnot interested\b/.test(t)
 
   );
@@ -1010,8 +958,6 @@ function getAttachmentInfo(
 
 /* =========================================================
    OPENAI CLASSIFIER
-   AI ANALYZES ONLY.
-   IT DOES NOT WRITE FIXED SALES MESSAGES.
 ========================================================= */
 
 async function classifyMessage(
@@ -1023,17 +969,11 @@ async function classifyMessage(
   if (!OPEN_AI) {
 
     return {
-      action:
-        "NO_REPLY",
-
-      package:
-        null,
-
-      payment:
-        null
+      action: "NO_REPLY",
+      package: null,
+      payment: null
     };
   }
-
 
   const history =
     conversation.history
@@ -1043,7 +983,6 @@ async function classifyMessage(
           `${item.role}: ${item.text}`
       )
       .join("\n");
-
 
   const prompt =
 `You are the classification brain for a sales assistant.
@@ -1127,24 +1066,20 @@ Return exactly this structure:
   "payment": null
 }`;
 
-
   try {
 
     const response =
       await fetch(
         "https://api.openai.com/v1/responses",
         {
-          method:
-            "POST",
+          method: "POST",
 
           headers: {
-
             "Content-Type":
               "application/json",
 
             "Authorization":
               `Bearer ${OPEN_AI}`
-
           },
 
           body:
@@ -1177,36 +1112,23 @@ Return exactly this structure:
                     properties: {
 
                       action: {
-
                         type:
                           "string",
 
                         enum: [
-
                           "PACKAGE_SELECTED",
-
                           "PAYMENT",
-
                           "FOLLOWER_GUARANTEE",
-
                           "AI_REPLY",
-
                           "NO_REPLY",
-
                           "PAYMENT_PROOF",
-
                           "NEGATIVE",
-
                           "LATER",
-
                           "THINK"
-
                         ]
-
                       },
 
                       package: {
-
                         type:
                           [
                             "string",
@@ -1214,23 +1136,15 @@ Return exactly this structure:
                           ],
 
                         enum: [
-
                           "bronze",
-
                           "silver",
-
                           "gold",
-
                           "diamond",
-
                           null
-
                         ]
-
                       },
 
                       payment: {
-
                         type:
                           [
                             "string",
@@ -1238,60 +1152,39 @@ Return exactly this structure:
                           ],
 
                         enum: [
-
                           "paypal",
-
                           "iban",
-
                           "revolut",
-
                           "mbway",
-
                           "card",
-
                           null
-
                         ]
-
                       }
 
                     },
 
                     required: [
-
                       "action",
-
                       "package",
-
                       "payment"
-
                     ],
 
                     additionalProperties:
                       false
-
                   }
-
                 }
-
               },
 
               max_output_tokens:
                 200
-
             })
-
         }
       );
-
 
     const data =
       await response.json();
 
-
-    if (
-      !response.ok
-    ) {
+    if (!response.ok) {
 
       console.error(
         "OpenAI classifier error:",
@@ -1299,48 +1192,28 @@ Return exactly this structure:
       );
 
       return {
-        action:
-          "NO_REPLY",
-
-        package:
-          null,
-
-        payment:
-          null
+        action: "NO_REPLY",
+        package: null,
+        payment: null
       };
     }
-
 
     const text =
-      extractOpenAIText(
-        data
-      );
+      extractOpenAIText(data);
 
-
-    if (
-      !text
-    ) {
+    if (!text) {
 
       return {
-        action:
-          "NO_REPLY",
-
-        package:
-          null,
-
-        payment:
-          null
+        action: "NO_REPLY",
+        package: null,
+        payment: null
       };
     }
-
 
     try {
 
       const result =
-        JSON.parse(
-          text
-        );
-
+        JSON.parse(text);
 
       return {
 
@@ -1358,54 +1231,34 @@ Return exactly this structure:
 
       };
 
-    } catch (
-      error
-    ) {
+    } catch (error) {
 
       console.error(
         "Classifier JSON error:",
         text
       );
 
-
       return {
-
-        action:
-          "NO_REPLY",
-
-        package:
-          null,
-
-        payment:
-          null
-
+        action: "NO_REPLY",
+        package: null,
+        payment: null
       };
     }
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     console.error(
       "Classification error:",
       error
     );
 
-
     return {
-
-      action:
-        "NO_REPLY",
-
-      package:
-        null,
-
-      payment:
-        null
-
+      action: "NO_REPLY",
+      package: null,
+      payment: null
     };
   }
-}
+       }
 /* =========================================================
    AI REPLY
    ONLY USED FOR GENUINE CUSTOMER QUESTIONS
@@ -1485,6 +1338,9 @@ There is a 12% payment fee.
 Rules:
 - Be short and natural.
 - Reply in the customer's language.
+- Read the conversation history before answering.
+- Continue the conversation instead of starting it again.
+- Do not send the opening greeting again.
 - Do not invent information.
 - Do not change prices.
 - Do not invent payment details.
@@ -1501,6 +1357,7 @@ ${clientMessage || "[media]"}
 Attachment:
 ${attachmentInfo || "none"}`;
 
+
   try {
 
     const response =
@@ -1511,15 +1368,18 @@ ${attachmentInfo || "none"}`;
             "POST",
 
           headers: {
+
             "Content-Type":
               "application/json",
 
             "Authorization":
               `Bearer ${OPEN_AI}`
+
           },
 
           body:
             JSON.stringify({
+
               model:
                 OPENAI_MODEL,
 
@@ -1528,14 +1388,20 @@ ${attachmentInfo || "none"}`;
 
               max_output_tokens:
                 250
+
             })
+
         }
       );
+
 
     const data =
       await response.json();
 
-    if (!response.ok) {
+
+    if (
+      !response.ok
+    ) {
 
       console.error(
         "OpenAI reply error:",
@@ -1545,21 +1411,27 @@ ${attachmentInfo || "none"}`;
       return null;
     }
 
+
     const reply =
       extractOpenAIText(
         data
       ).trim();
 
+
     if (
       !reply ||
       reply === "NO_REPLY"
     ) {
+
       return null;
     }
 
+
     return reply;
 
-  } catch (error) {
+  } catch (
+    error
+  ) {
 
     console.error(
       "AI reply error:",
@@ -1587,9 +1459,11 @@ async function sendInstagramMessage(
     );
   }
 
+
   const url =
     `https://graph.instagram.com/${INSTAGRAM_API_VERSION}` +
     `/${INSTAGRAM_USER_ID}/messages`;
+
 
   const response =
     await fetch(
@@ -1599,11 +1473,13 @@ async function sendInstagramMessage(
           "POST",
 
         headers: {
+
           "Content-Type":
             "application/json",
 
           "Authorization":
             `Bearer ${PAGE_ACCESS_TOKEN}`
+
         },
 
         body:
@@ -1618,13 +1494,18 @@ async function sendInstagramMessage(
             }
 
           })
+
       }
     );
+
 
   const data =
     await response.json();
 
-  if (!response.ok) {
+
+  if (
+    !response.ok
+  ) {
 
     console.error(
       "Instagram API error:",
@@ -1636,9 +1517,11 @@ async function sendInstagramMessage(
     );
   }
 
+
   console.log(
     "Instagram message sent successfully"
   );
+
 
   console.log(
     JSON.stringify(
@@ -1647,6 +1530,7 @@ async function sendInstagramMessage(
       2
     )
   );
+
 
   return data;
 }
@@ -1664,6 +1548,7 @@ function cancelReminder(
     getConversation(
       senderId
     );
+
 
   if (
     conversation.reminderTimer
@@ -1742,18 +1627,22 @@ function scheduleReminder(
       senderId
     );
 
+
   cancelReminder(
     senderId
   );
+
 
   const reminderText =
     getReminderText(
       stage
     );
 
+
   if (
     !reminderText
   ) {
+
     return;
   }
 
@@ -1768,8 +1657,8 @@ function scheduleReminder(
 
         /*
           If another outgoing message
-          has already been sent, this
-          reminder is no longer valid.
+          has already been sent, reminder
+          is no longer valid.
         */
 
         if (
@@ -1783,11 +1672,24 @@ function scheduleReminder(
 
         /*
           If human mode is active,
-          never send an AI reminder.
+          never send reminder.
         */
 
         if (
           conversation.humanMode
+        ) {
+
+          return;
+        }
+
+
+        /*
+          If client has replied,
+          NEVER send reminder.
+        */
+
+        if (
+          conversation.clientReplied
         ) {
 
           return;
@@ -1800,15 +1702,11 @@ function scheduleReminder(
             "Sending 2-minute reminder:"
           );
 
+
           console.log(
             reminderText
           );
 
-
-          /*
-            Same 10–12 second delay
-            before the reminder.
-          */
 
           await wait(
             getRandomDelay()
@@ -1821,6 +1719,14 @@ function scheduleReminder(
 
           if (
             conversation.humanMode
+          ) {
+
+            return;
+          }
+
+
+          if (
+            conversation.clientReplied
           ) {
 
             return;
@@ -1853,12 +1759,16 @@ function scheduleReminder(
             "Reminder sent."
           );
 
-        } catch (error) {
+
+        } catch (
+          error
+        ) {
 
           console.error(
             "Reminder error:",
             error
           );
+
         }
 
       },
@@ -1868,6 +1778,139 @@ function scheduleReminder(
 }
 
 
+/* =========================================================
+   SEND REPLY SAFELY
+========================================================= */
+
+async function sendReplySafely(
+  senderId,
+  conversation,
+  reply
+) {
+
+  if (
+    !reply
+  ) {
+
+    return null;
+  }
+
+
+  if (
+    conversation.humanMode
+  ) {
+
+    console.log(
+      "Human mode activated before sending."
+    );
+
+    return null;
+  }
+
+
+  /*
+    Wait 10–12 seconds.
+  */
+
+  const delay =
+    getRandomDelay();
+
+
+  console.log(
+    `Waiting ${Math.round(
+      delay / 1000
+    )} seconds before reply`
+  );
+
+
+  await wait(
+    delay
+  );
+
+
+  /*
+    Check human mode again.
+  */
+
+  if (
+    conversation.humanMode
+  ) {
+
+    console.log(
+      "Human mode activated during delay. Reply cancelled."
+    );
+
+    return null;
+  }
+
+
+  const data =
+    await sendInstagramMessage(
+      senderId,
+      reply
+    );
+
+
+  saveMessage(
+    conversation,
+    "assistant",
+    reply
+  );
+
+
+  const outgoingMessageId =
+    data?.message_id ||
+    data?.id ||
+    null;
+
+
+  if (
+    outgoingMessageId
+  ) {
+
+    conversation.lastOutgoingMessageId =
+      outgoingMessageId;
+
+    conversation.lastOutgoingStage =
+      conversation.stage;
+
+
+    outgoingMessages.set(
+      outgoingMessageId,
+      {
+        senderId,
+        stage:
+          conversation.stage
+      }
+    );
+  }
+
+
+  console.log(
+    "Reply sent successfully."
+  );
+
+
+  console.log(
+    "Stage:",
+    conversation.stage
+  );
+
+
+  console.log(
+    "Package:",
+    conversation.selectedPackage
+  );
+
+
+  console.log(
+    "Payment:",
+    conversation.paymentMethod
+  );
+
+
+  return data;
+           }
 /* =========================================================
    PROCESS CLIENT MESSAGE
 ========================================================= */
@@ -1884,29 +1927,38 @@ async function processClientMessage(
     );
 
 
-  /*
-    HUMAN HANDOVER
-  */
+  /* =======================================================
+     HUMAN HANDOVER
+  ======================================================= */
 
   if (
     conversation.humanMode
   ) {
 
     console.log(
-      "Human mode active."
+      "Human mode active. AI will not reply."
     );
 
     return;
   }
 
 
+  /* =======================================================
+     CLIENT REPLIED
+  ======================================================= */
+
   /*
-    Client replied.
-    Cancel pending reminder.
+    IMPORTANT:
+
+    The moment the client sends a message,
+    mark the conversation as replied.
+
+    This also cancels any pending reminder.
   */
 
   conversation.clientReplied =
     true;
+
 
   cancelReminder(
     senderId
@@ -1918,6 +1970,17 @@ async function processClientMessage(
     "client",
     clientMessage ||
       "[media]"
+  );
+
+
+  console.log(
+    "Client replied."
+  );
+
+
+  console.log(
+    "Current conversation stage:",
+    conversation.stage
   );
 
 
@@ -1933,17 +1996,40 @@ async function processClientMessage(
     "NEW"
   ) {
 
+    /*
+      This is the ONLY place where MESSAGE_ONE
+      can be selected.
+
+      Once MESSAGE_ONE is sent,
+      stage changes to OPENING_SENT.
+
+      Therefore this client cannot receive
+      MESSAGE_ONE again unless the conversation
+      is actually NEW.
+    */
+
     conversation.stage =
       "OPENING_SENT";
 
+
     reply =
       MESSAGE_ONE;
+
+
+    console.log(
+      "NEW conversation detected."
+    );
+
+
+    console.log(
+      "Sending MESSAGE_ONE."
+    );
+
   }
 
 
   /* =======================================================
      CLIENT REPLIED TO MESSAGE ONE
-     ALWAYS MESSAGE TWO
   ======================================================= */
 
   else if (
@@ -1952,10 +2038,16 @@ async function processClientMessage(
   ) {
 
     /*
-      Guarantee question gets the guarantee
-      answer instead of moving the client
-      forward.
+      NEVER send MESSAGE_ONE here.
+
+      The client already received it.
+      Continue the conversation.
     */
+
+    console.log(
+      "Existing conversation: OPENING_SENT."
+    );
+
 
     if (
       isGuaranteeQuestion(
@@ -1966,7 +2058,10 @@ async function processClientMessage(
       reply =
         FOLLOWER_GUARANTEE_MESSAGE;
 
-    } else if (
+    }
+
+
+    else if (
       isNegative(
         clientMessage
       )
@@ -1975,19 +2070,25 @@ async function processClientMessage(
       reply =
 `No problem ❤️ If you ever change your mind, just message us and we'll be happy to help.`;
 
-    } else {
+    }
+
+
+    else {
 
       conversation.stage =
         "PROMOTION_SENT";
 
+
       reply =
         MESSAGE_TWO;
+
     }
+
   }
 
 
   /* =======================================================
-     CLIENT REPLIED TO MESSAGE TWO
+     PROMOTION SENT
   ======================================================= */
 
   else if (
@@ -1995,7 +2096,63 @@ async function processClientMessage(
     "PROMOTION_SENT"
   ) {
 
+    /*
+      Client has already received MESSAGE_TWO.
+
+      If they now ask for packages,
+      show PACKAGES_MESSAGE.
+
+      Otherwise let the classifier decide.
+    */
+
+    const normalized =
+      normalizeText(
+        clientMessage
+      );
+
+
+    const asksForPackages =
+      normalized.includes(
+        "package"
+      ) ||
+      normalized.includes(
+        "packages"
+      ) ||
+      normalized.includes(
+        "price"
+      ) ||
+      normalized.includes(
+        "prices"
+      ) ||
+      normalized.includes(
+        "pricing"
+      ) ||
+      normalized.includes(
+        "show me"
+      ) ||
+      normalized.includes(
+        "send me"
+      ) ||
+      isPositiveInterest(
+        clientMessage
+      );
+
+
     if (
+      asksForPackages
+    ) {
+
+      conversation.stage =
+        "PACKAGES_SHOWN";
+
+
+      reply =
+        PACKAGES_MESSAGE;
+
+    }
+
+
+    else if (
       isGuaranteeQuestion(
         clientMessage
       )
@@ -2004,34 +2161,91 @@ async function processClientMessage(
       reply =
         FOLLOWER_GUARANTEE_MESSAGE;
 
-    } else if (
+    }
+
+
+    else if (
       isNegative(
         clientMessage
       )
     ) {
 
       reply =
-`No problem ❤️ If you ever change your mind, just message us and we'll be happy to help.`;
+`No problem ❤️ If you ever change your mind, just message us.`;
 
-    } else {
-
-      /*
-        Any normal positive response such as:
-        Yes
-        Sure
-        Okay
-        Show me
-        Interested
-
-        sends the FIXED package message.
-      */
-
-      conversation.stage =
-        "PACKAGES_SHOWN";
-
-      reply =
-        PACKAGES_MESSAGE;
     }
+
+
+    else {
+
+      const result =
+        await classifyMessage(
+          conversation,
+          clientMessage,
+          attachmentInfo
+        );
+
+
+      if (
+        result.action ===
+        "AI_REPLY"
+      ) {
+
+        reply =
+          await getAIReply(
+            conversation,
+            clientMessage,
+            attachmentInfo
+          );
+
+      }
+
+
+      else if (
+        result.action ===
+        "FOLLOWER_GUARANTEE"
+      ) {
+
+        reply =
+          FOLLOWER_GUARANTEE_MESSAGE;
+
+      }
+
+
+      else if (
+        result.action ===
+        "NEGATIVE"
+      ) {
+
+        reply =
+`No problem ❤️ If you ever change your mind, just message us.`;
+
+      }
+
+
+      else if (
+        result.action ===
+        "LATER"
+      ) {
+
+        reply =
+`Of course ❤️ Take your time. Just message us whenever you're ready.`;
+
+      }
+
+
+      else if (
+        result.action ===
+        "THINK"
+      ) {
+
+        reply =
+`Of course ❤️ Take your time. If you have any questions, just ask me.`;
+
+      }
+
+    }
+
   }
 
 
@@ -2043,21 +2257,6 @@ async function processClientMessage(
     conversation.stage ===
     "PACKAGES_SHOWN"
   ) {
-
-    /*
-      FIRST:
-      Detect package locally.
-
-      This supports:
-      Bronze
-      1
-      first
-      first package
-      package 1
-      option 1
-
-      etc.
-    */
 
     const packageKey =
       detectPackageSelection(
@@ -2102,11 +2301,6 @@ Credit/Debit Card`;
 
     }
 
-
-    /*
-      Not an obvious package selection.
-      Now ask AI to ANALYZE the message.
-    */
 
     else {
 
@@ -2220,12 +2414,8 @@ Credit/Debit Card`;
 
       }
 
-
-      /*
-        NO_REPLY means:
-        SEND NOTHING.
-      */
     }
+
   }
 
 
@@ -2238,10 +2428,6 @@ Credit/Debit Card`;
     conversation.stage ===
     "PACKAGE_SELECTED"
   ) {
-
-    /*
-      First detect payment locally.
-    */
 
     const paymentMethod =
       detectPaymentMethod(
@@ -2344,6 +2530,7 @@ Credit/Debit Card`;
       }
 
     }
+
   }
 
 
@@ -2365,7 +2552,10 @@ Credit/Debit Card`;
       reply =
         FOLLOWER_GUARANTEE_MESSAGE;
 
-    } else {
+    }
+
+
+    else {
 
       const result =
         await classifyMessage(
@@ -2399,14 +2589,16 @@ We will verify the payment and our team will confirm it with you shortly.`;
             clientMessage,
             attachmentInfo
           );
+
       }
 
     }
+
   }
 
 
   /* =======================================================
-     NO RANDOM FALLBACK
+     NO REPLY
   ======================================================= */
 
   if (
@@ -2417,143 +2609,71 @@ We will verify the payment and our team will confirm it with you shortly.`;
       "No confident response. Nothing sent."
     );
 
-    conversation.clientReplied =
-      false;
+    /*
+      IMPORTANT:
 
-    return;
-  }
+      We do NOT reset the conversation stage.
 
-
-  /*
-    Client may have switched to human
-    while processing.
-  */
-
-  if (
-    conversation.humanMode
-  ) {
-
-    conversation.clientReplied =
-      false;
+      The client is still in the same conversation.
+    */
 
     return;
   }
 
 
   /* =======================================================
-     RANDOM 10–12 SECOND DELAY
-  ======================================================= */
-
-  const delay =
-    getRandomDelay();
-
-
-  console.log(
-    `Waiting ${Math.round(
-      delay / 1000
-    )} seconds before reply`
-  );
-
-
-  await wait(
-    delay
-  );
-
-
-  /*
-    Check human mode again after delay.
-  */
-
-  if (
-    conversation.humanMode
-  ) {
-
-    conversation.clientReplied =
-      false;
-
-    return;
-  }
-
-
-  /* =======================================================
-     SEND MESSAGE
+     SEND REPLY
   ======================================================= */
 
   const data =
-    await sendInstagramMessage(
+    await sendReplySafely(
       senderId,
+      conversation,
       reply
     );
 
 
-  saveMessage(
-    conversation,
-    "assistant",
-    reply
-  );
-
-
-  /*
-    Save outgoing message ID.
-  */
-
-  const outgoingMessageId =
-    data?.message_id ||
-    data?.id ||
-    null;
-
-
   if (
-    outgoingMessageId
+    !data
   ) {
 
-    conversation.lastOutgoingMessageId =
-      outgoingMessageId;
-
-    conversation.lastOutgoingStage =
-      conversation.stage;
-
-
-    outgoingMessages.set(
-      outgoingMessageId,
-      {
-        senderId,
-        stage:
-          conversation.stage
-      }
-    );
-
+    return;
   }
 
 
-  console.log(
-    "Reply sent successfully."
-  );
+  /*
+    IMPORTANT:
 
+    DO NOT reset conversation.clientReplied
+    to false here.
 
-  console.log(
-    "Stage:",
-    conversation.stage
-  );
+    It remains TRUE because the client has
+    already replied.
 
-
-  console.log(
-    "Package:",
-    conversation.selectedPackage
-  );
-
-
-  console.log(
-    "Payment:",
-    conversation.paymentMethod
-  );
-
+    The conversation stage is what determines
+    what happens next.
+  */
 
   conversation.clientReplied =
-    false;
-}
+    true;
 
 
+  console.log(
+    "Conversation remains active."
+  );
+
+
+  console.log(
+    "Client replied flag:",
+    conversation.clientReplied
+  );
+
+
+  console.log(
+    "Final stage:",
+    conversation.stage
+  );
+         }
 /* =========================================================
    WEBHOOK VERIFICATION
 ========================================================= */
@@ -2588,6 +2708,7 @@ app.get(
       console.log(
         "Webhook verified."
       );
+
 
       return res
         .status(200)
@@ -2632,9 +2753,11 @@ app.post(
       "================================="
     );
 
+
     console.log(
       "INSTAGRAM WEBHOOK RECEIVED"
     );
+
 
     console.log(
       "================================="
@@ -2746,6 +2869,23 @@ app.post(
           }
 
 
+          /*
+            NEVER schedule a reminder if
+            the client has already replied.
+          */
+
+          if (
+            conversation.clientReplied
+          ) {
+
+            console.log(
+              "Client already replied. Reminder not scheduled."
+            );
+
+            continue;
+          }
+
+
           const reminderText =
             getReminderText(
               outgoing.stage
@@ -2797,11 +2937,6 @@ app.post(
         const messageId =
           event.message?.mid;
 
-
-        /*
-          Ignore messages that do not have
-          a sender.
-        */
 
         if (
           !senderId
@@ -2946,9 +3081,11 @@ app.post(
                 "Message processing error:"
               );
 
+
               console.error(
                 error
               );
+
             }
 
           }
@@ -3076,8 +3213,33 @@ app.post(
       false;
 
 
-    conversation.clientReplied =
-      false;
+    /*
+      IMPORTANT:
+
+      DO NOT reset the conversation stage.
+
+      If the conversation was:
+
+      PAYMENT_PENDING
+
+      it stays:
+
+      PAYMENT_PENDING
+
+      It does NOT restart from MESSAGE_ONE.
+    */
+
+
+    console.log(
+      "AI turned back on for:",
+      senderId
+    );
+
+
+    console.log(
+      "Conversation stage:",
+      conversation.stage
+    );
 
 
     res.json({
@@ -3088,7 +3250,10 @@ app.post(
       senderId,
 
       humanMode:
-        false
+        false,
+
+      stage:
+        conversation.stage
 
     });
   }
@@ -3190,35 +3355,46 @@ app.listen(
       "================================="
     );
 
+
     console.log(
       `Server running on port ${PORT}`
     );
+
 
     console.log(
       "Instagram User ID:",
       INSTAGRAM_USER_ID
     );
 
+
     console.log(
       "OpenAI model:",
       OPENAI_MODEL
     );
 
+
     console.log(
       "Reply delay: 10–12 seconds"
     );
+
 
     console.log(
       "Reminder delay: 2 minutes"
     );
 
+
     console.log(
       "Payment fee: 12%"
     );
+
+
+    console.log(
+      "Conversation protection: ENABLED"
+    );
+
 
     console.log(
       "================================="
     );
   }
 );
-            
