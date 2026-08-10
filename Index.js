@@ -6935,195 +6935,128 @@ async function loadStatus() {
    RENDER CLIENTS
 ========================================================= */
 
-function renderClients(
-  clients
-) {
+function renderClients(clients) {
 
   const container =
-    document.getElementById(
-      "clients"
-    );
+    document.getElementById("clients");
 
-
-  if (
-    clients.length === 0
-  ) {
-
+  if (clients.length === 0) {
     container.innerHTML =
       '<div class="small">No clients loaded yet.</div>';
-
     return;
-
   }
 
-
   container.innerHTML =
-    clients
-      .map(
-        client => {
+    clients.map(function(client) {
 
-          const aiOn =
-            !client.humanMode &&
-            true;
+      const aiOn =
+        !client.humanMode;
 
+      const senderId =
+        escapeHTML(client.senderId);
 
-          const senderId =
-            escapeHTML(
-              client.senderId
-            );
+      const safeId =
+        escapeAttribute(client.senderId);
 
+      let html =
+        '<div class="client">' +
 
-          return `
+        '<strong>Client:</strong>' +
 
-<div class="client">
+        '<br>' +
 
-<strong>
-Client:
-</strong>
+        '<span class="small">' +
+        senderId +
+        '</span>' +
 
-<br>
+        '<br><br>' +
 
-<span class="small">
+        '<span class="badge ' +
+        (aiOn ? 'on' : 'off') +
+        '">' +
 
-${senderId}
+        (aiOn ? '🟢 AI ON' : '🔴 AI OFF') +
 
-</span>
+        '</span>' +
 
-<br><br>
+        '<br><br>' +
 
+        'Stage: ' +
 
-<span
-  class="badge ${
-    aiOn
-      ? "on"
-      : "off"
-  }"
->
+        '<strong>' +
+        escapeHTML(client.stage || 'Unknown') +
+        '</strong>' +
 
-${
-  aiOn
-    ? "🟢 AI ON"
-    : "🔴 AI OFF"
-}
+        '<br>' +
 
-</span>
+        'Messages: ' +
 
+        Number(client.messages || 0) +
 
-<br><br>
+        '<br>' +
 
-Stage:
+        'Package: ' +
 
-<strong>
+        escapeHTML(
+          client.selectedPackage || 'None'
+        ) +
 
-${escapeHTML(
-  client.stage
-)}
+        '<br>' +
 
-</strong>
+        'Payment: ' +
 
+        escapeHTML(
+          client.paymentMethod || 'None'
+        ) +
 
-<br>
+        '<br><br>';
 
-Messages:
+      if (aiOn) {
 
-${Number(
-  client.messages || 0
-)}
+        html +=
+          '<button class="stop" ' +
+          'onclick="stopClient(\'' +
+          safeId +
+          '\')">' +
+          '🔴 STOP AI' +
+          '</button>';
 
+      } else {
 
-<br>
+        html +=
+          '<button class="start" ' +
+          'onclick="startClient(\'' +
+          safeId +
+          '\')">' +
+          '🟢 START AI' +
+          '</button>';
+      }
 
-Package:
+      html +=
+        '<button class="secondary" ' +
+        'onclick="viewClient(\'' +
+        safeId +
+        '\')">' +
+        '💬 View Chat' +
+        '</button>';
 
-${escapeHTML(
-  client.selectedPackage ||
-  "None"
-)}
+      html +=
+        '<button class="secondary" ' +
+        'onclick="resetClient(\'' +
+        safeId +
+        '\')">' +
+        '♻️ Reset' +
+        '</button>';
 
+      html +=
+        '</div>';
 
-<br>
+      return html;
 
-Payment:
-
-${escapeHTML(
-  client.paymentMethod ||
-  "None"
-)}
-
-
-<br><br>
-
-
-${
-  aiOn
-
-  ? `
-
-<button
-  class="stop"
-  onclick="stopClient('${escapeAttribute(
-    client.senderId
-  )}')"
->
-
-🔴 STOP AI
-
-</button>
-
-`
-
-  : `
-
-<button
-  class="start"
-  onclick="startClient('${escapeAttribute(
-    client.senderId
-  )}')"
->
-
-🟢 START AI
-
-</button>
-
-`
+    }).join("");
 
 }
-
-
-<button
-  class="secondary"
-  onclick="viewClient('${escapeAttribute(
-    client.senderId
-  )}')"
->
-
-💬 View Chat
-
-</button>
-
-
-<button
-  class="secondary"
-  onclick="resetClient('${escapeAttribute(
-    client.senderId
-  )}')"
->
-
-♻️ Reset
-
-</button>
-
-
-</div>
-
-`;
-
-        }
-      )
-      .join("");
-
-}
-
+  
 
 /* =========================================================
    STOP ALL
