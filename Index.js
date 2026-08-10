@@ -17,7 +17,7 @@ const OPEN_AI =
 
 const PAGE_ACCESS_TOKEN =
   process.env.PAGE_ACCESS_TOKEN;
-
+let globalAIEnabled = true;
 const INSTAGRAM_USER_ID =
   "17841404831696204";
 
