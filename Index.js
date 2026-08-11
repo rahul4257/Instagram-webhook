@@ -6825,7 +6825,7 @@ async function request(
 
   const response =
     await fetch(
-      `${API_BASE}${url}`,
+      API_BASE + url,
       {
 
         method,
