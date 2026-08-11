@@ -6731,7 +6731,7 @@ Admin
 
 <button
   class="secondary"
-  onclick="alert('BUTTON CLICKED'); saveSecret()"
+  onclick="saveSecret()"
 >
 
 Save Secret
@@ -6809,6 +6809,7 @@ function saveSecret() {
     );
 
     alert("Secret saved successfully");
+console.log("SECRET SAVED:", secret);
 
     loadStatus();
 }
