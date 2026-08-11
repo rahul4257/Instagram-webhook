@@ -6816,6 +6816,7 @@ function saveSecret() {
 /* =========================================================
    API REQUEST
 ========================================================= */
+const API_BASE = "https://instagram-webhook-uiwr.onrender.com";
 
 async function request(
   url,
@@ -6824,7 +6825,7 @@ async function request(
 
   const response =
     await fetch(
-      url,
+      `${API_BASE}${url}`,
       {
 
         method,
