@@ -6833,7 +6833,7 @@ async function request(
         headers: {
 
           "x-admin-secret":
-            secret,
+            localStorage.getItem("global_promote_admin_secret") || secret,
 
           "Content-Type":
             "application/json"
