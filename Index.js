@@ -6731,7 +6731,7 @@ Admin
 
 <button
   class="secondary"
-  onclick="saveSecret()"
+  onclick="alert('BUTTON CLICKED'); saveSecret()"
 >
 
 Save Secret
