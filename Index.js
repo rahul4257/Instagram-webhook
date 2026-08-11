@@ -6794,24 +6794,24 @@ document.getElementById(
    SAVE SECRET
 ========================================================= */
 
+
 function saveSecret() {
+    secret = document.getElementById("secret").value.trim();
 
-  secret =
-    document.getElementById(
-      "secret"
-    ).value.trim();
+    if (!secret) {
+        alert("Please enter ADMIN_SECRET");
+        return;
+    }
 
+    localStorage.setItem(
+        "global_promote_admin_secret",
+        secret
+    );
 
-  localStorage.setItem(
-    "global_promote_admin_secret",
-    secret
-  );
+    alert("Secret saved successfully");
 
-
-  loadStatus();
-
+    loadStatus();
 }
-
 
 /* =========================================================
    API REQUEST
@@ -6883,10 +6883,10 @@ async function loadStatus() {
 
   try {
 
-    const data =
-      await request(
-        "/admin/status"
-      );
+    const data = await request(
+  "/admin/status",
+  "GET"
+);
 
 
     const globalStatus =
