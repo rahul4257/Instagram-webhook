@@ -1697,3 +1697,231 @@ app.post(
     });
   }
 );
+/* =========================================================
+   SIMPLE ADMIN PAGE
+========================================================= */
+
+app.get("/admin", (req, res) => {
+  res.send(`<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Global Promote AI</title>
+<style>
+body{font-family:Arial;background:#f6f7f9;margin:0;padding:20px;color:#111}
+.container{max-width:850px;margin:auto}
+.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:15px}
+input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:16px}
+button{padding:11px 15px;border:0;border-radius:10px;margin-top:10px}
+.ok{color:#15803d;font-weight:bold}
+.client{border-top:1px solid #eee;padding:15px 0}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="card">
+<h1>🤖 Global Promote AI</h1>
+<div class="ok">🟢 AI IS ALWAYS ON</div>
+<p>Simple mode • Supabase memory • No Start/Stop controls</p>
+</div>
+
+<div class="card">
+<input id="secret" type="password" placeholder="ADMIN_SECRET">
+<button onclick="saveSecret()">Save Secret</button>
+</div>
+
+<div class="card">
+<h2>Clients</h2>
+<div id="clients">Enter ADMIN_SECRET.</div>
+</div>
+
+</div>
+
+<script>
+let secret=localStorage.getItem("global_promote_admin_secret")||"";
+document.getElementById("secret").value=secret;
+
+function saveSecret(){
+  secret=document.getElementById("secret").value.trim();
+  localStorage.setItem("global_promote_admin_secret",secret);
+  loadStatus();
+}
+
+async function request(url){
+  const r=await fetch("/"+url,{
+    headers:{"x-admin-secret":secret}
+  });
+  if(!r.ok) throw new Error("Request failed: "+r.status);
+  return r.json();
+}
+
+async function loadStatus(){
+  if(!secret)return;
+
+  try{
+    const data=await request("admin/status");
+    const box=document.getElementById("clients");
+
+    if(!data.clients.length){
+      box.innerHTML="No clients loaded yet.";
+      return;
+    }
+
+    box.innerHTML=data.clients.map(c =>
+      '<div class="client">'+
+      '<b>Client:</b> '+c.senderId+
+      '<br><b>Messages:</b> '+c.messages+
+      '<br><b>Package:</b> '+(c.selectedPackage||"None")+
+      '<br><b>Payment:</b> '+(c.paymentMethod||"None")+
+      '<br><b>Stage:</b> '+(c.stage||"None")+
+      '</div>'
+    ).join("");
+
+  }catch(e){
+    document.getElementById("clients").innerText=e.message;
+  }
+}
+
+loadStatus();
+setInterval(loadStatus,15000);
+</script>
+
+</body>
+</html>`);
+});
+
+
+/* =========================================================
+   HEALTH
+========================================================= */
+
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    instagram: Boolean(
+      INSTAGRAM_USER_ID &&
+      PAGE_ACCESS_TOKEN
+    ),
+    openai: Boolean(OPEN_AI),
+    supabase: Boolean(supabase),
+    memoryProvider: "Supabase",
+    aiAlwaysOn: true,
+    conversations: conversations.size,
+    model: OPENAI_MODEL
+  });
+});
+
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+app.get("/", (req, res) => {
+  res.send(
+    "Global Promote Instagram AI is running!"
+  );
+});
+
+
+/* =========================================================
+   AUTH CALLBACK
+========================================================= */
+
+app.get("/auth/callback", (req, res) => {
+  if (!req.query.code) {
+    return res
+      .status(400)
+      .send("Missing authorization code");
+  }
+
+  res.send(
+    "Instagram authorization successful"
+  );
+});
+
+
+/* =========================================================
+   START SERVER
+========================================================= */
+
+async function startServer() {
+
+  if (
+    !(
+      (MEMORY_URL && MEMORY_TOKEN) ||
+      supabase
+    )
+  ) {
+    console.warn(
+      "WARNING: No persistent memory backend is configured."
+    );
+  }
+
+  if (!OPEN_AI) {
+    console.warn(
+      "WARNING: OPEN_AI is not configured."
+    );
+  }
+
+  if (!PAGE_ACCESS_TOKEN) {
+    console.warn(
+      "WARNING: PAGE_ACCESS_TOKEN is not configured."
+    );
+  }
+
+  app.listen(PORT, () => {
+
+    console.log(
+      "========================================"
+    );
+
+    console.log(
+      "Global Promote Instagram AI started"
+    );
+
+    console.log(
+      "Port:",
+      PORT
+    );
+
+    console.log(
+      "AI: ALWAYS ON"
+    );
+
+    console.log(
+      "Per-client queue: ENABLED"
+    );
+
+    console.log(
+      "Duplicate protection: ENABLED"
+    );
+
+    console.log(
+      "Manual-reply cancellation: ENABLED"
+    );
+
+    console.log(
+      "Persistent memory:",
+      supabase
+        ? "SUPABASE"
+        : "NOT CONFIGURED"
+    );
+
+    console.log(
+      "Packages: €35 / €60 / €90 / €120"
+    );
+
+    console.log(
+      "========================================"
+    );
+
+  });
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+startServer();
