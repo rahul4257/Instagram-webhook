@@ -1201,28 +1201,6 @@ async function processClientMessage(
   ) {
 
     /*
-     * Photo/video/link FIRST:
-     * don't send sales opening.
-     */
-    if (
-      media ||
-      isLink(text)
-    ) {
-
-      conversation.stage =
-        "FIRST_MEDIA_OR_LINK";
-
-      await sendReplySafely(
-        senderId,
-        conversation,
-        "Thanks ❤️ I received it. Tell me what you'd like to know and I'll help you.",
-        version
-      );
-
-      return;
-    }
-
-    /*
      * Normal first message.
      */
     conversation.stage =
