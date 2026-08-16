@@ -22,6 +22,11 @@ const SUPABASE_URL = process.env.SUPABASE_URL || "";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const SUPABASE_TABLE = process.env.SUPABASE_TABLE || "instagram_conversations";
 
+/* Existing memory endpoint from the earlier version is kept as a fallback.
+   No new Supabase table/setup is required by this code. */
+const MEMORY_URL = process.env.MEMORY_URL || "";
+const MEMORY_TOKEN = process.env.MEMORY_TOKEN || "";
+
 const supabase =
   SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
     ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -41,6 +46,21 @@ const INSTAGRAM_PAGES = [
   "@expl.atlanta",
   "@expl.miami"
 ];
+
+/* FIRST MESSAGE IS LOCKED. Every brand-new conversation starts with this.
+   This prevents a photo/video as the first message from triggering the
+   package flow. */
+const MESSAGE_ONE = `Hey dear ♥️
+I see your profile, its a great content ♥️
+Would you like to get featured on our page?`;
+
+const MESSAGE_TWO = `We are here to spotlight your profile 💫
+@expl.europe
+@expl.canada
+@expl.atlanta
+@expl.miami
+
+I will upload your post on these pages and from that you will gain 1k to 15k guaranteed followers according to your package. Can I show you our packages ?`;
 
 const PACKAGES_MESSAGE = `🎊 Instagram packages🎊
 
@@ -166,7 +186,7 @@ function sleep(ms) {
 
 function getReplyDelay() {
   /* Short human-like delay, not 10–12 seconds. */
-  return 2000 + Math.floor(Math.random() * 1500);
+  return 6500 + Math.floor(Math.random() * 2000);
 }
 
 function escapeHTML(value) {
@@ -225,10 +245,32 @@ function sanitizeConversation(saved, senderId) {
 }
 
 async function persistentMemoryGet(senderId) {
-  if (!supabase) {
-    console.error("Supabase memory is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");
-    return null;
+  /* Prefer the existing memory endpoint if it is already configured. */
+  if (MEMORY_URL && MEMORY_TOKEN) {
+    try {
+      const key = encodeURIComponent(`instagram:${senderId}`);
+      const response = await fetch(`${MEMORY_URL}/get/${key}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${MEMORY_TOKEN}` }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data?.result) {
+          try {
+            return JSON.parse(data.result);
+          } catch (_) {}
+        }
+      } else {
+        console.error("Existing memory GET failed:", response.status);
+      }
+    } catch (error) {
+      console.error("Existing memory GET error:", error);
+    }
   }
+
+  /* Direct Supabase is only used when the existing memory endpoint is not set. */
+  if (!supabase) return null;
 
   try {
     const { data, error } = await supabase
@@ -250,10 +292,25 @@ async function persistentMemoryGet(senderId) {
 }
 
 async function persistentMemorySave(senderId, conversation) {
-  if (!supabase) {
-    console.error("Supabase memory is not configured.");
-    return false;
+  /* Prefer the existing memory endpoint if it is already configured. */
+  if (MEMORY_URL && MEMORY_TOKEN) {
+    try {
+      const key = encodeURIComponent(`instagram:${senderId}`);
+      const value = encodeURIComponent(JSON.stringify(conversation));
+      const response = await fetch(`${MEMORY_URL}/set/${key}/${value}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${MEMORY_TOKEN}` }
+      });
+
+      if (response.ok) return true;
+      console.error("Existing memory SAVE failed:", response.status);
+    } catch (error) {
+      console.error("Existing memory SAVE error:", error);
+    }
   }
+
+  /* Direct Supabase is only used when the existing memory endpoint is not set. */
+  if (!supabase) return false;
 
   try {
     const { error } = await supabase
@@ -355,8 +412,7 @@ function queueForClient(senderId, task) {
   const next = previous
     .catch(() => {})
     .then(task);
-
-clientQueues.set(senderId, next);
+   clientQueues.set(senderId, next);
 
   next.finally(() => {
     if (clientQueues.get(senderId) === next) {
@@ -370,6 +426,22 @@ clientQueues.set(senderId, next);
 /* =========================================================
    PACKAGE / PAYMENT DETECTION
 ========================================================= */
+
+function isPackageListRequest(text) {
+  const t = normalizeText(text);
+
+  return (
+    /\bpackages?\b/.test(t) ||
+    /\bprice list\b/.test(t) ||
+    /\bprices?\b/.test(t) ||
+    /\bpricing\b/.test(t) ||
+    /\bcost\b/.test(t) ||
+    /\brates?\b/.test(t) ||
+    /\bhow much\b/.test(t) ||
+    /\bshow me.*(package|price)/.test(t) ||
+    /\bpackage.*(details|price|cost)/.test(t)
+  );
+}
 
 function detectPackageSelection(text) {
   const t = normalizeText(text);
@@ -515,7 +587,7 @@ Customer chooses a package first, then payment method. A 12% payment fee is adde
 
 IMPORTANT SALES FLOW:
 - Answer the customer's actual message.
-- If they ask to see packages or show clear interest, send the approved package list.
+- If they ask to see packages or prices, the server sends PACKAGES_MESSAGE exactly; never shorten or rewrite it.
 - If they select a package, confirm that package and ask how they want to pay.
 - If they select a payment method after a package is selected, send the approved payment instructions.
 - Never restart the conversation.
@@ -603,7 +675,10 @@ RULES:
 13. Never claim a payment was received.
 14. Reply in the customer's language when practical.
 15. If the customer says yes/okay/sure/show me after a promotion conversation, understand that as interest and show the approved package list.
-16. If the message is unrelated but can be answered safely, answer it naturally.
+16. NEVER reproduce or rewrite the package list from memory; the server sends the approved package list directly.
+17. A photo/video by itself is NOT a request for packages. Acknowledge it or ask what the customer wants to know.
+18. If the customer asks for prices/packages, the server will send the exact approved list. Do not invent a shortened list.
+19. If the message is unrelated but can be answered safely, answer it naturally.
 
 Return ONLY the customer-facing reply. No analysis, no labels.`;
 
@@ -714,6 +789,7 @@ async function handleManualOutgoingEcho(event) {
 /* =========================================================
    CUSTOMER MESSAGE PROCESSING
 ========================================================= */
+
 async function processCustomerMessage(senderId, messageId, clientMessage, attachmentInfo) {
   const conversation = await getConversation(senderId);
 
@@ -722,9 +798,17 @@ async function processCustomerMessage(senderId, messageId, clientMessage, attach
     return;
   }
 
-  /* Mark it immediately so Meta retries cannot create a second reply. */
+  const isFirstMessage = conversation.history.length === 0;
+  const hasText = Boolean(String(clientMessage || "").trim());
+  const hasMedia = Boolean(attachmentInfo);
+
+  /* Mark and save BEFORE generating a reply so the next message can see it. */
   markProcessed(conversation, messageId);
-  saveMessage(conversation, "client", clientMessage || attachmentInfo || "[media]");
+  saveMessage(
+    conversation,
+    "client",
+    hasText ? clientMessage : (hasMedia ? "[photo/video/media]" : "[media]")
+  );
   await saveConversation(senderId, conversation);
 
   const myManualVersion = manualReplyVersion.get(senderId) || 0;
@@ -733,341 +817,11 @@ async function processCustomerMessage(senderId, messageId, clientMessage, attach
   console.log("CLIENT MESSAGE");
   console.log("Sender:", senderId);
   console.log("Message:", clientMessage);
-  console.log("Previous messages:", conversation.history.length - 1);
-
-  /* Deterministic package selection first. */
-  const packageKey = detectPackageSelection(clientMessage);
-  if (packageKey) {
-    conversation.selectedPackage = packageKey;
-    conversation.paymentMethod = null;
-    conversation.stage = "PACKAGE_SELECTED";
-
-    const reply = buildPackageConfirmation(packageKey);
-    await sendReplyIfStillNeeded(senderId, conversation, reply, myManualVersion);
-    return;
-  }
-
-  /* Deterministic payment selection when a package is already known. */
-  const paymentMethod = detectPaymentMethod(clientMessage);
-  if (paymentMethod && conversation.selectedPackage) {
-    conversation.paymentMethod = paymentMethod;
-    conversation.stage = "PAYMENT_PENDING";
-
-    const reply = buildPaymentMessage(
-      conversation.selectedPackage,
-      paymentMethod
-    );
-
-    await sendReplyIfStillNeeded(senderId, conversation, reply, myManualVersion);
-    return;
-  }
-
-  /* Payment proof gets a fixed confirmation. */
-  if (isPaymentProof(clientMessage, attachmentInfo)) {
-    const reply = `Thank you ❤️\n\nWe will verify the payment and our team will confirm it with you shortly.`;
-    await sendReplyIfStillNeeded(senderId, conversation, reply, myManualVersion);
-    return;
-  }
-
-  /* Guarantee questions are deterministic and do not need an AI call. */
-  if (isGuaranteeQuestion(clientMessage)) {
-    await sendReplyIfStillNeeded(senderId, conversation, GUARANTEE_MESSAGE, myManualVersion);
-    return;
-  }
-
-  /* Everything else gets ONE AI call with the complete memory context. */
-  const reply = await getAIReply(conversation, clientMessage, attachmentInfo);
-
-  if (!reply) {
-    await saveConversation(senderId, conversation);
-    return;
-  }
-
-  await sendReplyIfStillNeeded(senderId, conversation, reply, myManualVersion);
-}
-
-async function sendReplyIfStillNeeded(senderId, conversation, reply, versionAtStart) {
-  if (!reply) return;
-
-  /* Wait briefly. This prevents rapid duplicate-looking replies and gives
-     the owner a chance to manually answer the customer. */
-  await sleep(getReplyDelay());
-
-  const currentVersion = manualReplyVersion.get(senderId) || 0;
-  if (currentVersion !== versionAtStart) {
-    console.log("AI reply cancelled because owner replied manually:", senderId);
-    await saveConversation(senderId, conversation);
-    return;
-  }
-
-  const data = await sendInstagramMessage(senderId, reply);
-  saveMessage(conversation, "assistant", reply);
-
-  conversation.lastAIMessageId = data?.message_id || data?.id || null;
-  conversation.lastSeenAt = nowISO();
-
-  await saveConversation(senderId, conversation);
-
-  console.log("Reply sent successfully:", senderId);
-}
-
-/* =========================================================
-   WEBHOOK VERIFICATION
-========================================================= */
-
-app.get("/webhook", (req, res) => {
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
-
-  if (mode === "subscribe" && token === VERIFY_TOKEN) {
-    console.log("Webhook verified successfully.");
-    return res.status(200).send(challenge);
-  }
-
-  return res.sendStatus(403);
-});
-
-/* =========================================================
-   INSTAGRAM WEBHOOK
-========================================================= */
-
-app.post("/webhook", async (req, res) => {
-  /* Meta needs a fast 200. Processing continues below. */
-  res.sendStatus(200);
-
-  const body = req.body;
-
-  if (body?.object !== "instagram" || !Array.isArray(body?.entry)) {
-    return;
-  }
-
-  for (const entry of body.entry) {
-    if (!Array.isArray(entry.messaging)) continue;
-
-    for (const event of entry.messaging) {
-      /* Read events are not customer messages. */
-      if (event.read?.mid) continue;
-
-      if (!event.message) continue;
-
-      /* Handle Instagram echo events first. */
-      if (event.message.is_echo === true) {
-        queueForClient(
-          event.recipient?.id || "unknown",
-          () => handleManualOutgoingEcho(event)
-        ).catch(error => console.error("Echo handling error:", error));
-        continue;
-      }
-
-      const senderId = event.sender?.id;
-      const messageId = event.message?.mid;
-
-      if (!senderId || !messageId) continue;
-
-      /* Never process messages generated by our own account. */
-      if (String(senderId) === String(INSTAGRAM_USER_ID)) continue;
-
-      /* Fast duplicate guard before entering the queue. */
-      const duplicateKey = String(messageId);
-      if (processedMessageIds.has(duplicateKey)) {
-        console.log("Webhook duplicate ignored:", duplicateKey);
-        continue;
-      }
-      processedMessageIds.set(duplicateKey, Date.now());
-
-      setTimeout(() => processedMessageIds.delete(duplicateKey), 60 * 60 * 1000);
-
-      const clientMessage = event.message.text || "";
-      const attachmentInfo = getAttachmentInfo(event.message);
-
-      if (!clientMessage && !attachmentInfo) continue;
-
-      /* Every client has its own queue. Client A cannot block Client B. */
-      queueForClient(senderId, () =>
-        processCustomerMessage(
-          senderId,
-          messageId,
-          clientMessage,
-          attachmentInfo
-        )
-      ).catch(error => {
-        console.error("Customer message processing error:", error);
-      });
-    }
-  }
-});
-
-function getAttachmentInfo(message) {
-  const parts = [];
-
-  if (Array.isArray(message?.attachments)) {
-    for (const attachment of message.attachments) {
-      const type = attachment.type || "unknown";
-      const url = attachment.payload?.url || attachment.payload?.src || "";
-      parts.push(`type=${type}, url=${url}`);
-    }
-  }
-
-  if (message?.share) {
-    parts.push(`shared=${JSON.stringify(message.share)}`);
-  }
-
-  return parts.join("\n");
-}
-
-/* =========================================================
-   ADMIN: READ-ONLY STATUS
-
-   No AI START/STOP controls. AI is always active.
-========================================================= */
-
-app.get("/admin/status", async (req, res) => {
-  if (!isAdmin(req)) return res.sendStatus(403);
-
-  const clients = Array.from(conversations.entries()).map(([senderId, conversation]) => ({
-    senderId,
-    messages: conversation.history.length,
-    selectedPackage: conversation.selectedPackage,
-    paymentMethod: conversation.paymentMethod,
-    lastSeenAt: conversation.lastSeenAt,
-    stage: conversation.stage
-  }));
-
-  res.json({
-    success: true,
-    aiAlwaysOn: true,
-    persistentMemory: Boolean(supabase),
-    memoryProvider: "Supabase",
-    clients
-  });
-});
-
-app.get("/admin/client/:senderId", async (req, res) => {
-  if (!isAdmin(req)) return res.sendStatus(403);
-
-  const conversation = await getConversation(req.params.senderId);
-
-  res.json({
-    success: true,
-    aiAlwaysOn: true,
-    conversation
-  });
-});
-
-app.post("/admin/client/reset/:senderId", async (req, res) => {
-  if (!isAdmin(req)) return res.sendStatus(403);
-
-  const senderId = req.params.senderId;
-  const conversation = createConversation(senderId);
-
-  conversations.set(senderId, conversation);
-  manualReplyVersion.set(senderId, (manualReplyVersion.get(senderId) || 0) + 1);
-  await persistentMemorySave(senderId, conversation);
-
-  res.json({ success: true, senderId, message: "Conversation memory reset." });
-});
-
-/* =========================================================
-   SIMPLE ADMIN PAGE
-========================================================= */
-
-app.get("/admin", (req, res) => {
-  res.send(`<!doctype html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Global Promote AI</title>
-<style>
-body{font-family:Arial,sans-serif;background:#f6f7f9;margin:0;padding:20px;color:#111}
-.container{max-width:850px;margin:auto}
-.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:15px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
-h1{margin:0 0 5px}.muted{color:#666}.ok{color:#15803d;font-weight:700}
-input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:16px}
-button{padding:11px 15px;border:0;border-radius:10px;margin-top:10px;cursor:pointer}
-.client{border-top:1px solid #eee;padding:15px 0}.chat{white-space:pre-wrap;background:#fafafa;border-radius:10px;padding:12px;margin-top:10px;max-height:420px;overflow:auto}
-</style>
-</head>
-<body>
-<div class="container">
-<div class="card">
-<h1>🤖 Global Promote AI</h1>
-<div class="ok">🟢 AI IS ALWAYS ON</div>
-<div class="muted">Simple mode • Supabase memory • No start/stop controls • No reminders</div>
-</div>
-<div class="card">
-<input id="secret" type="password" placeholder="ADMIN_SECRET">
-<button onclick="saveSecret()">Save Secret</button>
-</div>
-<div class="card"><h2>Clients</h2><div id="clients">Enter ADMIN_SECRET.</div></div>
-</div>
-<script>
-let secret=localStorage.getItem('global_promote_admin_secret')||'';
-document.getElementById('secret').value=secret;
-function saveSecret(){secret=document.getElementById('secret').value.trim();localStorage.setItem('global_promote_admin_secret',secret);loadStatus();}
-async function request(url){const r=await fetch('/'+url,{headers:{'x-admin-secret':secret}});if(!r.ok)throw new Error('Request failed: '+r.status);return r.json();}
-async function loadStatus(){if(!secret)return;try{const data=await request('admin/status');const box=document.getElementById('clients');if(!data.clients.length){box.innerHTML='No clients loaded yet.';return;}box.innerHTML=data.clients.map(c=>'<div class="client"><b>Client:</b> '+escapeHtml(c.senderId)+'<br><b>Messages:</b> '+c.messages+'<br><b>Package:</b> '+escapeHtml(c.selectedPackage||'None')+'<br><b>Payment:</b> '+escapeHtml(c.paymentMethod||'None')+'<br><button onclick="view(\''+encodeURIComponent(c.senderId)+'\')">View chat</button></div>').join('');}catch(e){document.getElementById('clients').innerText=e.message;}}
-async function view(id){try{const data=await request('admin/client/'+id);const c=data.conversation;let text='Selected package: '+(c.selectedPackage||'None')+'\\nPayment: '+(c.paymentMethod||'None')+'\\n\\n';text+=c.history.map(m=>m.role.toUpperCase()+': '+m.text).join('\\n\\n');alert(text);}catch(e){alert(e.message);}}
-function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-loadStatus();setInterval(loadStatus,15000);
-</script>
-</body>
-</html>`);
-});
-
-/* =========================================================
-   HEALTH
-========================================================= */
-
-app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    instagram: Boolean(INSTAGRAM_USER_ID && PAGE_ACCESS_TOKEN),
-    openai: Boolean(OPEN_AI),
-    supabase: Boolean(supabase),
-    memoryProvider: "Supabase",
-    aiAlwaysOn: true,
-    conversations: conversations.size,
-    model: OPENAI_MODEL
-  });
-});
-
-app.get("/", (req, res) => {
-  res.send("Global Promote Instagram AI is running!");
-});
-
-app.get("/auth/callback", (req, res) => {
-  if (!req.query.code) return res.status(400).send("Missing authorization code");
-  res.send("Instagram authorization successful");
-});
-
-/* =========================================================
-   START
-========================================================= */
-
-async function startServer() {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    console.warn("WARNING: Supabase memory is NOT configured.");
-    console.warn("Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");
-  }
-
-  if (!OPEN_AI) console.warn("WARNING: OPEN_AI is not configured.");
-  if (!PAGE_ACCESS_TOKEN) console.warn("WARNING: PAGE_ACCESS_TOKEN is not configured.");
-
-  app.listen(PORT, () => {
-    console.log("========================================");
-    console.log(`Server running on port ${PORT}`);
-    console.log("AI mode: ALWAYS ON");
-    console.log("Start/Stop AI controls: REMOVED");
-    console.log("Reminders: REMOVED");
-    console.log("AI architecture: ONE AI CALL PER CUSTOMER MESSAGE");
-    console.log("Per-client queue: ENABLED");
-    console.log("Duplicate protection: ENABLED");
-    console.log("Manual-reply cancellation: ENABLED");
-    console.log("Supabase persistent memory:", Boolean(supabase) ? "ENABLED" : "NOT CONFIGURED");
-    console.log("Package prices: €35 / €60 / €90 / €120");
-    console.log("========================================");
-  });
-}
-
-startServer();
+  console.log("Media:", hasMedia);
+  console.log("First message:", isFirstMessage);
+  console.log("----------------------------------------");
+
+  /* =======================================================
+     FIRST CHAT IS LOCKED
+     No AI/classifier/package logic can override this.
+     Even if the first message is a photo/video, send MESSAGE_ONE.
