@@ -825,3 +825,875 @@ async function processCustomerMessage(senderId, messageId, clientMessage, attach
      FIRST CHAT IS LOCKED
      No AI/classifier/package logic can override this.
      Even if the first message is a photo/video, send MESSAGE_ONE.
+
+   /* =========================================================
+   CUSTOMER MESSAGE PROCESSING
+========================================================= */
+
+async function processCustomerMessage(
+  senderId,
+  messageId,
+  clientMessage,
+  attachmentInfo
+) {
+  const conversation = await getConversation(senderId);
+
+  if (wasProcessed(conversation, messageId)) {
+    console.log("Duplicate message ignored:", messageId);
+    return;
+  }
+
+  const isFirstMessage =
+    conversation.history.filter(
+      item => item.role === "client"
+    ).length === 0;
+
+  const hasText =
+    Boolean(String(clientMessage || "").trim());
+
+  const hasMedia =
+    Boolean(attachmentInfo);
+
+  markProcessed(
+    conversation,
+    messageId
+  );
+
+  saveMessage(
+    conversation,
+    "client",
+    hasText
+      ? clientMessage
+      : (hasMedia
+          ? "[photo/video/media]"
+          : "[media]")
+  );
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+  const myManualVersion =
+    manualReplyVersion.get(senderId) || 0;
+
+  console.log(
+    "----------------------------------------"
+  );
+
+  console.log(
+    "CLIENT MESSAGE"
+  );
+
+  console.log(
+    "Sender:",
+    senderId
+  );
+
+  console.log(
+    "Message:",
+    clientMessage
+  );
+
+  console.log(
+    "Media:",
+    hasMedia
+  );
+
+  console.log(
+    "First message:",
+    isFirstMessage
+  );
+
+  console.log(
+    "----------------------------------------"
+  );
+
+
+  /* =======================================================
+     FIRST MESSAGE
+
+     Normal text:
+       -> opening feature message
+
+     Photo/video:
+       -> no opening feature message
+
+     Link:
+       -> no opening feature message
+
+     Emoji:
+       -> no opening feature message
+  ======================================================= */
+
+  if (isFirstMessage) {
+
+    conversation.stage =
+      "FIRST_MESSAGE_RECEIVED";
+
+    const text =
+      String(
+        clientMessage || ""
+      ).trim();
+
+    const isLink =
+      /^(https?:\/\/|www\.)\S+$/i.test(text) ||
+      /\b(instagram\.com|instagr\.am|tiktok\.com|youtube\.com|youtu\.be)\//i.test(text);
+
+    const isEmojiOnly =
+      text &&
+      /^[\p{Emoji}\s\uFE0F\u200D]+$/u.test(text);
+
+    if (
+      hasText &&
+      !hasMedia &&
+      !isLink &&
+      !isEmojiOnly
+    ) {
+
+      conversation.stage =
+        "OPENING_SENT";
+
+      await sendReplyIfStillNeeded(
+        senderId,
+        conversation,
+        MESSAGE_ONE,
+        myManualVersion
+      );
+
+    } else {
+
+      const reply =
+        hasMedia
+          ? `Thanks ❤️ I received your photo/video.\n\nTell me what you'd like to know and I'll help you.`
+          : isLink
+            ? `Thanks ❤️ I received your link.\n\nTell me what you'd like to know and I'll help you.`
+            : `Hey ❤️ How can I help you?`;
+
+      await sendReplyIfStillNeeded(
+        senderId,
+        conversation,
+        reply,
+        myManualVersion
+      );
+    }
+
+    return;
+  }
+
+
+  /* =======================================================
+     MEDIA-ONLY MESSAGE
+  ======================================================= */
+
+  if (
+    !hasText &&
+    hasMedia
+  ) {
+
+    const reply =
+      `Thanks ❤️ I received your photo/video.\n\nTell me what you'd like to know and I'll help you.`;
+
+    await sendReplyIfStillNeeded(
+      senderId,
+      conversation,
+      reply,
+      myManualVersion
+    );
+
+    return;
+  }
+
+
+  /* =======================================================
+     LINK-ONLY MESSAGE
+  ======================================================= */
+
+  const isLink =
+    /^(https?:\/\/|www\.)\S+$/i.test(
+      String(clientMessage || "").trim()
+    );
+
+  if (
+    isLink &&
+    !hasMedia
+  ) {
+
+    const reply =
+      `Thanks ❤️ I received your link.\n\nTell me what you'd like to know and I'll help you.`;
+
+    await sendReplyIfStillNeeded(
+      senderId,
+      conversation,
+      reply,
+      myManualVersion
+    );
+
+    return;
+  }
+
+
+  /* =======================================================
+     PACKAGE LIST
+
+     Send the exact package list directly.
+     AI does NOT rewrite it.
+  ======================================================= */
+
+  if (
+    isPackageListRequest(
+      clientMessage
+    )
+  ) {
+
+    conversation.stage =
+      "PACKAGES_SHOWN";
+
+    await sendReplyIfStillNeeded(
+      senderId,
+      conversation,
+      PACKAGES_MESSAGE,
+      myManualVersion
+    );
+
+    return;
+  }
+
+
+  /* =======================================================
+     PACKAGE SELECTION
+  ======================================================= */
+
+  const packageKey =
+    detectPackageSelection(
+      clientMessage
+    );
+
+  if (packageKey) {
+
+    conversation.selectedPackage =
+      packageKey;
+
+    conversation.paymentMethod =
+      null;
+
+    conversation.stage =
+      "PACKAGE_SELECTED";
+
+    const reply =
+      buildPackageConfirmation(
+        packageKey
+      );
+
+    await sendReplyIfStillNeeded(
+      senderId,
+      conversation,
+      reply,
+      myManualVersion
+    );
+
+    return;
+  }
+
+
+  /* =======================================================
+     PAYMENT METHOD
+  ======================================================= */
+
+  const paymentMethod =
+    detectPaymentMethod(
+      clientMessage
+    );
+
+  if (
+    paymentMethod &&
+    conversation.selectedPackage
+  ) {
+
+    conversation.paymentMethod =
+      paymentMethod;
+
+    conversation.stage =
+      "PAYMENT_PENDING";
+
+    const reply =
+      buildPaymentMessage(
+        conversation.selectedPackage,
+        paymentMethod
+      );
+
+    await sendReplyIfStillNeeded(
+      senderId,
+      conversation,
+      reply,
+      myManualVersion
+    );
+
+    return;
+       }
+   /* =======================================================
+     PAYMENT PROOF
+  ======================================================= */
+
+  if (
+    isPaymentProof(
+      clientMessage,
+      attachmentInfo
+    )
+  ) {
+
+    const reply =
+      `Thank you ❤️\n\nWe will verify the payment and our team will confirm it with you shortly.`;
+
+    await sendReplyIfStillNeeded(
+      senderId,
+      conversation,
+      reply,
+      myManualVersion
+    );
+
+    return;
+  }
+
+
+  /* =======================================================
+     GUARANTEE QUESTIONS
+  ======================================================= */
+
+  if (
+    isGuaranteeQuestion(
+      clientMessage
+    )
+  ) {
+
+    await sendReplyIfStillNeeded(
+      senderId,
+      conversation,
+      GUARANTEE_MESSAGE,
+      myManualVersion
+    );
+
+    return;
+  }
+
+
+  /* =======================================================
+     NORMAL AI CONVERSATION
+  ======================================================= */
+
+  const reply =
+    await getAIReply(
+      conversation,
+      clientMessage,
+      attachmentInfo
+    );
+
+  if (!reply) {
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+    return;
+  }
+
+  await sendReplyIfStillNeeded(
+    senderId,
+    conversation,
+    reply,
+    myManualVersion
+  );
+}
+
+
+/* =========================================================
+   SEND REPLY
+========================================================= */
+
+async function sendReplyIfStillNeeded(
+  senderId,
+  conversation,
+  reply,
+  versionAtStart
+) {
+
+  if (!reply) return;
+
+  /*
+   * 6.5–8.5 second delay.
+   */
+  await sleep(
+    getReplyDelay()
+  );
+
+  /*
+   * Cancel AI reply if owner manually replied.
+   */
+  const currentVersion =
+    manualReplyVersion.get(
+      senderId
+    ) || 0;
+
+  if (
+    currentVersion !==
+    versionAtStart
+  ) {
+
+    console.log(
+      "AI reply cancelled because owner replied manually:",
+      senderId
+    );
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+    return;
+  }
+
+  try {
+
+    const data =
+      await sendInstagramMessage(
+        senderId,
+        reply
+      );
+
+    saveMessage(
+      conversation,
+      "assistant",
+      reply
+    );
+
+    conversation.lastAIMessageId =
+      data?.message_id ||
+      data?.id ||
+      null;
+
+    conversation.lastSeenAt =
+      nowISO();
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+    console.log(
+      "Reply sent successfully:",
+      senderId
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Failed to send Instagram reply:",
+      error
+    );
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+  }
+}
+
+
+/* =========================================================
+   WEBHOOK VERIFICATION
+========================================================= */
+
+app.get(
+  "/webhook",
+  (req, res) => {
+
+    const mode =
+      req.query["hub.mode"];
+
+    const token =
+      req.query["hub.verify_token"];
+
+    const challenge =
+      req.query["hub.challenge"];
+
+    if (
+      mode === "subscribe" &&
+      token === VERIFY_TOKEN
+    ) {
+
+      console.log(
+        "Webhook verified successfully."
+      );
+
+      return res
+        .status(200)
+        .send(challenge);
+    }
+
+    return res.sendStatus(403);
+  }
+);
+
+
+/* =========================================================
+   INSTAGRAM WEBHOOK
+========================================================= */
+
+app.post(
+  "/webhook",
+  async (req, res) => {
+
+    res.sendStatus(200);
+
+    const body =
+      req.body;
+
+    if (
+      body?.object !== "instagram" ||
+      !Array.isArray(body?.entry)
+    ) {
+      return;
+    }
+
+    for (
+      const entry of body.entry
+    ) {
+
+      if (
+        !Array.isArray(
+          entry.messaging
+        )
+      ) {
+        continue;
+      }
+
+      for (
+        const event of entry.messaging
+      ) {
+
+        if (
+          event.read?.mid
+        ) {
+          continue;
+        }
+
+        if (
+          !event.message
+        ) {
+          continue;
+        }
+
+
+        /* =================================================
+           ECHO / MANUAL MESSAGE
+
+           Handle immediately so a manual reply can cancel
+           a waiting AI response.
+        ================================================= */
+
+        if (
+          event.message.is_echo === true
+        ) {
+
+          handleManualOutgoingEcho(
+            event
+          ).catch(
+            error =>
+              console.error(
+                "Echo handling error:",
+                error
+              )
+          );
+
+          continue;
+        }
+
+
+        const senderId =
+          event.sender?.id;
+
+        const messageId =
+          event.message?.mid;
+
+        if (
+          !senderId ||
+          !messageId
+        ) {
+          continue;
+        }
+
+
+        if (
+          String(senderId) ===
+          String(INSTAGRAM_USER_ID)
+        ) {
+          continue;
+        }
+
+
+        /* =================================================
+           DUPLICATE PROTECTION
+        ================================================= */
+
+        const duplicateKey =
+          String(messageId);
+
+        if (
+          processedMessageIds.has(
+            duplicateKey
+          )
+        ) {
+
+          console.log(
+            "Webhook duplicate ignored:",
+            duplicateKey
+          );
+
+          continue;
+        }
+
+        processedMessageIds.set(
+          duplicateKey,
+          Date.now()
+        );
+
+        setTimeout(
+          () =>
+            processedMessageIds.delete(
+              duplicateKey
+            ),
+          60 * 60 * 1000
+        );
+
+
+        const clientMessage =
+          event.message.text || "";
+
+        const attachmentInfo =
+          getAttachmentInfo(
+            event.message
+          );
+
+        if (
+          !clientMessage &&
+          !attachmentInfo
+        ) {
+          continue;
+        }
+
+
+        /* =================================================
+           PER-CLIENT QUEUE
+
+           Same client:
+           1 -> 2 -> 3
+
+           Different clients:
+           can run simultaneously.
+        ================================================= */
+
+        queueForClient(
+          senderId,
+          () =>
+            processCustomerMessage(
+              senderId,
+              messageId,
+              clientMessage,
+              attachmentInfo
+            )
+        ).catch(
+          error =>
+            console.error(
+              "Customer message processing error:",
+              error
+            )
+        );
+      }
+    }
+  }
+);
+
+
+function getAttachmentInfo(
+  message
+) {
+
+  const parts = [];
+
+  if (
+    Array.isArray(
+      message?.attachments
+    )
+  ) {
+
+    for (
+      const attachment
+      of message.attachments
+    ) {
+
+      const type =
+        attachment.type ||
+        "unknown";
+
+      const url =
+        attachment.payload?.url ||
+        attachment.payload?.src ||
+        "";
+
+      parts.push(
+        `type=${type}, url=${url}`
+      );
+    }
+  }
+
+  if (
+    message?.share
+  ) {
+
+    parts.push(
+      `shared=${JSON.stringify(
+        message.share
+      )}`
+    );
+  }
+
+  return parts.join("\n");
+}
+
+
+/* =========================================================
+   ADMIN STATUS
+========================================================= */
+
+app.get(
+  "/admin/status",
+  async (req, res) => {
+
+    if (
+      !isAdmin(req)
+    ) {
+      return res.sendStatus(403);
+    }
+
+    const clients =
+      Array.from(
+        conversations.entries()
+      ).map(
+        ([
+          senderId,
+          conversation
+        ]) => ({
+
+          senderId,
+
+          messages:
+            conversation.history.length,
+
+          selectedPackage:
+            conversation.selectedPackage,
+
+          paymentMethod:
+            conversation.paymentMethod,
+
+          lastSeenAt:
+            conversation.lastSeenAt,
+
+          stage:
+            conversation.stage
+        })
+      );
+
+    res.json({
+
+      success: true,
+
+      aiAlwaysOn: true,
+
+      persistentMemory:
+        Boolean(supabase),
+
+      memoryProvider:
+        "Supabase",
+
+      clients
+    });
+  }
+);
+
+
+app.get(
+  "/admin/client/:senderId",
+  async (req, res) => {
+
+    if (
+      !isAdmin(req)
+    ) {
+      return res.sendStatus(403);
+    }
+
+    const conversation =
+      await getConversation(
+        req.params.senderId
+      );
+
+    res.json({
+
+      success: true,
+
+      aiAlwaysOn: true,
+
+      conversation
+    });
+  }
+);
+
+
+app.post(
+  "/admin/client/reset/:senderId",
+  async (req, res) => {
+
+    if (
+      !isAdmin(req)
+    ) {
+      return res.sendStatus(403);
+    }
+
+    const senderId =
+      req.params.senderId;
+
+    const conversation =
+      createConversation(
+        senderId
+      );
+
+    conversations.set(
+      senderId,
+      conversation
+    );
+
+    manualReplyVersion.set(
+      senderId,
+      (
+        manualReplyVersion.get(
+          senderId
+        ) || 0
+      ) + 1
+    );
+
+    await persistentMemorySave(
+      senderId,
+      conversation
+    );
+
+    res.json({
+
+      success: true,
+
+      senderId,
+
+      message:
+        "Conversation memory reset."
+    });
+  }
+);
