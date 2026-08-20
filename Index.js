@@ -40,6 +40,13 @@ const SUPABASE_URL =
 const SUPABASE_SERVICE_ROLE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
+const SUPABASE_TABLE =
+  process.env.SUPABASE_TABLE || "Conversations";
+
+/*
+ * Legacy MEMORY_URL / MEMORY_TOKEN are kept only as a fallback.
+ * The primary persistent memory is now Supabase.
+ */
 const MEMORY_URL =
   process.env.MEMORY_URL || "";
 
@@ -94,20 +101,20 @@ const PACKAGES_MESSAGE =
 `🎊 Instagram packages🎊
 
 1️⃣ BRONZE PACKAGE 📦
-👉 only 35€ =  2story
+👉 only 39€ =  2story
 🎉(1.5k followers guaranteed)
 
 2️⃣ SILVER PACKAGE 📦
-👉 only 60€ = 1 post and 3stroy + 2 highlights 🎊
+👉 only 66€ = 1 post and 3stroy + 2 highlights 🎊
 🎉( 4k followers guaranteed)
 
 3️⃣ GOLD PACKAGE 📦
-👉 only 90€ = 3 post and 4 stroy +3 highlights 🎊
+👉 only 99€ = 3 post and 4 stroy +3 highlights 🎊
 🎉( 7k followers guaranteed)
 Mostly client choose this package!!
 
 4️⃣ DIAMOND PACKAGE 📦
-👉 only 120€ = 5 post and 8 story + 7 highlights 🎊
+👉 only 129€ = 5 post and 8 story + 7 highlights 🎊
 🎉( 10k followers guaranteed)
 
 💥 CHOOSE YOUR PACKAGE 💥`;
@@ -131,7 +138,7 @@ const PACKAGES = {
 
   bronze: {
     name: "Bronze",
-    price: 35,
+    price: 39,
     details:
       "2 story",
     followers:
@@ -140,7 +147,7 @@ const PACKAGES = {
 
   silver: {
     name: "Silver",
-    price: 60,
+    price: 66,
     details:
       "1 post and 3 story + 2 highlights",
     followers:
@@ -149,7 +156,7 @@ const PACKAGES = {
 
   gold: {
     name: "Gold",
-    price: 90,
+    price: 99,
     details:
       "3 post and 4 story + 3 highlights",
     followers:
@@ -158,7 +165,7 @@ const PACKAGES = {
 
   diamond: {
     name: "Diamond",
-    price: 120,
+    price: 129,
     details:
       "5 post and 8 story + 7 highlights",
     followers:
@@ -269,7 +276,19 @@ function createConversation(senderId) {
 
     paymentMethod: null,
 
-    lastSeenAt: nowISO()
+    lastSeenAt: nowISO(),
+
+    /*
+     * Persistent state used to understand what the
+     * customer's next message is replying to.
+     */
+    lastOutgoingMessageId: null,
+
+    lastOutgoingText: null,
+
+    lastOutgoingStage: null,
+
+    lastOutgoingAt: null
 
   };
 }
@@ -307,10 +326,215 @@ function saveMessage(
 
 
 /* =========================================================
-   EXISTING PERSISTENT MEMORY
+   PERSISTENT SUPABASE MEMORY
 ========================================================= */
 
-async function memoryGet(senderId) {
+/*
+ * Supabase table:
+ *
+ * public.Conversations
+ *   id         text primary key
+ *   messages   jsonb
+ *   updated_at timestamptz default now()
+ *
+ * We store the COMPLETE conversation object in the jsonb
+ * "messages" column. This means stage/history/package/payment
+ * state survives Render restarts.
+ */
+
+function supabaseConfigured() {
+  return Boolean(
+    SUPABASE_URL &&
+    SUPABASE_SERVICE_ROLE_KEY
+  );
+}
+
+function supabaseHeaders() {
+  return {
+    apikey: SUPABASE_SERVICE_ROLE_KEY,
+    Authorization:
+      `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+    "Content-Type": "application/json"
+  };
+}
+
+function supabaseRowUrl(senderId) {
+  return (
+    `${SUPABASE_URL.replace(/\/+$/, "")}` +
+    `/rest/v1/${encodeURIComponent(SUPABASE_TABLE)}` +
+    `?id=eq.${encodeURIComponent(senderId)}`
+  );
+}
+
+async function supabaseGetConversation(senderId) {
+
+  if (!supabaseConfigured()) {
+    console.error(
+      "SUPABASE MEMORY NOT CONFIGURED: " +
+      "SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing."
+    );
+    return null;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `${SUPABASE_URL.replace(/\/+$/, "")}` +
+        `/rest/v1/${encodeURIComponent(SUPABASE_TABLE)}` +
+        `?select=id,messages,updated_at` +
+        `&id=eq.${encodeURIComponent(senderId)}` +
+        `&limit=1`,
+        {
+          method: "GET",
+          headers: supabaseHeaders()
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      console.error(
+        "SUPABASE GET ERROR:",
+        data
+      );
+      return null;
+    }
+
+    if (!Array.isArray(data) || !data.length) {
+      return null;
+    }
+
+    const stored = data[0]?.messages;
+
+    /*
+     * New format: complete conversation object.
+     */
+    if (
+      stored &&
+      typeof stored === "object" &&
+      !Array.isArray(stored) &&
+      (
+        stored.stage ||
+        stored.history ||
+        stored.senderId
+      )
+    ) {
+      return stored;
+    }
+
+    /*
+     * Backward compatibility with the old memory-test format:
+     * [{ role, content }, ...]
+     */
+    if (Array.isArray(stored)) {
+
+      const conversation =
+        createConversation(senderId);
+
+      conversation.history =
+        stored
+          .map(item => ({
+            role:
+              item?.role === "assistant"
+                ? "assistant"
+                : "client",
+            text:
+              String(
+                item?.text ??
+                item?.content ??
+                ""
+              ),
+            timestamp:
+              item?.timestamp ||
+              nowISO()
+          }))
+          .filter(item => item.text);
+
+      return conversation;
+    }
+
+    return null;
+
+  } catch (error) {
+
+    console.error(
+      "SUPABASE GET EXCEPTION:",
+      error.message
+    );
+
+    return null;
+  }
+}
+
+async function supabaseSaveConversation(
+  senderId,
+  conversation
+) {
+
+  if (!supabaseConfigured()) {
+    console.error(
+      "SUPABASE MEMORY NOT CONFIGURED: " +
+      "conversation was NOT persisted."
+    );
+    return false;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `${SUPABASE_URL.replace(/\/+$/, "")}` +
+        `/rest/v1/${encodeURIComponent(SUPABASE_TABLE)}`,
+        {
+          method: "POST",
+          headers: {
+            ...supabaseHeaders(),
+            Prefer:
+              "resolution=merge-duplicates,return=minimal"
+          },
+          body:
+            JSON.stringify({
+              id: String(senderId),
+              messages: conversation,
+              updated_at: nowISO()
+            })
+        }
+      );
+
+    const raw =
+      await response.text();
+
+    if (!response.ok) {
+
+      console.error(
+        "SUPABASE SAVE ERROR:",
+        response.status,
+        raw
+      );
+
+      return false;
+    }
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      "SUPABASE SAVE EXCEPTION:",
+      error.message
+    );
+
+    return false;
+  }
+}
+
+/*
+ * Legacy memory service is retained only as a fallback if
+ * Supabase is not configured. It is no longer the primary store.
+ */
+async function legacyMemoryGet(senderId) {
 
   if (
     !MEMORY_URL ||
@@ -355,7 +579,7 @@ async function memoryGet(senderId) {
   } catch (error) {
 
     console.error(
-      "MEMORY GET ERROR:",
+      "LEGACY MEMORY GET ERROR:",
       error.message
     );
 
@@ -363,8 +587,7 @@ async function memoryGet(senderId) {
   }
 }
 
-
-async function memorySave(
+async function legacyMemorySave(
   senderId,
   conversation
 ) {
@@ -394,7 +617,6 @@ async function memorySave(
       `${MEMORY_URL}/set/${key}/${value}`,
       {
         method: "POST",
-
         headers: {
           Authorization:
             `Bearer ${MEMORY_TOKEN}`
@@ -405,12 +627,11 @@ async function memorySave(
   } catch (error) {
 
     console.error(
-      "MEMORY SAVE ERROR:",
+      "LEGACY MEMORY SAVE ERROR:",
       error.message
     );
   }
 }
-
 
 async function getConversation(
   senderId
@@ -425,8 +646,25 @@ async function getConversation(
     );
   }
 
-  const saved =
-    await memoryGet(senderId);
+  /*
+   * ALWAYS try Supabase first. Do not create a NEW
+   * conversation merely because the Node process restarted.
+   */
+  let saved =
+    await supabaseGetConversation(
+      senderId
+    );
+
+  /*
+   * Optional legacy fallback for installations that
+   * still have data in the old MEMORY_URL store.
+   */
+  if (!saved) {
+    saved =
+      await legacyMemoryGet(
+        senderId
+      );
+  }
 
   const conversation =
     saved &&
@@ -458,6 +696,22 @@ async function getConversation(
     conversation.paymentMethod ||
     null;
 
+  conversation.lastOutgoingMessageId =
+    conversation.lastOutgoingMessageId ||
+    null;
+
+  conversation.lastOutgoingText =
+    conversation.lastOutgoingText ||
+    null;
+
+  conversation.lastOutgoingStage =
+    conversation.lastOutgoingStage ||
+    null;
+
+  conversation.lastOutgoingAt =
+    conversation.lastOutgoingAt ||
+    null;
+
   conversations.set(
     senderId,
     conversation
@@ -466,12 +720,13 @@ async function getConversation(
   console.log(
     "Conversation loaded:",
     senderId,
-    conversation.stage
+    conversation.stage,
+    "history:",
+    conversation.history.length
   );
 
   return conversation;
 }
-
 
 async function saveConversation(
   senderId,
@@ -483,12 +738,28 @@ async function saveConversation(
     conversation
   );
 
-  await memorySave(
-    senderId,
-    conversation
-  );
-}
+  /*
+   * Supabase is the source of truth.
+   */
+  const saved =
+    await supabaseSaveConversation(
+      senderId,
+      conversation
+    );
 
+  /*
+   * Only use the old memory service as an additional
+   * backup, not as the main database.
+   */
+  if (MEMORY_URL && MEMORY_TOKEN) {
+    await legacyMemorySave(
+      senderId,
+      conversation
+    );
+  }
+
+  return saved;
+}
 
 /* =========================================================
    PER-CLIENT QUEUE
@@ -563,9 +834,8 @@ function detectPackage(text) {
     /\bdiamond\b/.test(t)
   ) {
     return "diamond";
-  }
-
-  if (
+}
+   if (
     /\bpackage\s*1\b/.test(t) ||
     /^1$/.test(t)
   ) {
@@ -687,48 +957,29 @@ function buildPaymentMessage(
   const p =
     PACKAGES[packageKey];
 
-  const fee =
-    Math.round(
-      p.price * 0.12 * 100
-    ) / 100;
-
-  const total =
-    Math.round(
-      (p.price + fee) * 100
-    ) / 100;
-
   let details = "";
 
   if (
     method === "paypal"
   ) {
-    details =
-      PAYPAL_DETAILS;
+    details = PAYPAL_DETAILS;
   }
-
   else if (
     method === "iban"
   ) {
-    details =
-      IBAN_DETAILS;
+    details = IBAN_DETAILS;
   }
-
   else if (
     method === "revolut"
   ) {
-    details =
-      REVOLUT_DETAILS;
+    details = REVOLUT_DETAILS;
   }
-
   else if (
     method === "mbway"
   ) {
-    details =
-      MBWAY_DETAILS;
+    details = MBWAY_DETAILS;
   }
-
   else {
-
     details =
       "Our team will assist you with the Credit/Debit Card payment ❤️";
   }
@@ -739,9 +990,7 @@ Package: ${p.name}
 
 Package price: €${p.price.toFixed(2)}
 
-12% payment fee: €${fee.toFixed(2)}
-
-Total: €${total.toFixed(2)}
+Total: €${p.price.toFixed(2)}
 
 Payment method: ${method.toUpperCase()}
 
@@ -1094,6 +1343,29 @@ async function sendReplySafely(
       reply
     );
 
+  const sentMessageId =
+    data?.message_id ||
+    data?.id ||
+    null;
+
+  /*
+   * Record exactly what was sent and which stage it
+   * represents. This makes delayed replies deterministic.
+   */
+  conversation.lastOutgoingMessageId =
+    sentMessageId
+      ? String(sentMessageId)
+      : null;
+
+  conversation.lastOutgoingText =
+    reply;
+
+  conversation.lastOutgoingStage =
+    conversation.stage;
+
+  conversation.lastOutgoingAt =
+    nowISO();
+
   saveMessage(
     conversation,
     "assistant",
@@ -1193,16 +1465,15 @@ async function processClientMessage(
 
 
   /* =======================================================
-     FIRST CUSTOMER MESSAGE
+     FIXED CONVERSATION FLOW
+     The stage, not the number of historical messages,
+     determines what the customer's message means.
   ======================================================= */
 
   if (
-    customerMessages === 0
+    conversation.stage === "NEW"
   ) {
 
-    /*
-     * Normal first message.
-     */
     conversation.stage =
       "MESSAGE_ONE_SENT";
 
@@ -1216,18 +1487,9 @@ async function processClientMessage(
     return;
   }
 
-
-  /* =======================================================
-     SECOND CUSTOMER MESSAGE
-     
-     Whatever they say:
-     YES / OK / SURE / HELLO / ANYTHING
-     
-     -> FIXED MESSAGE TWO
-  ======================================================= */
-
   if (
-    customerMessages === 1
+    conversation.stage ===
+    "MESSAGE_ONE_SENT"
   ) {
 
     conversation.stage =
@@ -1243,18 +1505,9 @@ async function processClientMessage(
     return;
   }
 
-
-  /* =======================================================
-     THIRD CUSTOMER MESSAGE
-     
-     Fixed package list.
-     
-     BUT if they directly select a package,
-     handle the package immediately.
-  ======================================================= */
-
   if (
-    customerMessages === 2
+    conversation.stage ===
+    "MESSAGE_TWO_SENT"
   ) {
 
     const directPackage =
@@ -1297,6 +1550,11 @@ async function processClientMessage(
     return;
   }
 
+  /*
+   * If a previous version left the conversation in an
+   * unknown/old stage, do NOT restart the opening.
+   * Continue using the stored history and AI instead.
+   */
 
   /* =======================================================
      PACKAGE SELECTION
@@ -1416,7 +1674,7 @@ async function processClientMessage(
       conversation
     );
   }
-               }
+       }
 /* =========================================================
    WEBHOOK VERIFICATION
 ========================================================= */
@@ -1521,17 +1779,26 @@ app.post(
       ) {
 
         /*
-         * READ EVENT
+         * NON-MESSAGE EVENTS MUST NEVER REACH THE AI.
+         *
+         * This includes seen/read, delivery, reactions and
+         * other webhook notifications. Only event.message
+         * from the customer is processed below.
          */
         if (
-          event.read?.mid
+          event.read ||
+          event.delivery ||
+          event.reaction ||
+          event.postback
         ) {
+          console.log(
+            "Non-message event ignored."
+          );
           continue;
         }
 
-
         /*
-         * Ignore events without messages.
+         * Ignore events without a real message payload.
          */
         if (
           !event.message
@@ -1551,6 +1818,20 @@ app.post(
 
         const isEcho =
           event.message?.is_echo === true;
+
+        /*
+         * Never process our own messages as customer messages.
+         * Echo/manual handling is dealt with separately below.
+         */
+        if (
+          isEcho ||
+          String(senderId) ===
+          String(INSTAGRAM_USER_ID)
+        ) {
+          /*
+           * Handled by the existing own-message block below.
+           */
+        }
 
 
         console.log(
@@ -1680,6 +1961,48 @@ app.post(
                 ownText
               );
 
+              /*
+               * Manual messages must keep the state machine
+               * synchronized. This is important when the owner
+               * has to resend a fixed message after an AI delay
+               * or failed reply.
+               */
+              if (
+                normalize(ownText) ===
+                normalize(MESSAGE_ONE)
+              ) {
+                conversation.stage =
+                  "MESSAGE_ONE_SENT";
+              }
+              else if (
+                normalize(ownText) ===
+                normalize(MESSAGE_TWO)
+              ) {
+                conversation.stage =
+                  "MESSAGE_TWO_SENT";
+              }
+              else if (
+                normalize(ownText) ===
+                normalize(PACKAGES_MESSAGE)
+              ) {
+                conversation.stage =
+                  "PACKAGES_SHOWN";
+              }
+
+              conversation.lastOutgoingText =
+                ownText;
+
+              conversation.lastOutgoingStage =
+                conversation.stage;
+
+              conversation.lastOutgoingAt =
+                nowISO();
+
+              conversation.lastOutgoingMessageId =
+                messageId
+                  ? String(messageId)
+                  : null;
+
               await saveConversation(
                 recipientId,
                 conversation
@@ -1793,6 +2116,81 @@ app.post(
 
 
 /* =========================================================
+   MEMORY TEST
+========================================================= */
+
+/*
+ * GET /admin/memory-test?sender_id=...
+ * Requires x-admin-secret.
+ *
+ * This lets you verify from Render that the same sender ID
+ * can be loaded from Supabase after a restart.
+ */
+app.get(
+  "/admin/memory-test",
+  async (req, res) => {
+
+    if (!isAdmin(req)) {
+      return res.sendStatus(403);
+    }
+
+    const senderId =
+      String(
+        req.query.sender_id ||
+        ""
+      ).trim();
+
+    if (!senderId) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "sender_id is required"
+      });
+    }
+
+    const conversation =
+      await supabaseGetConversation(
+        senderId
+      );
+
+    if (!conversation) {
+      return res.json({
+        success: true,
+        found: false,
+        senderId,
+        message:
+          "No Supabase conversation found for this sender."
+      });
+    }
+
+    return res.json({
+      success: true,
+      found: true,
+      senderId,
+      stage:
+        conversation.stage,
+      selectedPackage:
+        conversation.selectedPackage,
+      paymentMethod:
+        conversation.paymentMethod,
+      historyLength:
+        Array.isArray(
+          conversation.history
+        )
+          ? conversation.history.length
+          : 0,
+      lastOutgoingText:
+        conversation.lastOutgoingText,
+      lastOutgoingStage:
+        conversation.lastOutgoingStage,
+      lastOutgoingAt:
+        conversation.lastOutgoingAt
+    });
+  }
+);
+
+
+/* =========================================================
    HEALTH
 ========================================================= */
 
@@ -1813,8 +2211,8 @@ app.get(
       ),
 
       memory: Boolean(
-        MEMORY_URL &&
-        MEMORY_TOKEN
+        SUPABASE_URL &&
+        SUPABASE_SERVICE_ROLE_KEY
       ),
 
       supabaseEnvironmentPresent:
@@ -1822,6 +2220,9 @@ app.get(
           SUPABASE_URL &&
           SUPABASE_SERVICE_ROLE_KEY
         ),
+
+      supabaseTable:
+        SUPABASE_TABLE,
 
       conversations:
         conversations.size,
@@ -1908,9 +2309,12 @@ app.get(
 
       memory:
         Boolean(
-          MEMORY_URL &&
-          MEMORY_TOKEN
+          SUPABASE_URL &&
+          SUPABASE_SERVICE_ROLE_KEY
         ),
+
+      supabaseTable:
+        SUPABASE_TABLE,
 
       clients
 
@@ -2080,9 +2484,9 @@ app.listen(
     );
 
     console.log(
-      "Persistent memory:",
-      MEMORY_URL
-        ? "ENABLED"
+      "Supabase persistent memory:",
+      supabaseConfigured()
+        ? `ENABLED (${SUPABASE_TABLE})`
         : "NOT CONFIGURED"
     );
 
