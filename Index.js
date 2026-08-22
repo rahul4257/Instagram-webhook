@@ -337,7 +337,56 @@ function getPageById(id) {
   return null;
 
 }
+/* =========================================================
+   MANAGED PAGE PROTECTION
+   Prevent AI-to-AI conversations
+========================================================= */
 
+const MANAGED_PAGE_IDS = new Set(
+  Object.values(PAGE_CONFIGS)
+    .map(page => String(page.id))
+);
+
+
+function isManagedPageEvent(event) {
+
+  const senderId =
+    String(event?.sender?.id || "").trim();
+
+  const message =
+    event?.message || {};
+
+  /*
+     Ignore Meta echo events from our own page.
+  */
+
+  if (
+    message.is_echo === true
+  ) {
+
+    return true;
+
+  }
+
+
+  /*
+     Ignore messages coming from ANY
+     of our four AI-enabled pages.
+  */
+
+  if (
+    senderId &&
+    MANAGED_PAGE_IDS.has(senderId)
+  ) {
+
+    return true;
+
+  }
+
+
+  return false;
+
+}
 
 /* =========================================================
    FIXED MESSAGE 1
@@ -3163,7 +3212,26 @@ app.post(
         const event of
         entry.messaging || []
       ) {
+/* =================================================
+   BLOCK AI-TO-AI EVENTS
+================================================= */
 
+if (
+  isManagedPageEvent(event)
+) {
+
+  console.log(
+    "🚫 AI-TO-AI EVENT IGNORED:",
+    page.username,
+    "SENDER:",
+    event?.sender?.id,
+    "RECIPIENT:",
+    event?.recipient?.id
+  );
+
+  continue;
+
+}
 
         /* =================================================
            READ / SEEN
