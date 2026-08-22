@@ -5524,94 +5524,63 @@ function renderClients(){
               : "No reminder";
 
 
-          return `
+          return (
+  '<div class="client">' +
 
-<div class="client">
+  '<div class="username">' +
+  escapeHtml(username) +
+  '</div>' +
 
-<div class="username">
+  '<div class="meta">' +
+  'Page: ' +
+  escapeHtml(client.page || "") +
+  '</div>' +
 
-${escapeHtml(username)}
+  '<div class="meta">' +
+  'Stage: ' +
+  escapeHtml(client.stage || "") +
+  '</div>' +
 
-</div>
+  '<div class="meta">' +
+  'Package: ' +
+  escapeHtml(
+    client.selectedPackage || "none"
+  ) +
+  '</div>' +
 
+  '<div class="meta">' +
+  'Payment: ' +
+  escapeHtml(
+    client.paymentMethod || "none"
+  ) +
+  '</div>' +
 
-<div class="meta">
+  '<div class="meta">' +
+  escapeHtml(reminder) +
+  '</div>' +
 
-Page:
-${escapeHtml(
-  client.page || ""
-)}
+  '<div class="meta">' +
+  'ID: ' +
+  escapeHtml(
+    client.senderId || ""
+  ) +
+  '</div>' +
 
-</div>
+  '<button ' +
+  'onclick="selectClient(' +
+  index +
+  ')">' +
+  'Reply' +
+  '</button>' +
 
+  '</div>'
+);
 
-<div class="meta">
-
-Stage:
-${escapeHtml(
-  client.stage || ""
-)}
-
-</div>
-
-
-<div class="meta">
-
-Package:
-${escapeHtml(
-  client.selectedPackage ||
-  "none"
-)}
-
-</div>
-
-
-<div class="meta">
-
-Payment:
-${escapeHtml(
-  client.paymentMethod ||
-  "none"
-)}
-
-</div>
-
-
-<div class="meta">
-
-${escapeHtml(
-  reminder
-)}
-
-</div>
-
-
-<div class="meta">
-
-ID:
-${escapeHtml(
-  client.senderId || ""
-)}
-
-</div>
-
-
-<button
-  onclick="selectClient(${index})"
->
-Reply
-</button>
-
-</div>
-
-`;
-
-        }
-      )
-      .join("");
+      }
+    )
+    .join("");
 
 }
-
 
 function selectClient(index){
 
