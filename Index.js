@@ -1583,7 +1583,6 @@ async function scheduleReminder(
 /* =========================================================
    START REMINDER AFTER READ
 ========================================================= */
-
 async function startReminderAfterRead(
   customerId,
   page,
@@ -1596,29 +1595,85 @@ async function startReminderAfterRead(
   const conversation =
     await getConversation(key);
 
-  if (
-    !conversation.reminder
-  ) {
-
-    return;
-
-  }
-
   const reminder =
     conversation.reminder;
 
   if (
-    reminder.triggered ||
-    reminder.seen
+    !reminder
   ) {
+
+    console.log(
+      "READ REMINDER SKIPPED - NO REMINDER:",
+      key
+    );
 
     return;
 
   }
 
   if (
+    reminder.triggered
+  ) {
+
+    return;
+
+  }
+
+  /*
+     IMPORTANT:
+     If this reminder was already activated by a previous
+     READ event, do not create another timer.
+  */
+
+  if (
+    reminder.seen
+  ) {
+
+    console.log(
+      "READ REMINDER ALREADY STARTED:",
+      key,
+      reminder.stage
+    );
+
+    return;
+
+  }
+
+  /*
+     The reminder must belong to the exact message
+     currently stored as the last outgoing message.
+  */
+
+  if (
     !reminder.messageId
   ) {
+
+    console.log(
+      "READ REMINDER SKIPPED - NO MESSAGE ID:",
+      key
+    );
+
+    return;
+
+  }
+
+  if (
+    String(
+      conversation.lastOutgoingMessageId || ""
+    ) !==
+    String(
+      reminder.messageId
+    )
+  ) {
+
+    console.log(
+      "READ REMINDER SKIPPED - MESSAGE ID MISMATCH:",
+      key,
+      "LAST:",
+      conversation.lastOutgoingMessageId,
+      "REMINDER:",
+      reminder.messageId
+    );
 
     return;
 
@@ -1633,6 +1688,12 @@ async function startReminderAfterRead(
     )
   ) {
 
+    console.log(
+      "READ REMINDER SKIPPED - INVALID WATERMARK:",
+      key,
+      watermark
+    );
+
     return;
 
   }
@@ -1646,40 +1707,41 @@ async function startReminderAfterRead(
     !Number.isFinite(sentTime)
   ) {
 
-    return;
-
-  }
-
-  if (
-    watermarkNumber < sentTime
-  ) {
+    console.log(
+      "READ REMINDER SKIPPED - INVALID SENT TIME:",
+      key,
+      reminder.sentAt
+    );
 
     return;
 
   }
-
 
   /*
-     The READ event is only allowed to activate
-     the reminder for the exact current outgoing message.
+     Meta timestamps can differ slightly from our server
+     timestamp. Allow a small tolerance.
+
+     We only reject a READ event if it is clearly older
+     than the message that generated the reminder.
   */
 
+  const READ_TOLERANCE =
+    10 * 1000;
+
   if (
-    String(
-      conversation.lastOutgoingMessageId || ""
-    ) !==
-    String(
-      reminder.messageId
-    )
+    watermarkNumber +
+      READ_TOLERANCE <
+    sentTime
   ) {
+
+    console.log(
+      "READ REMINDER SKIPPED - READ BEFORE MESSAGE:",
+      key
+    );
 
     return;
 
   }
-
-
-  reminder.seen =
-    true;
 
   const delay =
     REMINDER_DELAYS[
@@ -1690,10 +1752,68 @@ async function startReminderAfterRead(
     delay === undefined
   ) {
 
+    console.log(
+      "READ REMINDER SKIPPED - NO DELAY:",
+      key,
+      reminder.stage
+    );
+
     return;
 
   }
 
+  /*
+     Mark it seen BEFORE creating the timer.
+
+     This prevents multiple Meta READ events from creating
+     multiple timers for the same message.
+  */
+
+  reminder.seen =
+    true;
+
+  reminder.triggered =
+    false;
+
+  reminder.dueAt =
+    new Date(
+      Date.now() + delay
+    ).toISOString();
+
+  /*
+     Keep the page that actually sent this message.
+  */
+
+  conversation.pageKey =
+    page?.key ||
+    conversation.pageKey ||
+    null;
+
+  await saveConversation(
+    key,
+    conversation
+  );
+
+  /*
+     Clear any old timer first.
+  */
+
+  const oldTimer =
+    reminderTimers.get(key);
+
+  if (
+    oldTimer
+  ) {
+
+    clearTimeout(
+      oldTimer
+    );
+
+    reminderTimers.delete(
+      key
+    );
+
+  }
 
   const timer =
     setTimeout(
@@ -1717,29 +1837,55 @@ async function startReminderAfterRead(
       delay
     );
 
-
   reminderTimers.set(
     key,
     timer
   );
 
-
-  await saveConversation(
-    key,
-    conversation
+  console.log(
+    "========================================"
   );
 
+  console.log(
+    "REMINDER TIMER STARTED"
+  );
 
   console.log(
-    "REMINDER TIMER STARTED:",
-    page.username,
-    key,
-    reminder.stage,
-    delay
+    "PAGE:",
+    page?.username
+  );
+
+  console.log(
+    "CUSTOMER:",
+    key
+  );
+
+  console.log(
+    "STAGE:",
+    reminder.stage
+  );
+
+  console.log(
+    "MESSAGE ID:",
+    reminder.messageId
+  );
+
+  console.log(
+    "DELAY:",
+    delay,
+    "ms"
+  );
+
+  console.log(
+    "DUE AT:",
+    reminder.dueAt
+  );
+
+  console.log(
+    "========================================"
   );
 
 }
-
 
 /* =========================================================
    PROCESS REMINDER
@@ -1756,7 +1902,9 @@ async function processReminder(
   const key =
     String(senderId);
 
-  reminderTimers.delete(key);
+  reminderTimers.delete(
+    key
+  );
 
   const conversation =
     await getConversation(key);
@@ -1764,19 +1912,57 @@ async function processReminder(
   const reminder =
     conversation.reminder;
 
+  /*
+     Make sure this reminder still exists.
+  */
+
   if (
-    !reminder ||
-    reminder.triggered ||
-    !reminder.seen
+    !reminder
+  ) {
+
+    console.log(
+      "REMINDER CANCELLED - NO REMINDER:",
+      key
+    );
+
+    return;
+
+  }
+
+  /*
+     Never fire the same reminder twice.
+  */
+
+  if (
+    reminder.triggered
   ) {
 
     return;
 
   }
 
+  /*
+     Reminder must have been seen.
+  */
+
+  if (
+    !reminder.seen
+  ) {
+
+    console.log(
+      "REMINDER CANCELLED - MESSAGE NOT SEEN:",
+      key
+    );
+
+    return;
+
+  }
 
   /*
-     Customer replied after the original message.
+     Customer sent a new message after the original
+     outgoing message.
+
+     In that case the old reminder is cancelled.
   */
 
   if (
@@ -1788,13 +1974,25 @@ async function processReminder(
     )
   ) {
 
+    console.log(
+      "REMINDER CANCELLED - CUSTOMER REPLIED:",
+      key
+    );
+
+    conversation.reminder =
+      null;
+
+    await saveConversation(
+      key,
+      conversation
+    );
+
     return;
 
   }
 
-
   /*
-     Conversation moved forward.
+     Conversation must still be at the same stage.
   */
 
   if (
@@ -1802,113 +2000,276 @@ async function processReminder(
     expectedStage
   ) {
 
+    console.log(
+      "REMINDER CANCELLED - STAGE CHANGED:",
+      key,
+      conversation.stage,
+      expectedStage
+    );
+
+    conversation.reminder =
+      null;
+
+    await saveConversation(
+      key,
+      conversation
+    );
+
     return;
 
   }
 
+  /*
+     The reminder must still belong to the same
+     outgoing message.
+  */
+
+  if (
+    String(
+      reminder.messageId || ""
+    ) !==
+    String(
+      expectedMessageId || ""
+    )
+  ) {
+
+    console.log(
+      "REMINDER CANCELLED - REMINDER MESSAGE CHANGED:",
+      key
+    );
+
+    return;
+
+  }
 
   if (
     String(
       conversation.lastOutgoingMessageId || ""
     ) !==
-    String(expectedMessageId || "")
+    String(
+      expectedMessageId || ""
+    )
   ) {
+
+    console.log(
+      "REMINDER CANCELLED - LAST OUTGOING CHANGED:",
+      key
+    );
 
     return;
 
   }
 
+  /*
+     Never send a payment reminder after payment
+     has already been confirmed.
+  */
 
   if (
     conversation.paymentConfirmed
   ) {
 
+    conversation.reminder =
+      null;
+
+    await saveConversation(
+      key,
+      conversation
+    );
+
     return;
 
   }
-
 
   const text =
     REMINDER_TEXTS[
       expectedStage
     ];
 
-  if (!text) {
+  if (
+    !text
+  ) {
 
     return;
 
   }
 
+  /*
+     Use the page from the webhook.
+     If unavailable, fall back to the conversation page.
+  */
 
-  const data =
-    await sendInstagramMessage(
-      page,
-      key,
-      text
-    );
-
-
-  const messageId =
-    data?.message_id ||
-    data?.id ||
-    null;
-
+  const currentPage =
+    page ||
+    PAGE_CONFIGS[
+      conversation.pageKey
+    ];
 
   if (
-    messageId
+    !currentPage
   ) {
 
-    outgoingMessages.set(
-      `${page.key}:${String(messageId)}`,
-      {
-        customerId: key,
-        pageKey: page.key,
-        type: "reminder"
-      }
+    console.log(
+      "REMINDER SKIPPED - PAGE UNKNOWN:",
+      key
     );
+
+    return;
 
   }
 
+  /*
+     Mark triggered BEFORE sending.
 
-  saveMessage(
-    conversation,
-    "assistant",
-    text
-  );
+     This prevents duplicate timers/events from sending
+     the same reminder twice.
+  */
 
-
-  conversation.lastOutgoingMessageId =
-    messageId
-      ? String(messageId)
-      : null;
-
-  conversation.lastOutgoingText =
-    text;
-
-  conversation.lastOutgoingStage =
-    expectedStage;
-
-  conversation.lastOutgoingAt =
-    nowISO();
-
-  conversation.reminder =
-    null;
-
+  reminder.triggered =
+    true;
 
   await saveConversation(
     key,
     conversation
   );
 
+  try {
 
-  console.log(
-    "REMINDER SENT:",
-    page.username,
-    key
-  );
+    const data =
+      await sendInstagramMessage(
+        currentPage,
+        key,
+        text
+      );
 
-}
+    const messageId =
+      data?.message_id ||
+      data?.id ||
+      null;
 
+    if (
+      messageId
+    ) {
+
+      outgoingMessages.set(
+        `${currentPage.key}:${String(messageId)}`,
+        {
+          customerId:
+            key,
+
+          pageKey:
+            currentPage.key,
+
+          type:
+            "reminder"
+        }
+      );
+
+    }
+
+    saveMessage(
+      conversation,
+      "assistant",
+      text
+    );
+
+    conversation.pageKey =
+      currentPage.key;
+
+    conversation.lastOutgoingMessageId =
+      messageId
+        ? String(messageId)
+        : null;
+
+    conversation.lastOutgoingText =
+      text;
+
+    conversation.lastOutgoingStage =
+      expectedStage;
+
+    conversation.lastOutgoingAt =
+      nowISO();
+
+    /*
+       Remove the fired reminder.
+
+       The next reminder will be created by the next
+       customer message / fixed reply.
+    */
+
+    conversation.reminder =
+      null;
+
+    await saveConversation(
+      key,
+      conversation
+    );
+
+    console.log(
+      "========================================"
+    );
+
+    console.log(
+      "REMINDER SENT"
+    );
+
+    console.log(
+      "PAGE:",
+      currentPage.username
+    );
+
+    console.log(
+      "CUSTOMER:",
+      key
+    );
+
+    console.log(
+      "STAGE:",
+      expectedStage
+    );
+
+    console.log(
+      "TEXT:",
+      text
+    );
+
+    console.log(
+      "========================================"
+    );
+
+  }
+
+  catch (
+    error
+  ) {
+
+    /*
+       If Instagram sending fails, restore the reminder
+       so it is not silently lost.
+    */
+
+    reminder.triggered =
+      false;
+
+    conversation.reminder =
+      reminder;
+
+    await saveConversation(
+      key,
+      conversation
+    );
+
+    console.error(
+      "REMINDER SEND FAILED:",
+      currentPage.username,
+      key,
+      error
+    );
+
+  }
+
+       }
+  
 
 /* =========================================================
    AI TEXT EXTRACTION
