@@ -74,14 +74,11 @@ const PAGE_CONFIGS = {
 
     username: "@expl.europe",
 
-    id:
-      "17841404831696204",
+    id: "17841404831696204",
 
-    token:
-      PAGE_ACCESS_TOKEN,
+    token: PAGE_ACCESS_TOKEN,
 
-    currency:
-      "€",
+    currency: "€",
 
     packages: {
 
@@ -89,8 +86,7 @@ const PAGE_CONFIGS = {
         name: "Bronze",
         price: 39,
         details: "2 story",
-        followers:
-          "1.5K followers guaranteed"
+        followers: "1.5K followers guaranteed"
       },
 
       silver: {
@@ -98,8 +94,7 @@ const PAGE_CONFIGS = {
         price: 66,
         details:
           "1 post and 3 story + 2 highlights",
-        followers:
-          "4K followers guaranteed"
+        followers: "4K followers guaranteed"
       },
 
       gold: {
@@ -107,8 +102,7 @@ const PAGE_CONFIGS = {
         price: 99,
         details:
           "3 post and 4 story + 3 highlights",
-        followers:
-          "7K followers guaranteed"
+        followers: "7K followers guaranteed"
       },
 
       diamond: {
@@ -116,8 +110,7 @@ const PAGE_CONFIGS = {
         price: 129,
         details:
           "5 post and 8 story + 7 highlights",
-        followers:
-          "10K followers guaranteed"
+        followers: "10K followers guaranteed"
       }
 
     },
@@ -133,24 +126,17 @@ const PAGE_CONFIGS = {
   },
 
 
-  /* =======================================================
-     MIAMI
-  ======================================================= */
-
   miami: {
 
     key: "miami",
 
     username: "@expl.miami",
 
-    id:
-      "17841403973063146",
+    id: "17841403973063146",
 
-    token:
-      EXPL_MIAMI_TOKEN,
+    token: EXPL_MIAMI_TOKEN,
 
-    currency:
-      "$",
+    currency: "$",
 
     packages: {
 
@@ -158,8 +144,7 @@ const PAGE_CONFIGS = {
         name: "Bronze",
         price: 38,
         details: "2 story",
-        followers:
-          "1K followers guaranteed"
+        followers: "1K followers guaranteed"
       },
 
       silver: {
@@ -167,8 +152,7 @@ const PAGE_CONFIGS = {
         price: 66,
         details:
           "1 post and 3 story + 2 highlights",
-        followers:
-          "3K followers guaranteed"
+        followers: "3K followers guaranteed"
       },
 
       gold: {
@@ -176,8 +160,7 @@ const PAGE_CONFIGS = {
         price: 99,
         details:
           "3 post and 4 story + 3 highlights",
-        followers:
-          "5K followers guaranteed"
+        followers: "5K followers guaranteed"
       },
 
       diamond: {
@@ -185,8 +168,7 @@ const PAGE_CONFIGS = {
         price: 129,
         details:
           "5 post and 8 story + 7 highlights",
-        followers:
-          "8K followers guaranteed"
+        followers: "8K followers guaranteed"
       }
 
     },
@@ -201,32 +183,24 @@ const PAGE_CONFIGS = {
   },
 
 
-  /* =======================================================
-     CANADA
-  ======================================================= */
-
   canada: {
 
     key: "canada",
 
     username: "@expl.canada",
 
-    id:
-      "17841452723605206",
+    id: "17841452723605206",
 
-    token:
-      EXPL_CANADA_TOKEN,
+    token: EXPL_CANADA_TOKEN,
 
-    currency:
-      "$",
+    currency: "$",
 
     packages: {
 
       bronze: {
         name: "Bronze",
         price: 35,
-        details:
-          "2 Stories",
+        details: "2 Stories",
         followers:
           "300–400 Global Followers Guaranteed"
       },
@@ -269,34 +243,25 @@ const PAGE_CONFIGS = {
   },
 
 
-  /* =======================================================
-     MENTALXHEAL
-  ======================================================= */
-
   mentalxheal: {
 
     key: "mentalxheal",
 
     username: "@mentalxheal",
 
-    id:
-      "17841402953609202",
+    id: "17841402953609202",
 
-    token:
-      MENTALXHEAL_TOKEN,
+    token: MENTALXHEAL_TOKEN,
 
-    currency:
-      "$",
+    currency: "$",
 
     packages: {
 
       bronze: {
         name: "Bronze",
         price: 39,
-        details:
-          "2 story",
-        followers:
-          "1K followers guaranteed"
+        details: "2 story",
+        followers: "1K followers guaranteed"
       },
 
       silver: {
@@ -304,8 +269,7 @@ const PAGE_CONFIGS = {
         price: 66,
         details:
           "1 post and 3 story + 2 highlights",
-        followers:
-          "3K followers guaranteed"
+        followers: "3K followers guaranteed"
       },
 
       gold: {
@@ -313,8 +277,7 @@ const PAGE_CONFIGS = {
         price: 99,
         details:
           "3 post and 4 story + 3 highlights",
-        followers:
-          "5K followers guaranteed"
+        followers: "5K followers guaranteed"
       },
 
       diamond: {
@@ -322,8 +285,7 @@ const PAGE_CONFIGS = {
         price: 129,
         details:
           "5 post and 8 story + 7 highlights",
-        followers:
-          "8K followers guaranteed"
+        followers: "8K followers guaranteed"
       }
 
     },
@@ -357,10 +319,9 @@ function getPageById(id) {
   const value =
     String(id || "").trim();
 
-
   for (
-    const page
-    of Object.values(PAGE_CONFIGS)
+    const page of
+    Object.values(PAGE_CONFIGS)
   ) {
 
     if (
@@ -506,7 +467,7 @@ const processedMessageIds =
   new Map();
 
 const outgoingMessages =
-  new Set();
+  new Map();
 
 const manualReplyVersion =
   new Map();
@@ -559,6 +520,17 @@ function normalize(text) {
 }
 
 
+function hasMedia(
+  attachmentInfo
+) {
+
+  return Boolean(
+    String(
+      attachmentInfo || ""
+    ).trim()
+  );
+
+     }
 /* =========================================================
    CONVERSATION
 ========================================================= */
@@ -571,6 +543,9 @@ function createConversation(
 
     senderId:
       String(senderId),
+
+    pageKey:
+      null,
 
     stage:
       "NEW",
@@ -596,8 +571,11 @@ function createConversation(
     awaitingPaymentConfirmation:
       false,
 
-    lastSeenAt:
-      nowISO(),
+    lastCustomerMessageAt:
+      null,
+
+    customerMessageVersion:
+      0,
 
     lastOutgoingMessageId:
       null,
@@ -627,7 +605,6 @@ function saveMessage(
 
   if (!text) return;
 
-
   conversation.history.push({
 
     role,
@@ -640,7 +617,6 @@ function saveMessage(
 
   });
 
-
   if (
     conversation.history.length > 80
   ) {
@@ -650,11 +626,9 @@ function saveMessage(
 
   }
 
-
-  conversation.lastSeenAt =
-    nowISO();
-
 }
+
+
 /* =========================================================
    SUPABASE
 ========================================================= */
@@ -695,14 +669,9 @@ async function supabaseGetConversation(
     !supabaseConfigured()
   ) {
 
-    console.error(
-      "SUPABASE NOT CONFIGURED"
-    );
-
     return null;
 
   }
-
 
   try {
 
@@ -727,26 +696,11 @@ async function supabaseGetConversation(
 
       );
 
-
     const data =
       await response.json();
 
-
     if (
-      !response.ok
-    ) {
-
-      console.error(
-        "SUPABASE GET ERROR:",
-        data
-      );
-
-      return null;
-
-    }
-
-
-    if (
+      !response.ok ||
       !Array.isArray(data) ||
       !data.length
     ) {
@@ -755,10 +709,8 @@ async function supabaseGetConversation(
 
     }
 
-
     const stored =
       data[0]?.messages;
-
 
     if (
       stored &&
@@ -770,62 +722,14 @@ async function supabaseGetConversation(
 
     }
 
-
-    if (
-      Array.isArray(stored)
-    ) {
-
-      const conversation =
-        createConversation(
-          senderId
-        );
-
-
-      conversation.history =
-        stored
-          .map(
-            item => ({
-
-              role:
-                item?.role ===
-                "assistant"
-                  ? "assistant"
-                  : "client",
-
-              text:
-                String(
-                  item?.text ??
-                  item?.content ??
-                  ""
-                ),
-
-              timestamp:
-                item?.timestamp ||
-                nowISO()
-
-            })
-          )
-          .filter(
-            item =>
-              item.text
-          );
-
-
-      return conversation;
-
-    }
-
-
     return null;
 
   }
 
-  catch (
-    error
-  ) {
+  catch (error) {
 
     console.error(
-      "SUPABASE GET EXCEPTION:",
+      "SUPABASE GET ERROR:",
       error.message
     );
 
@@ -835,10 +739,6 @@ async function supabaseGetConversation(
 
 }
 
-
-/* =========================================================
-   SUPABASE SAVE
-========================================================= */
 
 async function supabaseSaveConversation(
   senderId,
@@ -850,13 +750,12 @@ async function supabaseSaveConversation(
   ) {
 
     console.error(
-      "SUPABASE NOT CONFIGURED - MEMORY NOT SAVED"
+      "SUPABASE NOT CONFIGURED"
     );
 
     return false;
 
   }
-
 
   try {
 
@@ -898,10 +797,8 @@ async function supabaseSaveConversation(
 
       );
 
-
     const raw =
       await response.text();
-
 
     if (
       !response.ok
@@ -917,14 +814,11 @@ async function supabaseSaveConversation(
 
     }
 
-
     return true;
 
   }
 
-  catch (
-    error
-  ) {
+  catch (error) {
 
     console.error(
       "SUPABASE SAVE EXCEPTION:",
@@ -959,17 +853,9 @@ async function getConversation(
   }
 
 
-  /*
-     ALWAYS LOAD SUPABASE FIRST.
-
-     This is the important fix for the old problem where
-     a client replied hours later and the bot treated it
-     as a completely new conversation.
-  */
-
   const saved =
     await supabaseGetConversation(
-      senderId
+      key
     );
 
 
@@ -980,13 +866,20 @@ async function getConversation(
       ? saved
 
       : createConversation(
-          senderId
+          key
         );
 
 
   conversation.senderId =
     key;
 
+  conversation.pageKey =
+    conversation.pageKey ||
+    null;
+
+  conversation.stage =
+    conversation.stage ||
+    "NEW";
 
   conversation.history =
     Array.isArray(
@@ -995,65 +888,55 @@ async function getConversation(
       ? conversation.history
       : [];
 
-
-  conversation.stage =
-    conversation.stage ||
-    "NEW";
-
-
   conversation.selectedPackage =
     conversation.selectedPackage ||
     null;
 
-
   conversation.paymentMethod =
     conversation.paymentMethod ||
     null;
-
 
   conversation.paymentDetailsSent =
     Boolean(
       conversation.paymentDetailsSent
     );
 
-
   conversation.paymentConfirmed =
     Boolean(
       conversation.paymentConfirmed
     );
-
 
   conversation.paymentProofReceived =
     Boolean(
       conversation.paymentProofReceived
     );
 
-
   conversation.awaitingPaymentConfirmation =
     Boolean(
       conversation.awaitingPaymentConfirmation
     );
 
+  conversation.customerMessageVersion =
+    Number(
+      conversation.customerMessageVersion ||
+      0
+    );
 
   conversation.lastOutgoingMessageId =
     conversation.lastOutgoingMessageId ||
     null;
 
-
   conversation.lastOutgoingText =
     conversation.lastOutgoingText ||
     null;
-
 
   conversation.lastOutgoingStage =
     conversation.lastOutgoingStage ||
     null;
 
-
   conversation.lastOutgoingAt =
     conversation.lastOutgoingAt ||
     null;
-
 
   conversation.reminder =
     conversation.reminder ||
@@ -1071,10 +954,6 @@ async function getConversation(
 }
 
 
-/* =========================================================
-   SAVE
-========================================================= */
-
 async function saveConversation(
   senderId,
   conversation
@@ -1083,15 +962,13 @@ async function saveConversation(
   const key =
     String(senderId);
 
-
   conversations.set(
     key,
     conversation
   );
 
-
   return await supabaseSaveConversation(
-    senderId,
+    key,
     conversation
   );
 
@@ -1110,23 +987,19 @@ function queueForClient(
   const key =
     String(senderId);
 
-
   const previous =
     clientQueues.get(key) ||
     Promise.resolve();
-
 
   const next =
     previous
       .catch(() => {})
       .then(task);
 
-
   clientQueues.set(
     key,
     next
   );
-
 
   next.finally(() => {
 
@@ -1140,7 +1013,6 @@ function queueForClient(
     }
 
   }).catch(() => {});
-
 
   return next;
 
@@ -1158,50 +1030,29 @@ function detectPackage(
   const t =
     normalize(text);
 
-
   if (
-    /\bbronze\b/.test(t)
-  ) return "bronze";
-
-
-  if (
-    /\bsilver\b/.test(t)
-  ) return "silver";
-
-
-  if (
-    /\bgold\b/.test(t)
-  ) return "gold";
-
-
-  if (
-    /\bdiamond\b/.test(t)
-  ) return "diamond";
-
-
-  if (
+    /\bbronze\b/.test(t) ||
     /\bpackage\s*1\b/.test(t) ||
     /^1$/.test(t)
   ) return "bronze";
 
-
   if (
+    /\bsilver\b/.test(t) ||
     /\bpackage\s*2\b/.test(t) ||
     /^2$/.test(t)
   ) return "silver";
 
-
   if (
+    /\bgold\b/.test(t) ||
     /\bpackage\s*3\b/.test(t) ||
     /^3$/.test(t)
   ) return "gold";
 
-
   if (
+    /\bdiamond\b/.test(t) ||
     /\bpackage\s*4\b/.test(t) ||
     /^4$/.test(t)
   ) return "diamond";
-
 
   return null;
 
@@ -1219,45 +1070,30 @@ function detectPaymentMethod(
   const t =
     normalize(text);
 
-
   if (
     /\bpaypal\b/.test(t)
   ) return "paypal";
-
 
   if (
     /\bvenmo\b/.test(t)
   ) return "venmo";
 
-
   if (
     /\be[\s-]?transfer\b/.test(t)
   ) return "etransfer";
-
 
   if (
     /\biban\b/.test(t) ||
     /\bwise\b/.test(t)
   ) return "iban";
 
-
   if (
     /\brevolut\b/.test(t)
   ) return "revolut";
 
-
   if (
     /\bmb[\s-]?way\b/.test(t)
   ) return "mbway";
-
-
-  if (
-    /\bcredit card\b/.test(t) ||
-    /\bdebit card\b/.test(t) ||
-    /\bcredit\/debit\b/.test(t) ||
-    /\bcard\b/.test(t)
-  ) return "card";
-
 
   if (
     /\bach\b/.test(t) ||
@@ -1266,6 +1102,12 @@ function detectPaymentMethod(
     /\bbank\b/.test(t)
   ) return "achWire";
 
+  if (
+    /\bcredit card\b/.test(t) ||
+    /\bdebit card\b/.test(t) ||
+    /\bcredit\/debit\b/.test(t) ||
+    /\bcard\b/.test(t)
+  ) return "card";
 
   return null;
 
@@ -1273,7 +1115,7 @@ function detectPaymentMethod(
 
 
 /* =========================================================
-   PAYMENT METHOD AVAILABLE?
+   PAYMENT METHOD AVAILABLE
 ========================================================= */
 
 function paymentMethodAvailable(
@@ -1319,12 +1161,8 @@ function paymentMethodAvailable(
     expected =>
       page.paymentMethods.some(
         available =>
-          normalize(
-            available
-          ) ===
-          normalize(
-            expected
-          )
+          normalize(available) ===
+          normalize(expected)
       )
   );
 
@@ -1461,7 +1299,6 @@ YOUTUBE
 
   }
 
-
   return "";
 
 }
@@ -1479,9 +1316,7 @@ function buildPackageConfirmation(
   const p =
     page.packages[packageKey];
 
-
   if (!p) return null;
-
 
   return `
 Perfect ❤️
@@ -1511,9 +1346,7 @@ function buildPaymentMessage(
   const p =
     page.packages[packageKey];
 
-
   if (!p) return null;
-
 
   if (
     !paymentMethodAvailable(
@@ -1533,10 +1366,8 @@ Please choose one of these ❤️`;
 
   }
 
-
   const details =
     PAYMENT_DETAILS[method];
-
 
   return `
 Perfect ❤️
@@ -1558,7 +1389,7 @@ After successful payment, please send us your payment screenshot ❤️`;
 
      }
 /* =========================================================
-   REMINDER SYSTEM
+   REMINDERS
 ========================================================= */
 
 const REMINDER_TEXTS = {
@@ -1581,14 +1412,15 @@ const REMINDER_TEXTS = {
 };
 
 
-/* =========================================================
-   REMINDER DELAYS
-========================================================= */
+/*
+   First reminder was not given an exact delay in the
+   original requirements, so it is set to 1 minute.
+*/
 
 const REMINDER_DELAYS = {
 
   MESSAGE_ONE_SENT:
-    0,
+    1 * 60 * 1000,
 
   MESSAGE_TWO_SENT:
     2 * 60 * 1000,
@@ -1616,16 +1448,24 @@ function cancelReminder(
   const key =
     String(senderId);
 
-
   const timer =
     reminderTimers.get(key);
-
 
   if (timer) {
 
     clearTimeout(timer);
 
     reminderTimers.delete(key);
+
+  }
+
+  const conversation =
+    conversations.get(key);
+
+  if (conversation) {
+
+    conversation.reminder =
+      null;
 
   }
 
@@ -1639,13 +1479,9 @@ function cancelReminder(
 async function scheduleReminder(
   senderId,
   stage,
-  outgoingMessageId,
-  outgoingAt
+  messageId,
+  sentAt
 ) {
-
-  /*
-     Never schedule a reminder for an unsupported stage.
-  */
 
   if (
     !REMINDER_TEXTS[stage]
@@ -1655,66 +1491,42 @@ async function scheduleReminder(
 
   }
 
-
   const key =
     String(senderId);
 
-
-  cancelReminder(
-    senderId
-  );
-
+  cancelReminder(key);
 
   const conversation =
-    await getConversation(
-      senderId
-    );
-
-
-  /*
-     The reminder is only valid for the exact message/stage
-     that was sent.
-  */
+    await getConversation(key);
 
   conversation.reminder = {
 
     stage,
 
     messageId:
-      outgoingMessageId
-        ? String(outgoingMessageId)
+      messageId
+        ? String(messageId)
         : null,
 
     sentAt:
-      outgoingAt ||
+      sentAt ||
       nowISO(),
 
     seen:
       false,
 
-    dueAt:
-      null,
-
     triggered:
-      false
+      false,
+
+    customerMessageVersion:
+      conversation.customerMessageVersion
 
   };
 
-
   await saveConversation(
-    senderId,
+    key,
     conversation
   );
-
-
-  /*
-     IMPORTANT:
-
-     We DO NOT start the reminder timer here.
-
-     It starts only when Meta sends a READ event proving
-     the client has seen the message.
-  */
 
 }
 
@@ -1724,48 +1536,30 @@ async function scheduleReminder(
 ========================================================= */
 
 async function startReminderAfterRead(
-  senderId,
-  readWatermark
+  customerId,
+  page,
+  watermark
 ) {
 
   const key =
-    String(senderId);
-
+    String(customerId);
 
   const conversation =
-    await getConversation(
-      senderId
-    );
+    await getConversation(key);
 
+  if (
+    !conversation.reminder
+  ) {
+
+    return;
+
+  }
 
   const reminder =
     conversation.reminder;
 
-
   if (
-    !reminder
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    reminder.triggered
-  ) {
-
-    return;
-
-  }
-
-
-  /*
-     Only start if this exact reminder hasn't already
-     been marked as seen.
-  */
-
-  if (
+    reminder.triggered ||
     reminder.seen
   ) {
 
@@ -1773,20 +1567,42 @@ async function startReminderAfterRead(
 
   }
 
+  if (
+    !reminder.messageId
+  ) {
 
-  /*
-     Meta's read watermark is milliseconds.
-     Convert safely.
-  */
+    return;
 
-  const watermark =
-    Number(
-      readWatermark
-    );
+  }
 
+  const watermarkNumber =
+    Number(watermark);
 
   if (
-    !Number.isFinite(watermark)
+    !Number.isFinite(
+      watermarkNumber
+    )
+  ) {
+
+    return;
+
+  }
+
+  const sentTime =
+    new Date(
+      reminder.sentAt
+    ).getTime();
+
+  if (
+    !Number.isFinite(sentTime)
+  ) {
+
+    return;
+
+  }
+
+  if (
+    watermarkNumber < sentTime
   ) {
 
     return;
@@ -1794,19 +1610,18 @@ async function startReminderAfterRead(
   }
 
 
-  const sentTime =
-    new Date(
-      reminder.sentAt
-    ).getTime();
-
-
   /*
-     The read event must be after the message was sent.
+     The READ event is only allowed to activate
+     the reminder for the exact current outgoing message.
   */
 
   if (
-    !Number.isFinite(sentTime) ||
-    watermark < sentTime
+    String(
+      conversation.lastOutgoingMessageId || ""
+    ) !==
+    String(
+      reminder.messageId
+    )
   ) {
 
     return;
@@ -1817,12 +1632,10 @@ async function startReminderAfterRead(
   reminder.seen =
     true;
 
-
   const delay =
     REMINDER_DELAYS[
       reminder.stage
     ];
-
 
   if (
     delay === undefined
@@ -1833,30 +1646,16 @@ async function startReminderAfterRead(
   }
 
 
-  const dueAt =
-    Date.now() + delay;
-
-
-  reminder.dueAt =
-    new Date(
-      dueAt
-    ).toISOString();
-
-
-  await saveConversation(
-    senderId,
-    conversation
-  );
-
-
   const timer =
     setTimeout(
       () => {
 
         processReminder(
-          senderId,
+          key,
+          page,
           reminder.stage,
-          reminder.messageId
+          reminder.messageId,
+          reminder.customerMessageVersion
         ).catch(
           error =>
             console.error(
@@ -1876,9 +1675,16 @@ async function startReminderAfterRead(
   );
 
 
+  await saveConversation(
+    key,
+    conversation
+  );
+
+
   console.log(
-    "REMINDER STARTED:",
-    senderId,
+    "REMINDER TIMER STARTED:",
+    page.username,
+    key,
     reminder.stage,
     delay
   );
@@ -1892,32 +1698,22 @@ async function startReminderAfterRead(
 
 async function processReminder(
   senderId,
+  page,
   expectedStage,
-  expectedMessageId
+  expectedMessageId,
+  expectedCustomerVersion
 ) {
 
   const key =
     String(senderId);
 
-
-  reminderTimers.delete(
-    key
-  );
-
+  reminderTimers.delete(key);
 
   const conversation =
-    await getConversation(
-      senderId
-    );
-
+    await getConversation(key);
 
   const reminder =
     conversation.reminder;
-
-
-  /*
-     Customer may have replied while the timer was running.
-  */
 
   if (
     !reminder ||
@@ -1931,8 +1727,25 @@ async function processReminder(
 
 
   /*
-     If conversation moved to another stage,
-     the old reminder is invalid.
+     Customer replied after the original message.
+  */
+
+  if (
+    Number(
+      conversation.customerMessageVersion
+    ) !==
+    Number(
+      expectedCustomerVersion
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+     Conversation moved forward.
   */
 
   if (
@@ -1947,22 +1760,15 @@ async function processReminder(
 
   if (
     String(
-      reminder.messageId || ""
+      conversation.lastOutgoingMessageId || ""
     ) !==
-    String(
-      expectedMessageId || ""
-    )
+    String(expectedMessageId || "")
   ) {
 
     return;
 
   }
 
-
-  /*
-     Don't send the payment reminder if payment has already
-     been confirmed.
-  */
 
   if (
     conversation.paymentConfirmed
@@ -1978,7 +1784,6 @@ async function processReminder(
       expectedStage
     ];
 
-
   if (!text) {
 
     return;
@@ -1986,52 +1791,10 @@ async function processReminder(
   }
 
 
-  /*
-     We need the page associated with this conversation.
-     For reminders, the last known page is stored.
-  */
-
-  const pageKey =
-    conversation.pageKey;
-
-
-  const page =
-    PAGE_CONFIGS[
-      pageKey
-    ];
-
-
-  /*
-     Existing old conversations may not have pageKey.
-     In that case we cannot safely send a multi-page reminder.
-  */
-
-  if (!page) {
-
-    console.log(
-      "REMINDER SKIPPED - PAGE UNKNOWN:",
-      senderId
-    );
-
-    return;
-
-  }
-
-
-  const currentVersion =
-    manualReplyVersion.get(
-      key
-    ) || 0;
-
-
-  /*
-     Send reminder through the same safe sender.
-  */
-
   const data =
     await sendInstagramMessage(
       page,
-      senderId,
+      key,
       text
     );
 
@@ -2046,8 +1809,13 @@ async function processReminder(
     messageId
   ) {
 
-    outgoingMessages.add(
-      `${page.key}:${String(messageId)}`
+    outgoingMessages.set(
+      `${page.key}:${String(messageId)}`,
+      {
+        customerId: key,
+        pageKey: page.key,
+        type: "reminder"
+      }
     );
 
   }
@@ -2065,33 +1833,21 @@ async function processReminder(
       ? String(messageId)
       : null;
 
-
   conversation.lastOutgoingText =
     text;
-
 
   conversation.lastOutgoingStage =
     expectedStage;
 
-
   conversation.lastOutgoingAt =
     nowISO();
-
-
-  reminder.triggered =
-    true;
-
-
-  /*
-     Remove the reminder after it has fired.
-  */
 
   conversation.reminder =
     null;
 
 
   await saveConversation(
-    senderId,
+    key,
     conversation
   );
 
@@ -2099,15 +1855,14 @@ async function processReminder(
   console.log(
     "REMINDER SENT:",
     page.username,
-    senderId,
-    text
+    key
   );
 
 }
 
 
 /* =========================================================
-   AI RESPONSE EXTRACTION
+   AI TEXT EXTRACTION
 ========================================================= */
 
 function extractAIText(
@@ -2123,10 +1878,7 @@ function extractAIText(
 
   }
 
-
-  let text =
-    "";
-
+  let text = "";
 
   for (
     const item of
@@ -2153,7 +1905,6 @@ function extractAIText(
 
   }
 
-
   return text.trim();
 
 }
@@ -2179,10 +1930,10 @@ async function getAIReply(
 
   const history =
     conversation.history
-      .slice(-35)
+      .slice(-40)
       .map(
-        message =>
-          `${message.role}: ${message.text}`
+        item =>
+          `${item.role}: ${item.text}`
       )
       .join("\n");
 
@@ -2199,9 +1950,9 @@ async function getAIReply(
 
 
   const prompt =
-`You are the customer-support and sales AI for Global Promote.
+`You are the customer-support and sales assistant for ${BUSINESS_NAME}.
 
-CURRENT PAGE:
+CURRENT INSTAGRAM PAGE:
 ${page.username}
 
 CURRENT PAGE PACKAGES:
@@ -2219,39 +1970,25 @@ ${conversation.selectedPackage || "none"}
 PAYMENT METHOD:
 ${conversation.paymentMethod || "none"}
 
-IMPORTANT:
+RULES:
 
-This is an existing customer conversation.
+- This is an existing customer conversation.
+- Remember all previous messages.
+- Never restart the conversation.
+- Never send the opening message again.
+- Never send MESSAGE TWO again unless the fixed conversation flow specifically requires it.
+- Never randomly send the package list.
+- Never use another page's price.
+- Never invent payment details.
+- Only mention payment methods available on this page.
+- Keep answers short, natural and friendly.
+- If asked how followers are guaranteed, explain the approved guarantee.
+- If asked whether followers are real/organic, explain that they are achieved through promotion of their content on different pages.
+- If asked another business question, answer naturally.
+- Never claim payment is verified unless the customer has confirmed it.
+- Never say a screenshot itself proves payment was received.
 
-Remember the conversation history.
-
-NEVER restart the conversation.
-
-NEVER send the first opening message again.
-
-NEVER send the second fixed message again.
-
-NEVER randomly send the package list.
-
-NEVER use another page's prices.
-
-NEVER invent payment information.
-
-Only use payment methods available for the current page.
-
-If the customer asks how followers are guaranteed, explain that their content is promoted on our pages and promotion continues until the guaranteed followers are reached, according to the business guarantee policy.
-
-If the customer asks whether followers are real or organic, explain naturally that the followers are real and organic because they are achieved through promoting the customer's content on different pages until the guaranteed amount is reached.
-
-If the customer asks another reasonable business question, answer helpfully and naturally.
-
-Keep replies short, friendly and professional.
-
-Do not claim that payment has been verified unless the customer has confirmed that the payment is completed.
-
-Do not say that a screenshot proves payment was received.
-
-EXISTING CONVERSATION:
+CONVERSATION HISTORY:
 
 ${history}
 
@@ -2263,7 +2000,7 @@ ATTACHMENT:
 
 ${attachmentInfo || "none"}
 
-Return ONLY the customer-facing answer.`;
+Return only the customer-facing response.`;
 
 
   try {
@@ -2328,9 +2065,7 @@ Return ONLY the customer-facing answer.`;
 
   }
 
-  catch (
-    error
-  ) {
+  catch (error) {
 
     console.error(
       "OPENAI ERROR:",
@@ -2437,7 +2172,7 @@ async function sendInstagramMessage(
 
 
 /* =========================================================
-   SAFE FIXED / AI REPLY
+   SAFE REPLY
 ========================================================= */
 
 async function sendReplySafely(
@@ -2461,11 +2196,6 @@ async function sendReplySafely(
   );
 
 
-  /*
-     If the owner manually replied while AI was waiting,
-     cancel this automatic response.
-  */
-
   if (
     (
       manualReplyVersion.get(
@@ -2474,31 +2204,30 @@ async function sendReplySafely(
     ) !== version
   ) {
 
-    console.log(
-      "AI REPLY CANCELLED - MANUAL REPLY DETECTED"
-    );
-
     return null;
 
   }
 
 
   /*
-     Customer may have replied during our delay.
-     Do not send an old response.
+     Do not send a stale reply if the customer sent
+     another message while the AI was waiting.
   */
 
-  const latest =
+  const current =
     await getConversation(
       senderId
     );
 
 
   if (
-    latest !== conversation &&
-    latest.lastSeenAt !==
-    conversation.lastSeenAt
+    current.customerMessageVersion !==
+    conversation.customerMessageVersion
   ) {
+
+    console.log(
+      "STALE AI RESPONSE CANCELLED"
+    );
 
     return null;
 
@@ -2523,8 +2252,18 @@ async function sendReplySafely(
     messageId
   ) {
 
-    outgoingMessages.add(
-      `${page.key}:${String(messageId)}`
+    outgoingMessages.set(
+      `${page.key}:${String(messageId)}`,
+      {
+        customerId:
+          String(senderId),
+
+        pageKey:
+          page.key,
+
+        type:
+          "ai"
+      }
     );
 
   }
@@ -2533,20 +2272,16 @@ async function sendReplySafely(
   conversation.pageKey =
     page.key;
 
-
   conversation.lastOutgoingMessageId =
     messageId
       ? String(messageId)
       : null;
 
-
   conversation.lastOutgoingText =
     reply;
 
-
   conversation.lastOutgoingStage =
     conversation.stage;
-
 
   conversation.lastOutgoingAt =
     nowISO();
@@ -2559,84 +2294,129 @@ async function sendReplySafely(
   );
 
 
+  if (
+    reminderStage &&
+    messageId
+  ) {
+
+    conversation.reminder = {
+
+      stage:
+        reminderStage,
+
+      messageId:
+        String(messageId),
+
+      sentAt:
+        conversation.lastOutgoingAt,
+
+      seen:
+        false,
+
+      triggered:
+        false,
+
+      customerMessageVersion:
+        conversation.customerMessageVersion
+
+    };
+
+  }
+  else {
+
+    conversation.reminder =
+      null;
+
+  }
+
+
   await saveConversation(
     senderId,
     conversation
   );
 
 
-  /*
-     Schedule a READ-triggered reminder for fixed messages.
-  */
-
-  if (
-    reminderStage
-  ) {
-
-    await scheduleReminder(
-      senderId,
-      reminderStage,
-      messageId,
-      conversation.lastOutgoingAt
-    );
-
-  }
-
-
   return data;
 
-  }
+}
 /* =========================================================
-   PAYMENT CONFIRMATION DETECTION
+   POSITIVE REPLY DETECTION
 ========================================================= */
 
-function isPaymentClaim(
+function isPositive(
   text
 ) {
 
   const t =
     normalize(text);
 
-
-  return (
-    /\bpaid\b/.test(t) ||
-    /\bi paid\b/.test(t) ||
-    /\bpayment sent\b/.test(t) ||
-    /\bpayment done\b/.test(t) ||
-    /\bpayment completed\b/.test(t) ||
-    /\bpayment complete\b/.test(t) ||
-    /\btransfer sent\b/.test(t) ||
-    /\bsent the payment\b/.test(t) ||
-    /\bjust paid\b/.test(t)
+  return Boolean(
+    /^(yes|yeah|yep|yup|sure|okay|ok|interested|i am interested|send|show me|go ahead|yes please|sure please)$/.test(t) ||
+    /\b(yes|interested|sure|go ahead)\b/.test(t)
   );
 
 }
 
 
 /* =========================================================
-   PAYMENT YES
+   NEGATIVE
 ========================================================= */
 
-function isPaymentConfirmedByClient(
+function isNegative(
   text
 ) {
 
   const t =
     normalize(text);
 
+  return Boolean(
+    /\b(no thanks|not interested|no thank you|stop|remove me)\b/.test(t)
+  );
+
+}
+
+
+/* =========================================================
+   GUARANTEE QUESTION
+========================================================= */
+
+function isGuaranteeQuestion(
+  text
+) {
+
+  const t =
+    normalize(text);
 
   return (
-    /^(yes|yeah|yep|yup|done|completed|complete|it is|its done|payment done|payment completed)$/
-      .test(t)
-  ) ||
+    t.includes("guarantee") ||
+    t.includes("guaranteed") ||
+    t.includes("refund") ||
+    t.includes("how do you guarantee")
+  );
 
-  (
-    /\byes\b/.test(t) &&
+}
+
+
+/* =========================================================
+   REAL / ORGANIC QUESTION
+========================================================= */
+
+function isRealFollowerQuestion(
+  text
+) {
+
+  const t =
+    normalize(text);
+
+  return (
     (
-      /\bpaid\b/.test(t) ||
-      /\bpayment\b/.test(t) ||
-      /\bcompleted\b/.test(t) ||
-      /\bdone\b/.test(t)
+      t.includes("real") ||
+      t.includes("organic") ||
+      t.includes("genuine")
+    ) &&
+    (
+      t.includes("followers") ||
+      t.includes("follow")
     )
   );
 
@@ -2644,88 +2424,47 @@ function isPaymentConfirmedByClient(
 
 
 /* =========================================================
-   PAYMENT NOT COMPLETE
+   PAYMENT PROOF / PAID DETECTION
 ========================================================= */
 
-function isPaymentPending(
-  text
+function claimsPayment(
+  text,
+  attachmentInfo
 ) {
 
   const t =
     normalize(text);
 
+  const paymentWords =
+    [
+      "paid",
+      "payment done",
+      "payment completed",
+      "i have paid",
+      "sent payment",
+      "payment sent",
+      "done payment"
+    ];
 
   return (
-    /\bpending\b/.test(t) ||
-    /\bnot yet\b/.test(t) ||
-    /\bnot done\b/.test(t) ||
-    /\bnot completed\b/.test(t) ||
-    /\bfailed\b/.test(t) ||
-    /\bcan't\b/.test(t) ||
-    /\bcannot\b/.test(t)
-  );
-
-}
-
-
-/* =========================================================
-   PAYMENT VERIFICATION QUESTION
-========================================================= */
-
-const PAYMENT_VERIFICATION_MESSAGE =
-`Does the payment show as completed on your side? ❤️`;
-
-
-/* =========================================================
-   AFTER PAYMENT CONFIRMED
-========================================================= */
-
-const AFTER_PAYMENT_CONFIRMED_MESSAGE =
-`Okay dear ❤️ please send me pictures that you wanna promote and your username, I will upload it within 24 hours after verifying your payment.`;
-
-
-/* =========================================================
-   PAYMENT PENDING RESPONSE
-========================================================= */
-
-const PAYMENT_PENDING_RESPONSE =
-`No problem dear ❤️ Please let me know once the payment is completed and I'll help you with the next step.`;
-
-
-/* =========================================================
-   PAYMENT PROOF DETECTION
-========================================================= */
-
-function looksLikePaymentProof(
-  attachmentInfo
-) {
-
-  if (
-    !attachmentInfo
-  ) {
-
-    return false;
-
-  }
-
-
-  const t =
-    normalize(
+    paymentWords.some(
+      word =>
+        t.includes(word)
+    ) ||
+    Boolean(
       attachmentInfo
-    );
-
-
-  return (
-    t.includes("image") ||
-    t.includes("photo") ||
-    t.includes("file")
+    ) &&
+    (
+      t.includes("payment") ||
+      t.includes("paid")
+    )
   );
 
 }
 
 
 /* =========================================================
-   MAIN CUSTOMER PROCESSOR
+   PROCESS CUSTOMER MESSAGE
 ========================================================= */
 
 async function processClientMessage(
@@ -2735,20 +2474,41 @@ async function processClientMessage(
   attachmentInfo
 ) {
 
-  const conversation =
-    await getConversation(
-      senderId
-    );
-
-
   const key =
     String(senderId);
 
 
-  const version =
-    manualReplyVersion.get(
+  const conversation =
+    await getConversation(
       key
-    ) || 0;
+    );
+
+
+  conversation.pageKey =
+    page.key;
+
+
+  /*
+     A real customer message always cancels the
+     reminder belonging to the previous outgoing message.
+  */
+
+  cancelReminder(key);
+
+
+  /*
+     Increase customer message version BEFORE doing
+     anything else. This makes all old reminder/AI jobs stale.
+  */
+
+  conversation.customerMessageVersion =
+    Number(
+      conversation.customerMessageVersion || 0
+    ) + 1;
+
+
+  conversation.lastCustomerMessageAt =
+    nowISO();
 
 
   const text =
@@ -2758,66 +2518,10 @@ async function processClientMessage(
 
 
   const media =
-    Boolean(
-      attachmentInfo &&
-      attachmentInfo.trim()
+    hasMedia(
+      attachmentInfo
     );
 
-
-  console.log(
-    "========================================"
-  );
-
-
-  console.log(
-    "PAGE:",
-    page.username
-  );
-
-
-  console.log(
-    "CLIENT:",
-    senderId
-  );
-
-
-  console.log(
-    "STAGE:",
-    conversation.stage
-  );
-
-
-  console.log(
-    "TEXT:",
-    text
-  );
-
-
-  /*
-     Any genuine customer message cancels a pending reminder.
-
-     This prevents:
-     client replies -> old reminder still fires.
-  */
-
-  cancelReminder(
-    senderId
-  );
-
-
-  if (
-    conversation.reminder
-  ) {
-
-    conversation.reminder =
-      null;
-
-  }
-
-
-  /*
-     Save customer message first.
-  */
 
   saveMessage(
     conversation,
@@ -2832,51 +2536,113 @@ async function processClientMessage(
 
 
   await saveConversation(
-    senderId,
+    key,
     conversation
   );
 
 
+  const version =
+    manualReplyVersion.get(key) || 0;
+
+
+  console.log(
+    "CUSTOMER MESSAGE:",
+    page.username,
+    key,
+    "STAGE:",
+    conversation.stage,
+    "TEXT:",
+    text
+  );
+
+
   /* =======================================================
-     PAYMENT PROOF / PAYMENT CLAIM
+     PAYMENT CONFIRMATION
   ======================================================= */
 
   if (
-    conversation.paymentDetailsSent &&
-    (
-      isPaymentClaim(text) ||
-      looksLikePaymentProof(
-        attachmentInfo
-      )
+    conversation.awaitingPaymentConfirmation
+  ) {
+
+    const normalized =
+      normalize(text);
+
+
+    if (
+      /\b(yes|yeah|yep|yup|correct|done|payment is done|it is done)\b/
+        .test(normalized)
+    ) {
+
+      conversation.paymentConfirmed =
+        true;
+
+      conversation.awaitingPaymentConfirmation =
+        false;
+
+      conversation.stage =
+        "PAYMENT_CONFIRMED";
+
+
+      const reply =
+`Okay dear ❤️ Please send me the pictures that you wanna promote and your username, I will upload it within 24 hours after verifying your payment.`;
+
+      await sendReplySafely(
+        page,
+        key,
+        conversation,
+        reply,
+        version
+      );
+
+      return;
+
+    }
+
+
+    const reply =
+`No problem ❤️ Please let me know once the payment is completed.`;
+
+    await sendReplySafely(
+      page,
+      key,
+      conversation,
+      reply,
+      version
+    );
+
+    return;
+
+  }
+
+
+  /* =======================================================
+     PAYMENT PROOF
+  ======================================================= */
+
+  if (
+    claimsPayment(
+      text,
+      attachmentInfo
     )
   ) {
 
     conversation.paymentProofReceived =
       true;
 
-
     conversation.awaitingPaymentConfirmation =
       true;
 
 
-    conversation.stage =
-      "PAYMENT_VERIFICATION";
-
-
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
+    const reply =
+`Thank you dear ❤️ Did the payment go through successfully?`;
 
     await sendReplySafely(
       page,
-      senderId,
+      key,
       conversation,
-      PAYMENT_VERIFICATION_MESSAGE,
+      reply,
       version
     );
-
 
     return;
 
@@ -2884,40 +2650,20 @@ async function processClientMessage(
 
 
   /* =======================================================
-     CLIENT CONFIRMS PAYMENT
+     GUARANTEE
   ======================================================= */
 
   if (
-    conversation.awaitingPaymentConfirmation &&
-    isPaymentConfirmedByClient(text)
+    isGuaranteeQuestion(text)
   ) {
-
-    conversation.paymentConfirmed =
-      true;
-
-
-    conversation.awaitingPaymentConfirmation =
-      false;
-
-
-    conversation.stage =
-      "PAYMENT_CONFIRMED";
-
-
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
 
     await sendReplySafely(
       page,
-      senderId,
+      key,
       conversation,
-      AFTER_PAYMENT_CONFIRMED_MESSAGE,
+      GUARANTEE_MESSAGE,
       version
     );
-
 
     return;
 
@@ -2925,32 +2671,20 @@ async function processClientMessage(
 
 
   /* =======================================================
-     PAYMENT NOT COMPLETE
+     REAL / ORGANIC
   ======================================================= */
 
   if (
-    conversation.awaitingPaymentConfirmation &&
-    isPaymentPending(text)
+    isRealFollowerQuestion(text)
   ) {
-
-    conversation.awaitingPaymentConfirmation =
-      false;
-
-
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
 
     await sendReplySafely(
       page,
-      senderId,
+      key,
       conversation,
-      PAYMENT_PENDING_RESPONSE,
+      REAL_FOLLOWERS_MESSAGE,
       version
     );
-
 
     return;
 
@@ -2958,7 +2692,31 @@ async function processClientMessage(
 
 
   /* =======================================================
-     NEW CUSTOMER
+     NEGATIVE
+  ======================================================= */
+
+  if (
+    isNegative(text)
+  ) {
+
+    conversation.stage =
+      "NEGATIVE";
+
+    await sendReplySafely(
+      page,
+      key,
+      conversation,
+      `No problem ❤️ If you ever change your mind, just message us.`,
+      version
+    );
+
+    return;
+
+  }
+
+
+  /* =======================================================
+     NEW → MESSAGE ONE
   ======================================================= */
 
   if (
@@ -2966,29 +2724,18 @@ async function processClientMessage(
     "NEW"
   ) {
 
-    conversation.pageKey =
-      page.key;
-
-
     conversation.stage =
       "MESSAGE_ONE_SENT";
 
 
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-
     await sendReplySafely(
       page,
-      senderId,
+      key,
       conversation,
       MESSAGE_ONE,
       version,
       "MESSAGE_ONE_SENT"
     );
-
 
     return;
 
@@ -2997,6 +2744,9 @@ async function processClientMessage(
 
   /* =======================================================
      MESSAGE ONE → MESSAGE TWO
+     
+     ONLY the customer's NEXT REAL MESSAGE can
+     advance this stage.
   ======================================================= */
 
   if (
@@ -3004,29 +2754,18 @@ async function processClientMessage(
     "MESSAGE_ONE_SENT"
   ) {
 
-    conversation.pageKey =
-      page.key;
-
-
     conversation.stage =
       "MESSAGE_TWO_SENT";
 
 
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-
     await sendReplySafely(
       page,
-      senderId,
+      key,
       conversation,
       MESSAGE_TWO,
       version,
       "MESSAGE_TWO_SENT"
     );
-
 
     return;
 
@@ -3034,7 +2773,10 @@ async function processClientMessage(
 
 
   /* =======================================================
-     MESSAGE TWO → PACKAGE LIST
+     MESSAGE TWO → PACKAGES
+     
+     IMPORTANT:
+     This is exactly ONE response.
   ======================================================= */
 
   if (
@@ -3048,11 +2790,6 @@ async function processClientMessage(
       );
 
 
-    /*
-       If client directly says Gold/3/etc.,
-       don't send package list again.
-    */
-
     if (
       directPackage
     ) {
@@ -3060,20 +2797,13 @@ async function processClientMessage(
       conversation.selectedPackage =
         directPackage;
 
-
       conversation.stage =
         "PACKAGE_SELECTED";
 
 
-      await saveConversation(
-        senderId,
-        conversation
-      );
-
-
       await sendReplySafely(
         page,
-        senderId,
+        key,
         conversation,
         buildPackageConfirmation(
           page,
@@ -3082,7 +2812,6 @@ async function processClientMessage(
         version,
         "PACKAGE_SELECTED"
       );
-
 
       return;
 
@@ -3093,21 +2822,14 @@ async function processClientMessage(
       "PACKAGES_SHOWN";
 
 
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-
     await sendReplySafely(
       page,
-      senderId,
+      key,
       conversation,
       buildPackagesMessage(page),
       version,
       "PACKAGES_SHOWN"
     );
-
 
     return;
 
@@ -3131,20 +2853,13 @@ async function processClientMessage(
     conversation.selectedPackage =
       selectedPackage;
 
-
     conversation.stage =
       "PACKAGE_SELECTED";
 
 
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-
     await sendReplySafely(
       page,
-      senderId,
+      key,
       conversation,
       buildPackageConfirmation(
         page,
@@ -3153,7 +2868,6 @@ async function processClientMessage(
       version,
       "PACKAGE_SELECTED"
     );
-
 
     return;
 
@@ -3184,16 +2898,16 @@ async function processClientMessage(
 
       await sendReplySafely(
         page,
-        senderId,
+        key,
         conversation,
-        `That payment method isn't listed for ${page.username}. ❤️
+        `That payment method isn't available on this page ❤️
 
 Available methods:
 
 ${page.paymentMethods.join("\n")}`,
-        version
+        version,
+        "PACKAGE_SELECTED"
       );
-
 
       return;
 
@@ -3203,40 +2917,16 @@ ${page.paymentMethods.join("\n")}`,
     conversation.paymentMethod =
       paymentMethod;
 
-
     conversation.stage =
       "PAYMENT_PENDING";
-
 
     conversation.paymentDetailsSent =
       true;
 
 
-    conversation.paymentConfirmed =
-      false;
-
-
-    conversation.paymentProofReceived =
-      false;
-
-
-    conversation.awaitingPaymentConfirmation =
-      false;
-
-
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-
-    /*
-       Payment details are sent immediately.
-    */
-
     await sendReplySafely(
       page,
-      senderId,
+      key,
       conversation,
       buildPaymentMessage(
         page,
@@ -3247,60 +2937,13 @@ ${page.paymentMethods.join("\n")}`,
       "PAYMENT_PENDING"
     );
 
-
     return;
 
   }
 
 
   /* =======================================================
-     GUARANTEE
-  ======================================================= */
-
-  if (
-    /\bguarantee\b|\bguaranteed\b|\brefund\b|\brefill\b/i
-      .test(text)
-  ) {
-
-    await sendReplySafely(
-      page,
-      senderId,
-      conversation,
-      GUARANTEE_MESSAGE,
-      version
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     REAL / ORGANIC
-  ======================================================= */
-
-  if (
-    /\borganic\b|\breal followers\b|\bare.*followers.*real\b|\bfake followers\b/i
-      .test(text)
-  ) {
-
-    await sendReplySafely(
-      page,
-      senderId,
-      conversation,
-      REAL_FOLLOWERS_MESSAGE,
-      version
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     AI
+     AI FALLBACK
   ======================================================= */
 
   const aiReply =
@@ -3318,14 +2961,47 @@ ${page.paymentMethods.join("\n")}`,
 
     await sendReplySafely(
       page,
-      senderId,
+      key,
       conversation,
       aiReply,
       version
     );
 
+    return;
+
   }
 
+
+  /*
+     If AI fails, don't restart the conversation.
+  */
+
+  await saveConversation(
+    key,
+    conversation
+  );
+
+}
+
+
+/* =========================================================
+   ADMIN AUTH
+========================================================= */
+
+function isAdmin(
+  req
+) {
+
+  return Boolean(
+
+    ADMIN_SECRET &&
+
+    req.headers[
+      "x-admin-secret"
+    ] ===
+    ADMIN_SECRET
+
+  );
 
 }
 /* =========================================================
@@ -3355,7 +3031,6 @@ app.get(
         "WEBHOOK VERIFIED"
       );
 
-
       return res
         .status(200)
         .send(challenge);
@@ -3372,6 +3047,56 @@ app.get(
 
 
 /* =========================================================
+   GET CUSTOMER ID FROM READ EVENT
+========================================================= */
+
+function getCustomerIdFromReadEvent(
+  event,
+  page
+) {
+
+  const sender =
+    String(
+      event.sender?.id || ""
+    );
+
+  const recipient =
+    String(
+      event.recipient?.id || ""
+    );
+
+
+  /*
+     The page ID is known.
+     The other ID is the customer.
+  */
+
+  if (
+    sender &&
+    sender !== String(page.id)
+  ) {
+
+    return sender;
+
+  }
+
+
+  if (
+    recipient &&
+    recipient !== String(page.id)
+  ) {
+
+    return recipient;
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
    INSTAGRAM WEBHOOK
 ========================================================= */
 
@@ -3380,7 +3105,7 @@ app.post(
   async (req, res) => {
 
     /*
-       Meta must receive 200 immediately.
+       Meta gets 200 immediately.
     */
 
     res.sendStatus(200);
@@ -3388,30 +3113,6 @@ app.post(
 
     const body =
       req.body;
-
-
-    console.log(
-      "========================================"
-    );
-
-
-    console.log(
-      "INSTAGRAM WEBHOOK RECEIVED"
-    );
-
-
-    console.log(
-      JSON.stringify(
-        body,
-        null,
-        2
-      )
-    );
-
-
-    console.log(
-      "========================================"
-    );
 
 
     if (
@@ -3426,7 +3127,7 @@ app.post(
 
     if (
       !Array.isArray(
-        body?.entry
+        body.entry
       )
     ) {
 
@@ -3440,10 +3141,6 @@ app.post(
       body.entry
     ) {
 
-      /*
-         The Instagram account that received the event.
-      */
-
       const page =
         getPageById(
           entry?.id
@@ -3453,20 +3150,13 @@ app.post(
       if (!page) {
 
         console.log(
-          "UNKNOWN INSTAGRAM PAGE:",
+          "UNKNOWN PAGE:",
           entry?.id
         );
-
 
         continue;
 
       }
-
-
-      console.log(
-        "PAGE:",
-        page.username
-      );
 
 
       for (
@@ -3474,8 +3164,13 @@ app.post(
         entry.messaging || []
       ) {
 
+
         /* =================================================
-           READ / SEEN EVENT
+           READ / SEEN
+           
+           THIS BLOCK MUST FINISH WITH continue.
+           
+           READ EVENTS NEVER ENTER CUSTOMER PROCESSOR.
         ================================================= */
 
         if (
@@ -3483,47 +3178,32 @@ app.post(
         ) {
 
           console.log(
-            "READ / SEEN EVENT"
+            "READ / SEEN EVENT:",
+            page.username
           );
 
 
-          /*
-             IMPORTANT:
-
-             Read events do NOT go through the normal AI
-             customer-message processor.
-
-             Instead they only activate the appropriate
-             follow-up timer.
-          */
-
-          const recipientId =
-            event.recipient?.id;
+          const customerId =
+            getCustomerIdFromReadEvent(
+              event,
+              page
+            );
 
 
           const watermark =
             event.read?.watermark;
 
 
-          /*
-             Depending on Meta's event shape, the sender is
-             the Instagram page and recipient is the client.
-          */
-
           if (
-            recipientId &&
+            customerId &&
             watermark
           ) {
 
-            /*
-               The conversation is stored by CLIENT ID.
-            */
-
             startReminderAfterRead(
-              recipientId,
+              customerId,
+              page,
               watermark
-            )
-            .catch(
+            ).catch(
               error =>
                 console.error(
                   "READ REMINDER ERROR:",
@@ -3533,6 +3213,11 @@ app.post(
 
           }
 
+
+          /*
+             CRITICAL:
+             A read event can NEVER continue below.
+          */
 
           continue;
 
@@ -3551,7 +3236,6 @@ app.post(
             "DELIVERY EVENT IGNORED"
           );
 
-
           continue;
 
         }
@@ -3569,7 +3253,6 @@ app.post(
           console.log(
             "REACTION / POSTBACK IGNORED"
           );
-
 
           continue;
 
@@ -3592,14 +3275,11 @@ app.post(
         const senderId =
           event.sender?.id;
 
-
         const recipientId =
           event.recipient?.id;
 
-
         const messageId =
           event.message?.mid;
-
 
         const isEcho =
           event.message?.is_echo === true;
@@ -3615,50 +3295,8 @@ app.post(
         }
 
 
-        console.log(
-          "---------- MESSAGE EVENT ----------"
-        );
-
-
-        console.log(
-          "PAGE:",
-          page.username
-        );
-
-
-        console.log(
-          "SENDER:",
-          senderId
-        );
-
-
-        console.log(
-          "RECIPIENT:",
-          recipientId
-        );
-
-
-        console.log(
-          "MESSAGE:",
-          event.message?.text ||
-          "[NO TEXT]"
-        );
-
-
-        console.log(
-          "MESSAGE ID:",
-          messageId
-        );
-
-
-        console.log(
-          "IS ECHO:",
-          isEcho
-        );
-
-
         /* =================================================
-           OUR OWN MESSAGE / MANUAL MESSAGE
+           ECHO / OUR MESSAGE
         ================================================= */
 
         if (
@@ -3672,7 +3310,7 @@ app.post(
 
 
           /*
-             This is an AI message that our server sent.
+             This was sent by our server.
           */
 
           if (
@@ -3687,9 +3325,8 @@ app.post(
 
 
             console.log(
-              "OUR AI ECHO IGNORED"
+              "OUR MESSAGE ECHO IGNORED"
             );
-
 
             continue;
 
@@ -3697,8 +3334,8 @@ app.post(
 
 
           /*
-             Otherwise treat it as a manual message from
-             the owner/admin.
+             Not one of our tracked messages.
+             Therefore it may be a manual message.
           */
 
           if (
@@ -3709,18 +3346,10 @@ app.post(
               String(recipientId);
 
 
-            /*
-               Cancel all pending reminders.
-            */
-
             cancelReminder(
               customerId
             );
 
-
-            /*
-               Cancel AI responses currently waiting.
-            */
 
             manualReplyVersion.set(
               customerId,
@@ -3756,9 +3385,12 @@ app.post(
               );
 
 
+              conversation.pageKey =
+                page.key;
+
+
               /*
-                 Synchronize fixed stages if the owner
-                 manually sends a fixed message.
+                 Synchronize the exact stage.
               */
 
               if (
@@ -3770,7 +3402,6 @@ app.post(
                   "MESSAGE_ONE_SENT";
 
               }
-
               else if (
                 normalize(ownText) ===
                 normalize(MESSAGE_TWO)
@@ -3780,7 +3411,6 @@ app.post(
                   "MESSAGE_TWO_SENT";
 
               }
-
               else if (
                 normalize(ownText) ===
                 normalize(
@@ -3794,25 +3424,17 @@ app.post(
               }
 
 
-              conversation.pageKey =
-                page.key;
-
-
               conversation.lastOutgoingText =
                 ownText;
-
-
-              conversation.lastOutgoingStage =
-                conversation.stage;
-
 
               conversation.lastOutgoingMessageId =
                 String(messageId);
 
+              conversation.lastOutgoingStage =
+                conversation.stage;
 
               conversation.lastOutgoingAt =
                 nowISO();
-
 
               conversation.reminder =
                 null;
@@ -3823,12 +3445,14 @@ app.post(
                 conversation
               );
 
+
+              console.log(
+                "MANUAL MESSAGE SYNCHRONIZED:",
+                page.username,
+                customerId
+              );
+
             }
-
-
-            console.log(
-              "MANUAL MESSAGE SYNCHRONIZED"
-            );
 
           }
 
@@ -3839,7 +3463,7 @@ app.post(
 
 
         /* =================================================
-           DUPLICATE PROTECTION
+           DUPLICATE CUSTOMER MESSAGE PROTECTION
         ================================================= */
 
         const duplicateKey =
@@ -3853,10 +3477,9 @@ app.post(
         ) {
 
           console.log(
-            "DUPLICATE MESSAGE IGNORED:",
+            "DUPLICATE IGNORED:",
             messageId
           );
-
 
           continue;
 
@@ -3886,12 +3509,19 @@ app.post(
         ================================================= */
 
         const clientMessage =
-          event.message?.text ||
-          "";
+          typeof event.message?.text ===
+          "string"
+
+            ? event.message.text.trim()
+
+            : "";
 
 
         const attachmentInfo =
-          (event.message?.attachments || [])
+          (
+            event.message?.attachments ||
+            []
+          )
             .map(
               attachment =>
                 `type=${attachment.type || "unknown"}`
@@ -3909,20 +3539,13 @@ app.post(
 
         if (!hasMessage) {
 
-          console.log(
-            "EMPTY MESSAGE IGNORED"
-          );
-
-
           continue;
 
         }
 
 
         /*
-           Every client message is processed in a per-client
-           queue so two messages from the same client cannot
-           corrupt the conversation order.
+           Every customer has ONE sequential queue.
         */
 
         queueForClient(
@@ -3930,10 +3553,6 @@ app.post(
           async () => {
 
             try {
-
-              /*
-                 Store page information before processing.
-              */
 
               const conversation =
                 await getConversation(
@@ -3960,9 +3579,7 @@ app.post(
 
             }
 
-            catch (
-              error
-            ) {
+            catch (error) {
 
               console.error(
                 "CUSTOMER PROCESSING ERROR:",
@@ -4012,8 +3629,7 @@ app.get(
 
       return res.status(400).json({
 
-        success:
-          false,
+        success: false,
 
         error:
           "sender_id is required"
@@ -4033,11 +3649,9 @@ app.get(
 
       return res.json({
 
-        success:
-          true,
+        success: true,
 
-        found:
-          false,
+        found: false,
 
         senderId,
 
@@ -4051,16 +3665,14 @@ app.get(
 
     return res.json({
 
-      success:
-        true,
+      success: true,
 
-      found:
-        true,
+      found: true,
 
       senderId,
 
       pageKey:
-        conversation.pageKey || null,
+        conversation.pageKey,
 
       stage:
         conversation.stage,
@@ -4083,6 +3695,9 @@ app.get(
       awaitingPaymentConfirmation:
         conversation.awaitingPaymentConfirmation,
 
+      customerMessageVersion:
+        conversation.customerMessageVersion,
+
       reminder:
         conversation.reminder,
 
@@ -4099,8 +3714,119 @@ app.get(
       lastOutgoingStage:
         conversation.lastOutgoingStage,
 
+      lastOutgoingMessageId:
+        conversation.lastOutgoingMessageId,
+
       lastOutgoingAt:
         conversation.lastOutgoingAt
+
+    });
+
+  }
+);
+
+
+/* =========================================================
+   ADMIN STATUS
+========================================================= */
+
+app.get(
+  "/admin/status",
+  async (req, res) => {
+
+    if (
+      !isAdmin(req)
+    ) {
+
+      return res.sendStatus(
+        403
+      );
+
+    }
+
+
+    const clients = [];
+
+
+    for (
+      const [
+        senderId,
+        conversation
+      ]
+      of conversations.entries()
+    ) {
+
+      clients.push({
+
+        senderId,
+
+        page:
+          conversation.pageKey,
+
+        stage:
+          conversation.stage,
+
+        selectedPackage:
+          conversation.selectedPackage,
+
+        paymentMethod:
+          conversation.paymentMethod,
+
+        paymentConfirmed:
+          conversation.paymentConfirmed,
+
+        paymentProofReceived:
+          conversation.paymentProofReceived,
+
+        reminder:
+          conversation.reminder,
+
+        messages:
+          conversation.history.length,
+
+        lastOutgoingText:
+          conversation.lastOutgoingText,
+
+        lastOutgoingMessageId:
+          conversation.lastOutgoingMessageId,
+
+        lastOutgoingAt:
+          conversation.lastOutgoingAt
+
+      });
+
+    }
+
+
+    return res.json({
+
+      success: true,
+
+      pages:
+        Object.values(
+          PAGE_CONFIGS
+        ).map(
+          page => ({
+
+            username:
+              page.username,
+
+            id:
+              page.id,
+
+            token:
+              Boolean(page.token)
+
+          })
+        ),
+
+      supabase:
+        supabaseConfigured(),
+
+      activeReminders:
+        reminderTimers.size,
+
+      clients
 
     });
 
@@ -4149,143 +3875,7 @@ app.get(
         conversations.size,
 
       activeReminders:
-        reminderTimers.size,
-
-      system:
-        "Global Promote 4-Page AI"
-
-    });
-
-  }
-);
-
-
-/* =========================================================
-   ADMIN AUTH
-========================================================= */
-
-function isAdmin(
-  req
-) {
-
-  return Boolean(
-
-    ADMIN_SECRET &&
-
-    req.headers[
-      "x-admin-secret"
-    ] ===
-    ADMIN_SECRET
-
-  );
-
-}
-
-
-/* =========================================================
-   ADMIN STATUS
-========================================================= */
-
-app.get(
-  "/admin/status",
-  async (req, res) => {
-
-    if (
-      !isAdmin(req)
-    ) {
-
-      return res.sendStatus(
-        403
-      );
-
-    }
-
-
-    const clients =
-      [];
-
-
-    for (
-      const [
-        senderId,
-        conversation
-      ]
-      of conversations.entries()
-    ) {
-
-      clients.push({
-
-        senderId,
-
-        page:
-          conversation.pageKey ||
-          null,
-
-        stage:
-          conversation.stage,
-
-        selectedPackage:
-          conversation.selectedPackage,
-
-        paymentMethod:
-          conversation.paymentMethod,
-
-        paymentConfirmed:
-          conversation.paymentConfirmed,
-
-        paymentProofReceived:
-          conversation.paymentProofReceived,
-
-        reminder:
-          conversation.reminder,
-
-        messages:
-          conversation.history.length,
-
-        lastOutgoingText:
-          conversation.lastOutgoingText,
-
-        lastOutgoingAt:
-          conversation.lastOutgoingAt
-
-      });
-
-    }
-
-
-    res.json({
-
-      success:
-        true,
-
-      aiAlwaysOn:
-        true,
-
-      pages:
-        Object.values(
-          PAGE_CONFIGS
-        ).map(
-          page => ({
-
-            username:
-              page.username,
-
-            id:
-              page.id,
-
-            token:
-              Boolean(page.token)
-
-          })
-        ),
-
-      memory:
-        supabaseConfigured(),
-
-      activeReminders:
-        reminderTimers.size,
-
-      clients
+        reminderTimers.size
 
     });
 
@@ -4320,49 +3910,31 @@ Global Promote AI
 
 <style>
 
-body{
-
-  font-family:Arial;
-
-  background:#f5f5f5;
-
-  padding:20px;
-
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+  padding: 20px;
 }
 
-.card{
-
-  max-width:850px;
-
-  margin:auto;
-
-  background:white;
-
-  padding:20px;
-
-  border-radius:15px;
-
+.card {
+  max-width: 850px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
 }
 
 input,
-button{
-
-  width:100%;
-
-  box-sizing:border-box;
-
-  padding:12px;
-
-  margin-top:10px;
-
+button {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin-top: 10px;
 }
 
-pre{
-
-  white-space:pre-wrap;
-
-  word-break:break-word;
-
+pre {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 </style>
@@ -4386,7 +3958,7 @@ Europe • Miami • Canada • Mentalxheal
 </p>
 
 <p>
-Persistent memory + reminders + payment verification
+Supabase Memory • Seen Reminders • Payment Flow
 </p>
 
 <input
@@ -4407,13 +3979,12 @@ Load Status
 
 <script>
 
-async function loadStatus(){
+async function loadStatus() {
 
   const secret =
     document.getElementById(
       "secret"
     ).value;
-
 
   const response =
     await fetch(
@@ -4429,7 +4000,6 @@ async function loadStatus(){
 
       }
     );
-
 
   document.getElementById(
     "out"
@@ -4478,17 +4048,14 @@ app.listen(
       "========================================"
     );
 
-
     console.log(
       "GLOBAL PROMOTE 4-PAGE AI STARTED"
     );
-
 
     console.log(
       "PORT:",
       PORT
     );
-
 
     console.log(
       "AI:",
@@ -4497,14 +4064,12 @@ app.listen(
         : "MISSING"
     );
 
-
     console.log(
       "SUPABASE:",
       supabaseConfigured()
         ? "CONNECTED"
         : "MISSING"
     );
-
 
     console.log(
       "----------------------------------------"
@@ -4519,7 +4084,6 @@ app.listen(
     ) {
 
       console.log(
-
         page.username,
         "|",
         page.id,
@@ -4527,7 +4091,6 @@ app.listen(
         page.token
           ? "CONNECTED"
           : "MISSING"
-
       );
 
     }
@@ -4537,36 +4100,33 @@ app.listen(
       "----------------------------------------"
     );
 
-
     console.log(
-      "SEEN EVENTS: IGNORED AS AI MESSAGES"
+      "READ / SEEN EVENTS: NEVER PROCESSED AS CUSTOMER MESSAGES"
     );
 
-
     console.log(
-      "READ REMINDERS: ENABLED"
+      "EXACT OUTGOING MESSAGE TRACKING: ENABLED"
     );
 
+    console.log(
+      "REMINDERS: ENABLED"
+    );
 
     console.log(
       "SUPABASE MEMORY: ENABLED"
     );
 
-
     console.log(
       "MANUAL REPLY SYNC: ENABLED"
     );
 
-
     console.log(
-      "PAYMENT VERIFICATION: ENABLED"
+      "PAYMENT PROOF FLOW: ENABLED"
     );
 
-
     console.log(
-      "4 PAGE PACKAGE SYSTEM: ENABLED"
+      "4-PAGE PACKAGE SYSTEM: ENABLED"
     );
-
 
     console.log(
       "========================================"
