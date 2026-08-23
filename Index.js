@@ -638,258 +638,9 @@ const REAL_FOLLOWERS_MESSAGE =
 `Of course ❤️ All the followers are real and organic because followers are achieved by sharing and promoting your content on different pages until you reach the followers included in your package.
 
 We don't simply add random followers. Your content is promoted to real audiences through our network of pages. ❤️`;
-
-
 /* =========================================================
-   PAYMENT DETAILS
+   CONTINUED — MESSAGE HISTORY
 ========================================================= */
-
-const PAYMENT_DETAILS = {
-
-  paypal:
-`PayPal:
-pay@globalpromote.in
-https://paypal.me/RamanKumar4257`,
-
-  venmo:
-`Venmo:
-Risa-Ramos-2
-https://venmo.com/u/Risa-Ramos-2`,
-
-  etransfer:
-`E-transfer:
-pay@globalpromote.in`,
-
-  iban:
-`Bank / Wise:
-
-Account name: Rahul Kumar
-IBAN: BE36967747881581
-SWIFT/BIC: TRWIBEB1XXX
-Bank: Wise
-
-Bank address:
-Rue du Trône 100, 3rd floor
-Brussels, 1050
-Belgium`,
-
-  achWire:
-`Bank Transfer / ACH / Wire:
-
-Name: Rahul
-Account type: Checking
-Routing number: 026073150
-Account number: 8313696908
-
-Bank:
-Community Federal Savings Bank
-
-Bank address:
-89-16 Jamaica Ave
-Woodhaven, NY 11421
-United States
-
-SWIFT/BIC:
-CMFGUS33`,
-
-  revolut:
-`Revolut:
-Tag: @clavis02pk
-Payment link:
-https://revolut.me/clavis02pk`,
-
-  mbway:
-`MB WAY:
-Number: +351 968 188 499
-Name: Andre Santana`,
-
-  card:
-`Credit/Debit Card:
-Our team will provide the secure card payment instructions.`
-
-};
-
-
-/* =========================================================
-   STORAGE
-========================================================= */
-
-const conversations =
-  new Map();
-
-
-const clientQueues =
-  new Map();
-
-
-const processedMessageIds =
-  new Map();
-
-
-const outgoingMessages =
-  new Set();
-
-
-const manualReplyVersion =
-  new Map();
-
-
-const reminderTimers =
-  new Map();
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function nowISO() {
-
-  return new Date()
-    .toISOString();
-
-}
-
-
-function wait(
-  ms
-) {
-
-  return new Promise(
-    resolve =>
-      setTimeout(
-        resolve,
-        ms
-      )
-  );
-
-}
-
-
-function replyDelay() {
-
-  return (
-    6000 +
-    Math.floor(
-      Math.random() *
-      3000
-    )
-  );
-
-}
-
-
-function normalize(
-  text
-) {
-
-  return String(
-    text || ""
-  )
-    .toLowerCase()
-    .trim()
-    .replace(
-      /[.,!?]/g,
-      " "
-    )
-    .replace(
-      /\s+/g,
-      " "
-    );
-
-}
-
-
-/* =========================================================
-   CONVERSATION
-========================================================= */
-
-function createConversation(
-  senderId
-) {
-
-  return {
-
-    senderId:
-      String(
-        senderId
-      ),
-
-    pageKey:
-      null,
-
-    clientUsername:
-      null,
-
-    stage:
-      "NEW",
-
-    messageOneSent:
-      false,
-
-    messageTwoSent:
-      false,
-
-    packagesSent:
-      false,
-
-    promotionMediaReceived:
-      false,
-
-    promotionUsernameReceived:
-      false,
-
-    promotionUsernameRequested:
-      false,
-
-    promotionComplete:
-      false,
-
-    history:
-      [],
-
-    selectedPackage:
-      null,
-
-    paymentMethod:
-      null,
-
-    paymentDetailsSent:
-      false,
-
-    paymentConfirmed:
-      false,
-
-    paymentProofReceived:
-      false,
-
-    awaitingPaymentConfirmation:
-      false,
-
-    customerMessageVersion:
-      0,
-
-    lastSeenAt:
-      nowISO(),
-
-    lastOutgoingMessageId:
-      null,
-
-    lastOutgoingText:
-      null,
-
-    lastOutgoingStage:
-      null,
-
-    lastOutgoingAt:
-      null,
-
-    reminder:
-      null
-
-  };
-
-}
-
 
 function saveMessage(
   conversation,
@@ -970,6 +721,8 @@ function supabaseHeaders() {
   };
 
 }
+
+
 async function supabaseGetConversation(
   senderId
 ) {
@@ -1010,6 +763,7 @@ async function supabaseGetConversation(
         `&limit=1`,
 
         {
+
           method:
             "GET",
 
@@ -1051,8 +805,10 @@ async function supabaseGetConversation(
     }
 
 
-    return data[0]?.messages ||
-      null;
+    return (
+      data[0]?.messages ||
+      null
+    );
 
   }
 
@@ -1101,6 +857,7 @@ async function supabaseSaveConversation(
         )}`,
 
         {
+
           method:
             "POST",
 
@@ -1202,6 +959,7 @@ async function supabaseGetAllConversations() {
         `&order=updated_at.desc`,
 
         {
+
           method:
             "GET",
 
@@ -1299,8 +1057,10 @@ async function getConversation(
     conversation =
       stored;
 
+
     conversation.senderId =
       key;
+
 
     conversation.history =
       Array.isArray(
@@ -1309,64 +1069,80 @@ async function getConversation(
         ? conversation.history
         : [];
 
+
     conversation.stage =
       conversation.stage ||
       "NEW";
+
 
     conversation.messageOneSent =
       Boolean(
         conversation.messageOneSent
       );
 
+
     conversation.messageTwoSent =
       Boolean(
         conversation.messageTwoSent
       );
+
+
+    /* MESSAGE 3 / PACKAGES
+       IS ALSO LOCKED */
 
     conversation.packagesSent =
       Boolean(
         conversation.packagesSent
       );
 
+
     conversation.paymentDetailsSent =
       Boolean(
         conversation.paymentDetailsSent
       );
+
 
     conversation.paymentConfirmed =
       Boolean(
         conversation.paymentConfirmed
       );
 
+
     conversation.paymentProofReceived =
       Boolean(
         conversation.paymentProofReceived
       );
+
 
     conversation.awaitingPaymentConfirmation =
       Boolean(
         conversation.awaitingPaymentConfirmation
       );
 
+
     conversation.promotionMediaReceived =
       Boolean(
         conversation.promotionMediaReceived
       );
+
 
     conversation.promotionUsernameReceived =
       Boolean(
         conversation.promotionUsernameReceived
       );
 
+
     conversation.promotionUsernameRequested =
       Boolean(
         conversation.promotionUsernameRequested
       );
 
+
     conversation.promotionComplete =
       Boolean(
         conversation.promotionComplete
       );
+
 
     conversation.customerMessageVersion =
       Number(
@@ -1374,10 +1150,12 @@ async function getConversation(
         0
       );
 
+
     conversations.set(
       key,
       conversation
     );
+
 
     return conversation;
 
@@ -1805,30 +1583,17 @@ async function processUsernameFromMessage(
     true;
 
 
-  conversation.promotionUsernameRequested =
-    false;
-
-
   await saveConversation(
     senderId,
     conversation
   );
 
 
-  console.log(
-    "USERNAME FROM MESSAGE:",
-    username,
-    senderId
-  );
-
-
   return true;
 
 }
-
-
 /* =========================================================
-   DETECTION HELPERS
+   CONTINUED — DETECTION HELPERS
 ========================================================= */
 
 function detectPackage(
@@ -2387,6 +2152,8 @@ function isGuaranteeQuestion(
   );
 
 }
+
+
 function isPaymentConfirmation(
   text
 ) {
@@ -2602,7 +2369,6 @@ ${Boolean(
         data
       );
 
-
       return null;
 
     }
@@ -2629,555 +2395,853 @@ ${Boolean(
       error.message
     );
 
-
     return null;
 
   }
 
 }
-
-
 /* =========================================================
-   REMINDER CONFIGURATION
+   CONTINUED — PROCESS USERNAME + MEDIA
 ========================================================= */
 
-const REMINDER_TEXTS = {
-
-  MESSAGE_ONE_SENT:
-    "Are you interested? ❤️",
-
-  MESSAGE_TWO_SENT:
-    "Can I show you our packages? 😊",
-
-  PACKAGES_SHOWN:
-    "So which package would you like to choose? ❤️",
-
-  PAYMENT_PENDING:
-    "Did you try to make the payment? ❤️ Let me know if you need any help."
-
-};
-
-
-const REMINDER_DELAYS = {
-
-  MESSAGE_ONE_SENT:
-    60 * 1000,
-
-  MESSAGE_TWO_SENT:
-    2 * 60 * 1000,
-
-  PACKAGES_SHOWN:
-    3 * 60 * 1000,
-
-  PAYMENT_PENDING:
-    5 * 60 * 1000
-
-};
-
-
-/* =========================================================
-   CANCEL REMINDER
-========================================================= */
-
-function cancelReminder(
-  senderId
+async function processUsernameAndMedia(
+  senderId,
+  conversation,
+  text,
+  attachmentInfo
 ) {
 
-  const key =
-    String(
-      senderId
-    );
-
-
-  const timer =
-    reminderTimers.get(
-      key
-    );
+  let changed =
+    false;
 
 
   if (
-    timer
+    text
   ) {
 
-    clearTimeout(
-      timer
-    );
+    const username =
+      extractInstagramUsername(
+        text
+      );
+
+
+    if (
+      username
+    ) {
+
+      conversation.clientUsername =
+        username;
+
+      conversation.promotionUsernameReceived =
+        true;
+
+      conversation.promotionUsernameRequested =
+        false;
+
+      changed =
+        true;
+
+    }
 
   }
 
 
-  reminderTimers.delete(
-    key
-  );
-
-
-  const conversation =
-    conversations.get(
-      key
-    );
-
-
   if (
+    hasMedia(
+      attachmentInfo
+    )
+  ) {
+
+    conversation.promotionMediaReceived =
+      true;
+
+    changed =
+      true;
+
+  }
+
+
+  updatePromotionComplete(
     conversation
-  ) {
-
-    conversation.reminder =
-      null;
-
-  }
-
-}
-
-
-/* =========================================================
-   MANUAL REPLY PROTECTION
-========================================================= */
-
-function invalidatePendingAI(
-  senderId
-) {
-
-  const key =
-    String(
-      senderId
-    );
-
-
-  manualReplyVersion.set(
-    key,
-    (
-      manualReplyVersion.get(
-        key
-      ) || 0
-    ) + 1
   );
-
-
-  cancelReminder(
-    key
-  );
-
-}
-
-
-function getManualReplyVersion(
-  senderId
-) {
-
-  return (
-    manualReplyVersion.get(
-      String(
-        senderId
-      )
-    ) || 0
-  );
-
-}
-
-
-function manualReplyStillValid(
-  senderId,
-  version
-) {
-
-  return (
-    getManualReplyVersion(
-      senderId
-    ) ===
-    version
-  );
-
-}
-
-
-/* =========================================================
-   SCHEDULE REMINDER
-========================================================= */
-
-async function scheduleReminder(
-  senderId,
-  stage,
-  messageId,
-  sentAt
-) {
-
-  const delay =
-    REMINDER_DELAYS[
-      stage
-    ];
 
 
   if (
-    !delay ||
-    !messageId
+    changed
   ) {
 
-    return;
+    await saveConversation(
+      senderId,
+      conversation
+    );
 
   }
 
 
-  const key =
-    String(
-      senderId
-    );
+  return changed;
+
+}
 
 
-  cancelReminder(
-    key
-  );
+/* =========================================================
+   PAYMENT DETAILS
+========================================================= */
+
+function getPaymentDetails(
+  paymentMethod
+) {
+
+  if (
+    !paymentMethod
+  ) {
+
+    return null;
+
+  }
 
 
-  const conversation =
-    await getConversation(
-      key
-    );
+  const details = {
 
+    paypal:
+`PayPal:
+pay@globalpromote.in
+https://paypal.me/RamanKumar4257`,
 
-  const version =
-    Number(
-      conversation.customerMessageVersion ||
-      0
-    );
+    venmo:
+`Venmo:
+Risa-Ramos-2
+https://venmo.com/u/Risa-Ramos-2`,
 
+    etransfer:
+`E-transfer:
+pay@globalpromote.in`,
 
-  const dueAt =
-    new Date(
-      Date.now() +
-      delay
-    ).toISOString();
+    iban:
+`Bank / Wise:
 
+Account name: Rahul Kumar
+IBAN: BE36967747881581
+SWIFT/BIC: TRWIBEB1XXX
+Bank: Wise
 
-  conversation.reminder = {
+Bank address:
+Rue du Trône 100, 3rd floor
+Brussels, 1050
+Belgium`,
 
-    stage:
-      stage,
+    achWire:
+`Bank Transfer / ACH / Wire:
 
-    messageId:
-      String(
-        messageId
-      ),
+Name: Rahul
+Account type: Checking
+Routing number: 026073150
+Account number: 8313696908
 
-    sentAt:
-      sentAt ||
-      nowISO(),
+Bank:
+Community Federal Savings Bank
 
-    dueAt:
-      dueAt,
+Bank address:
+89-16 Jamaica Ave
+Woodhaven, NY 11421
+United States
 
-    customerMessageVersion:
-      version
+SWIFT/BIC:
+CMFGUS33`,
+
+    revolut:
+`Revolut:
+Tag: @clavis02pk
+Payment link:
+https://revolut.me/clavis02pk`,
+
+    mbway:
+`MB WAY:
+Number: +351 968 188 499
+Name: Andre Santana`,
+
+    card:
+`Credit/Debit Card:
+Our team will provide the secure card payment instructions.`
 
   };
 
 
-  await saveConversation(
-    key,
-    conversation
-  );
-
-
-  const timer =
-    setTimeout(
-      () => {
-
-        processReminder(
-          key,
-          stage,
-          String(
-            messageId
-          ),
-          version
-        )
-          .catch(
-            error =>
-              console.error(
-                "REMINDER ERROR:",
-                error.message
-              )
-          );
-
-      },
-      delay
-    );
-
-
-  reminderTimers.set(
-    key,
-    timer
+  return (
+    details[
+      paymentMethod
+    ] ||
+    null
   );
 
 }
 
 
 /* =========================================================
-   PROCESS REMINDER
+   PAGE-SPECIFIC PAYMENT DETAILS
 ========================================================= */
 
-async function processReminder(
-  senderId,
-  expectedStage,
-  expectedMessageId,
-  expectedVersion
+function getPagePaymentDetails(
+  page,
+  method
 ) {
 
-  const key =
-    String(
-      senderId
+  if (
+    !page ||
+    !method
+  ) {
+
+    return null;
+
+  }
+
+
+  const available =
+    paymentMethodAvailable(
+      page,
+      method
     );
 
 
-  reminderTimers.delete(
-    key
+  if (
+    !available
+  ) {
+
+    return null;
+
+  }
+
+
+  return getPaymentDetails(
+    method
   );
 
-
-  const conversation =
-    await getConversation(
-      key
-    );
+}
 
 
-  const reminder =
-    conversation.reminder;
+/* =========================================================
+   PACKAGE TIMEFRAME
+========================================================= */
 
+function getPackageTimeframe(
+  packageKey
+) {
 
   if (
-    !reminder
+    packageKey ===
+    "gold"
   ) {
 
-    return;
+    return "3 days";
 
   }
 
 
-  if (
-    Number(
-      conversation.customerMessageVersion ||
-      0
-    ) !==
-    Number(
-      expectedVersion ||
-      0
-    )
-  ) {
+  return "48 hours";
 
-    conversation.reminder =
-      null;
+}
 
 
-    await saveConversation(
-      key,
-      conversation
-    );
+/* =========================================================
+   GUARANTEE MESSAGE
+========================================================= */
 
+function buildGuaranteeMessage(
+  page,
+  packageKey
+) {
 
-    return;
-
-  }
-
-
-  if (
-    String(
-      reminder.messageId
-    ) !==
-    String(
-      expectedMessageId
-    )
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    conversation.stage !==
-    expectedStage
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    conversation.paymentConfirmed
-  ) {
-
-    conversation.reminder =
-      null;
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    return;
-
-  }
-
-
-  const page =
-    PAGE_CONFIGS[
-      conversation.pageKey
+  const selected =
+    page?.packages?.[
+      packageKey
     ];
 
+
+  const timeframe =
+    getPackageTimeframe(
+      packageKey
+    );
+
+
+  if (
+    selected
+  ) {
+
+    return `
+Yes ❤️ The ${selected.name} package is guaranteed.
+
+We will continue promoting your content until you receive the guaranteed followers included in your package.
+
+Expected timeframe:
+${timeframe}
+
+If the guaranteed followers are not reached according to the guarantee policy, the eligible amount can be refunded. ❤️`;
+
+  }
+
+
+  return `
+Yes ❤️ Our followers are guaranteed.
+
+We continue the promotion until the guaranteed followers included in your selected package are reached.
+
+Gold package timeframe: 3 days.
+Other packages: 48 hours.
+
+If the guaranteed followers are not reached according to the guarantee policy, the eligible amount can be refunded. ❤️`;
+
+}
+
+
+/* =========================================================
+   LOCATION RESPONSE
+========================================================= */
+
+function buildLocationResponse(
+  page
+) {
 
   if (
     !page
   ) {
 
-    conversation.reminder =
-      null;
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    return;
+    return null;
 
   }
-
-
-  const text =
-    REMINDER_TEXTS[
-      expectedStage
-    ];
 
 
   if (
-    !text
+    page.key ===
+    "europe"
   ) {
 
-    return;
+    return `
+Yes dear ❤️ Our @expl.europe promotion is focused on Europe and European audiences.`;
 
   }
-
-
-  const version =
-    getManualReplyVersion(
-      key
-    );
 
 
   if (
-    !manualReplyStillValid(
-      key,
-      version
-    )
+    page.key ===
+    "canada"
   ) {
 
-    return;
+    return `
+Yes dear ❤️ @expl.canada is focused on Canadian audiences.`;
 
   }
 
 
-  try {
-
-    const data =
-      await sendInstagramMessage(
-        page,
-        key,
-        text
-      );
-
-
-    const newMessageId =
-      data?.message_id ||
-      data?.id ||
-      null;
-
-
-    if (
-      newMessageId
-    ) {
-
-      outgoingMessages.add(
-        `${page.key}:${String(
-          newMessageId
-        )}`
-      );
-
-    }
-
-
-    saveMessage(
-      conversation,
-      "assistant",
-      text
-    );
-
-
-    conversation.lastOutgoingMessageId =
-      newMessageId
-        ? String(
-            newMessageId
-          )
-        : null;
-
-
-    conversation.lastOutgoingText =
-      text;
-
-
-    conversation.lastOutgoingStage =
-      expectedStage;
-
-
-    conversation.lastOutgoingAt =
-      nowISO();
-
-
-    conversation.reminder =
-      null;
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-  }
-
-  catch (
-    error
+  if (
+    page.key ===
+    "miami"
   ) {
 
-    console.error(
-      "REMINDER SEND ERROR:",
-      error.message
-    );
-
-
-    conversation.reminder =
-      null;
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
+    return `
+Yes dear ❤️ @expl.miami is focused on Miami and the Miami audience.`;
 
   }
+
+
+  if (
+    page.key ===
+    "mentalxheal"
+  ) {
+
+    return `
+Yes dear ❤️ @mentalxheal is focused on mental-health related audiences and content.`;
+
+  }
+
+
+  return null;
 
 }
 
 
 /* =========================================================
-   RESTORE REMINDERS AFTER RESTART
+   LOCATION QUESTION DETECTION
 ========================================================= */
 
-async function restorePendingReminders() {
+function isLocationQuestion(
+  text
+) {
+
+  const t =
+    normalize(
+      text
+    );
+
+
+  return (
+    /\bwhere\b/.test(t) ||
+    /\blocation\b/.test(t) ||
+    /\bwhich country\b/.test(t) ||
+    /\bwhat country\b/.test(t) ||
+    /\bwhat city\b/.test(t) ||
+    /\bwhich city\b/.test(t) ||
+    /\bfrom portugal\b/.test(t) ||
+    /\bin portugal\b/.test(t) ||
+    /\bin canada\b/.test(t) ||
+    /\bin miami\b/.test(t) ||
+    /\bin europe\b/.test(t)
+  );
+
+}
+
+
+/* =========================================================
+   PAYMENT QUESTION DETECTION
+========================================================= */
+
+function isPaymentQuestion(
+  text
+) {
+
+  const t =
+    normalize(
+      text
+    );
+
+
+  return (
+    /\bhow can i pay\b/.test(t) ||
+    /\bhow do i pay\b/.test(t) ||
+    /\bpayment\b/.test(t) ||
+    /\bpay\b/.test(t) ||
+    /\bpaying\b/.test(t) ||
+    /\bpayment method\b/.test(t) ||
+    /\bpayment methods\b/.test(t)
+  );
+
+}
+
+
+/* =========================================================
+   PACKAGE QUESTION DETECTION
+========================================================= */
+
+function isPackageQuestion(
+  text
+) {
+
+  const t =
+    normalize(
+      text
+    );
+
+
+  return (
+    /\bpackage\b/.test(t) ||
+    /\bpackages\b/.test(t) ||
+    /\bprice\b/.test(t) ||
+    /\bprices\b/.test(t) ||
+    /\bhow much\b/.test(t) ||
+    /\bcost\b/.test(t) ||
+    /\brate\b/.test(t)
+  );
+
+}
+
+
+/* =========================================================
+   PAYMENT METHOD FOLLOW-UP
+   This is used after the 2-minute payment follow-up.
+========================================================= */
+
+function buildPaymentMethodQuestion(
+  page
+) {
+
+  if (
+    !page
+  ) {
+
+    return null;
+
+  }
+
+
+  return `
+Sure ❤️ Which payment method do you have?
+
+${page.paymentMethods.join(
+  "\n"
+)}`;
+
+}
+
+
+/* =========================================================
+   PAYMENT DETAILS MESSAGE
+========================================================= */
+
+function buildPagePaymentMessage(
+  page,
+  conversation
+) {
+
+  if (
+    !page ||
+    !conversation.selectedPackage ||
+    !conversation.paymentMethod
+  ) {
+
+    return null;
+
+  }
+
+
+  const selected =
+    page.packages[
+      conversation.selectedPackage
+    ];
+
+
+  const details =
+    getPagePaymentDetails(
+      page,
+      conversation.paymentMethod
+    );
+
+
+  if (
+    !selected ||
+    !details
+  ) {
+
+    return null;
+
+  }
+
+
+  return `
+Perfect ❤️
+
+Package:
+${selected.name}
+
+Price:
+${page.currency}${selected.price}
+
+Payment method:
+${conversation.paymentMethod}
+
+Payment details:
+
+${details}
+
+After successful payment, please send us the payment screenshot ❤️`;
+
+}
+
+
+/* =========================================================
+   PAYMENT METHOD SAVING
+========================================================= */
+
+async function savePaymentMethod(
+  senderId,
+  conversation,
+  page,
+  method
+) {
+
+  if (
+    !page ||
+    !method
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    !paymentMethodAvailable(
+      page,
+      method
+    )
+  ) {
+
+    return false;
+
+  }
+
+
+  conversation.paymentMethod =
+    method;
+
+
+  conversation.paymentDetailsSent =
+    false;
+
+
+  conversation.awaitingPaymentConfirmation =
+    true;
+
+
+  conversation.stage =
+    "PAYMENT_PENDING";
+
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   PACKAGE SELECTION
+========================================================= */
+
+async function savePackageSelection(
+  senderId,
+  conversation,
+  page,
+  packageKey
+) {
+
+  if (
+    !page ||
+    !packageKey ||
+    !page.packages?.[
+      packageKey
+    ]
+  ) {
+
+    return false;
+
+  }
+
+
+  conversation.selectedPackage =
+    packageKey;
+
+
+  conversation.paymentMethod =
+    null;
+
+
+  conversation.paymentDetailsSent =
+    false;
+
+
+  conversation.paymentConfirmed =
+    false;
+
+
+  conversation.paymentProofReceived =
+    false;
+
+
+  conversation.awaitingPaymentConfirmation =
+    true;
+
+
+  conversation.stage =
+    "PACKAGE_SELECTED";
+
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   PAYMENT PROOF
+========================================================= */
+
+async function processPaymentProof(
+  senderId,
+  conversation,
+  attachmentInfo
+) {
+
+  if (
+    !hasMedia(
+      attachmentInfo
+    )
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    !conversation.selectedPackage
+  ) {
+
+    return false;
+
+  }
+
+
+  conversation.paymentProofReceived =
+    true;
+
+
+  conversation.paymentConfirmed =
+    false;
+
+
+  conversation.awaitingPaymentConfirmation =
+    true;
+
+
+  conversation.stage =
+    "PAYMENT_PROOF_RECEIVED";
+
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   PAYMENT CONFIRMATION
+========================================================= */
+
+async function markPaymentConfirmed(
+  senderId,
+  conversation
+) {
+
+  conversation.paymentConfirmed =
+    true;
+
+
+  conversation.awaitingPaymentConfirmation =
+    false;
+
+
+  updatePromotionComplete(
+    conversation
+  );
+
+
+  if (
+    !conversation.promotionComplete
+  ) {
+
+    conversation.stage =
+      "PAYMENT_CONFIRMED";
+
+  }
+
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   LOCKED MESSAGE STATE
+========================================================= */
+
+function getLockedState(
+  conversation
+) {
+
+  return {
+
+    messageOneSent:
+      Boolean(
+        conversation.messageOneSent
+      ),
+
+    messageTwoSent:
+      Boolean(
+        conversation.messageTwoSent
+      ),
+
+    messageThreeSent:
+      Boolean(
+        conversation.packagesSent
+      )
+
+  };
+
+}
+
+
+/* =========================================================
+   LOCKED MESSAGE 3 CHECK
+========================================================= */
+
+function messageThreeAlreadySent(
+  conversation
+) {
+
+  return Boolean(
+    conversation.packagesSent
+  );
+
+}
+
+
+/* =========================================================
+   LOCKED MESSAGE 2 CHECK
+========================================================= */
+
+function messageTwoAlreadySent(
+  conversation
+) {
+
+  return Boolean(
+    conversation.messageTwoSent
+  );
+
+}
+
+
+/* =========================================================
+   LOCKED MESSAGE 1 CHECK
+========================================================= */
+
+function messageOneAlreadySent(
+  conversation
+) {
+
+  return Boolean(
+    conversation.messageOneSent
+  );
+
+}
+/* =========================================================
+   ADMIN CLIENT LIST — CONTINUED
+========================================================= */
+
+async function getAdminClients() {
 
   const rows =
     await supabaseGetAllConversations();
 
+  const clients =
+    [];
 
   for (
     const row
@@ -3215,2266 +3279,14 @@ async function restorePendingReminders() {
     }
 
 
-    conversations.set(
-      senderId,
-      conversation
-    );
-
-
-    const reminder =
-      conversation.reminder;
-
-
-    if (
-      !reminder ||
-      !reminder.dueAt ||
-      !reminder.messageId
-    ) {
-
-      continue;
-
-    }
-
-
-    const dueTime =
-      new Date(
-        reminder.dueAt
-      ).getTime();
-
-
-    if (
-      !Number.isFinite(
-        dueTime
-      )
-    ) {
-
-      conversation.reminder =
-        null;
-
-
-      await saveConversation(
-        senderId,
-        conversation
-      );
-
-
-      continue;
-
-    }
-
-
-    const delay =
-      Math.max(
-        1000,
-        dueTime -
-        Date.now()
-      );
-
-
-    cancelReminder(
-      senderId
-    );
-
-
-    const timer =
-      setTimeout(
-        () => {
-
-          processReminder(
-            senderId,
-            reminder.stage,
-            reminder.messageId,
-            reminder.customerMessageVersion
-          )
-            .catch(
-              error =>
-                console.error(
-                  "RESTORED REMINDER ERROR:",
-                  error.message
-                )
-            );
-
-        },
-        delay
-      );
-
-
-    reminderTimers.set(
-      senderId,
-      timer
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   INSTAGRAM SEND
-========================================================= */
-
-async function sendInstagramMessage(
-  page,
-  recipientId,
-  text
-) {
-
-  if (
-    !page ||
-    !page.token
-  ) {
-
-    throw new Error(
-      `Instagram page token missing for ${
-        page?.username ||
-        "unknown page"
-      }`
-    );
-
-  }
-
-
-  const url =
-    `https://graph.instagram.com/${INSTAGRAM_API_VERSION}` +
-    `/${page.id}/messages`;
-
-
-  const response =
-    await fetch(
-      url,
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/json",
-
-          Authorization:
-            `Bearer ${page.token}`
-
-        },
-
-        body:
-          JSON.stringify({
-
-            recipient: {
-
-              id:
-                String(
-                  recipientId
-                )
-
-            },
-
-            message: {
-
-              text:
-                String(
-                  text
-                )
-
-            }
-
-          })
-
-        }
-
-      );
-
-
-  const data =
-    await response.json();
-
-
-  if (
-    !response.ok
-  ) {
-
-    throw new Error(
-      data?.error?.message ||
-      `Instagram API error ${response.status}`
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-/* =========================================================
-   SAFE AUTOMATIC SEND
-========================================================= */
-
-async function sendReplySafely(
-  page,
-  senderId,
-  conversation,
-  text,
-  version,
-  reminderStage = null
-) {
-
-  if (
-    !text
-  ) {
-
-    return null;
-
-  }
-
-
-  const key =
-    String(
-      senderId
-    );
-
-
-  await wait(
-    replyDelay()
-  );
-
-
-  if (
-    !manualReplyStillValid(
-      key,
-      version
-    )
-  ) {
-
-    return null;
-
-  }
-
-
-  const latest =
-    await getConversation(
-      key
-    );
-
-
-  if (
-    Number(
-      latest.customerMessageVersion ||
-      0
-    ) !==
-    Number(
-      conversation.customerMessageVersion ||
-      0
-    )
-  ) {
-
-    return null;
-
-  }
-
-
-  const data =
-    await sendInstagramMessage(
-      page,
-      key,
-      text
-    );
-
-
-  const messageId =
-    data?.message_id ||
-    data?.id ||
-    null;
-
-
-  if (
-    messageId
-  ) {
-
-    outgoingMessages.add(
-      `${page.key}:${String(
-        messageId
-      )}`
-    );
-
-  }
-
-
-  latest.pageKey =
-    page.key;
-
-
-  saveMessage(
-    latest,
-    "assistant",
-    text
-  );
-
-
-  latest.lastOutgoingMessageId =
-    messageId
-      ? String(
-          messageId
-        )
-      : null;
-
-
-  latest.lastOutgoingText =
-    text;
-
-
-  latest.lastOutgoingStage =
-    latest.stage;
-
-
-  latest.lastOutgoingAt =
-    nowISO();
-
-
-  await saveConversation(
-    key,
-    latest
-  );
-
-
-  if (
-    reminderStage &&
-    messageId
-  ) {
-
-    await scheduleReminder(
-      key,
-      reminderStage,
-      messageId,
-      latest.lastOutgoingAt
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-/* =========================================================
-   PROMOTION COMPLETE
-========================================================= */
-
-function updatePromotionComplete(
-  conversation
-) {
-
-  conversation.promotionComplete =
-    Boolean(
-
-      conversation.paymentConfirmed &&
-
-      conversation.promotionMediaReceived &&
-
-      (
-        conversation.promotionUsernameReceived ||
-        conversation.clientUsername
-      )
-
-    );
-
-
-  if (
-    conversation.promotionComplete
-  ) {
-
-    conversation.stage =
-      "PROMOTION_COMPLETE";
-
-  }
-
-}
-/* =========================================================
-   PROCESS USERNAME + MEDIA
-========================================================= */
-
-async function processUsernameAndMedia(
-  senderId,
-  conversation,
-  text,
-  attachmentInfo
-) {
-
-  let changed =
-    false;
-
-
-  const username =
-    extractInstagramUsername(
-      text
-    );
-
-
-  if (
-    username &&
-    conversation.clientUsername !==
-    username
-  ) {
-
-    conversation.clientUsername =
-      username;
-
-    conversation.promotionUsernameReceived =
-      true;
-
-    conversation.promotionUsernameRequested =
-      false;
-
-    changed =
-      true;
-
-  }
-
-
-  /*
-     Media is promotion media ONLY after payment
-     has been confirmed.
-  */
-
-  if (
-    conversation.paymentConfirmed &&
-    hasMedia(
-      attachmentInfo
-    )
-  ) {
-
-    if (
-      !conversation.promotionMediaReceived
-    ) {
-
-      conversation.promotionMediaReceived =
-        true;
-
-      changed =
-        true;
-
-    }
-
-  }
-
-
-  updatePromotionComplete(
-    conversation
-  );
-
-
-  if (
-    changed
-  ) {
-
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-  }
-
-
-  return changed;
-
-}
-
-
-/* =========================================================
-   NEXT PROMOTION STEP
-========================================================= */
-
-async function sendPromotionNextStep(
-  page,
-  senderId,
-  conversation
-) {
-
-  if (
-    !conversation.paymentConfirmed
-  ) {
-
-    return;
-
-  }
-
-
-  updatePromotionComplete(
-    conversation
-  );
-
-
-  if (
-    conversation.promotionComplete
-  ) {
-
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-    return;
-
-  }
-
-
-  let message =
-    null;
-
-
-  if (
-    !conversation.promotionMediaReceived
-  ) {
-
-    message =
-      "Perfect dear ❤️ Please send me the pictures that you want to promote.";
-
-  }
-
-  else if (
-    !conversation.promotionUsernameReceived &&
-    !conversation.clientUsername
-  ) {
-
-    message =
-      "Perfect dear ❤️ Please send me your Instagram username.";
-
-    conversation.promotionUsernameRequested =
-      true;
-
-  }
-
-
-  if (
-    !message
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    conversation.lastOutgoingText ===
-    message
-  ) {
-
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-    return;
-
-  }
-
-
-  const version =
-    getManualReplyVersion(
-      senderId
-    );
-
-
-  await sendReplySafely(
-    page,
-    senderId,
-    conversation,
-    message,
-    version
-  );
-
-
-  if (
-    message.includes(
-      "username"
-    )
-  ) {
-
-    conversation.promotionUsernameRequested =
-      true;
-
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   PAYMENT CONFIRMATION
-========================================================= */
-
-function isSimplePaymentConfirmation(
-  text
-) {
-
-  const t =
-    normalize(
-      text
-    );
-
-
-  return (
-
-    /\bpaid\b/.test(t) ||
-
-    /payment\s+(is\s+)?done/.test(t) ||
-
-    /payment\s+(is\s+)?completed/.test(t) ||
-
-    /payment\s+sent/.test(t) ||
-
-    /payment\s+made/.test(t) ||
-
-    /i\s+paid/.test(t) ||
-
-    /paid\s+already/.test(t) ||
-
-    /successfully\s+paid/.test(t)
-
-  );
-
-}
-
-
-/* =========================================================
-   CLIENT MESSAGE PROCESSOR
-========================================================= */
-
-async function processClientMessage(
-  page,
-  senderId,
-  clientMessage,
-  attachmentInfo
-) {
-
-  const key =
-    String(
-      senderId
-    );
-
-
-  const conversation =
-    await getConversation(
-      key
-    );
-
-
-  if (
-    !conversation
-  ) {
-
-    return;
-
-  }
-
-
-  cancelReminder(
-    key
-  );
-
-
-  conversation.customerMessageVersion =
-    Number(
-      conversation.customerMessageVersion ||
-      0
-    ) + 1;
-
-
-  conversation.lastCustomerMessageText =
-    String(
-      clientMessage ||
-      ""
-    );
-
-
-  conversation.lastCustomerMessageAt =
-    nowISO();
-
-
-  conversation.pageKey =
-    page.key;
-
-
-  saveMessage(
-    conversation,
-    "client",
-    clientMessage ||
-      (
-        attachmentInfo
-          ? `[${attachmentInfo}]`
-          : "[media]"
-      )
-  );
-
-
-  await saveConversation(
-    key,
-    conversation
-  );
-
-
-  /* =======================================================
-     PAYMENT CONFIRMED FLOW
-  ======================================================= */
-
-  if (
-    conversation.paymentConfirmed
-  ) {
-
-    await processUsernameAndMedia(
-      key,
-      conversation,
-      clientMessage,
-      attachmentInfo
-    );
-
-
-    updatePromotionComplete(
-      conversation
-    );
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    if (
-      conversation.promotionComplete
-    ) {
-
-      return;
-
-    }
-
-
-    await sendPromotionNextStep(
-      page,
-      key,
-      conversation
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     PAYMENT DETAILS ALREADY SENT
-  ======================================================= */
-
-  if (
-    conversation.paymentDetailsSent
-  ) {
-
-    if (
-      isSimplePaymentConfirmation(
-        clientMessage
-      )
-    ) {
-
-      conversation.paymentProofReceived =
-        true;
-
-      conversation.awaitingPaymentConfirmation =
-        true;
-
-      await saveConversation(
-        key,
-        conversation
-      );
-
-
-      const version =
-        getManualReplyVersion(
-          key
-        );
-
-
-      await sendReplySafely(
-        page,
-        key,
-        conversation,
-        "Thank you dear ❤️ Please send me your payment screenshot and confirm once the payment has been completed successfully.",
-        version
-      );
-
-
-      return;
-
-    }
-
-
-    if (
-      hasMedia(
-        attachmentInfo
-      )
-    ) {
-
-      conversation.paymentProofReceived =
-        true;
-
-      conversation.awaitingPaymentConfirmation =
-        true;
-
-      await saveConversation(
-        key,
-        conversation
-      );
-
-
-      const version =
-        getManualReplyVersion(
-          key
-        );
-
-
-      await sendReplySafely(
-        page,
-        key,
-        conversation,
-        "Thank you dear ❤️ I received your payment screenshot. Please confirm once the payment has been completed successfully.",
-        version
-      );
-
-
-      return;
-
-    }
-
-
-    if (
-      conversation.awaitingPaymentConfirmation &&
-      (
-        normalize(
-          clientMessage
-        ) ===
-        "yes" ||
-
-        normalize(
-          clientMessage
-        ) ===
-        "done" ||
-
-        normalize(
-          clientMessage
-        ) ===
-        "completed" ||
-
-        normalize(
-          clientMessage
-        ) ===
-        "confirmed"
-      )
-    ) {
-
-      conversation.paymentConfirmed =
-        true;
-
-      conversation.awaitingPaymentConfirmation =
-        false;
-
-      conversation.stage =
-        "PAYMENT_CONFIRMED";
-
-
-      cancelReminder(
-        key
-      );
-
-
-      await saveConversation(
-        key,
-        conversation
-      );
-
-
-      await sendPromotionNextStep(
-        page,
-        key,
-        conversation
-      );
-
-
-      return;
-
-    }
-
-  }
-
-
-  /* =======================================================
-     PACKAGE SELECTION
-  ======================================================= */
-
-  const packageKey =
-    detectPackage(
-      clientMessage
-    );
-
-
-  if (
-    packageKey &&
-    conversation.packagesSent
-  ) {
-
-    if (
-      conversation.selectedPackage ===
-      packageKey
-    ) {
-
-      return;
-
-    }
-
-
-    conversation.selectedPackage =
-      packageKey;
-
-
-    conversation.stage =
-      "PACKAGE_SELECTED";
-
-
-    conversation.paymentMethod =
-      null;
-
-
-    conversation.paymentDetailsSent =
-      false;
-
-
-    conversation.paymentConfirmed =
-      false;
-
-
-    conversation.paymentProofReceived =
-      false;
-
-
-    conversation.awaitingPaymentConfirmation =
-      false;
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    const confirmation =
-      buildPackageConfirmation(
-        page,
-        packageKey
-      );
-
-
-    if (
-      confirmation
-    ) {
-
-      const version =
-        getManualReplyVersion(
-          key
-        );
-
-
-      await sendReplySafely(
-        page,
-        key,
-        conversation,
-        confirmation,
-        version
-      );
-
-    }
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     PAYMENT METHOD
-  ======================================================= */
-
-  const paymentMethod =
-    detectPaymentMethod(
-      clientMessage
-    );
-
-
-  if (
-    paymentMethod &&
-    conversation.selectedPackage
-  ) {
-
-    if (
-      !paymentMethodAvailable(
-        page,
-        paymentMethod
-      )
-    ) {
-
-      const version =
-        getManualReplyVersion(
-          key
-        );
-
-
-      await sendReplySafely(
-        page,
-        key,
-        conversation,
-        `That payment method isn't available for this page ❤️
-
-Available payment methods:
-
-${page.paymentMethods.join(
-  "\n"
-)}
-
-Please choose one of these.`,
-        version
-      );
-
-
-      return;
-
-    }
-
-
-    if (
-      conversation.paymentDetailsSent &&
-      conversation.paymentMethod ===
-      paymentMethod
-    ) {
-
-      return;
-
-    }
-
-
-    const paymentMessage =
-      buildPaymentMessage(
-        page,
-        conversation.selectedPackage,
-        paymentMethod
-      );
-
-
-    if (
-      !paymentMessage
-    ) {
-
-      return;
-
-    }
-
-
-    conversation.paymentMethod =
-      paymentMethod;
-
-
-    conversation.paymentDetailsSent =
-      true;
-
-
-    conversation.paymentConfirmed =
-      false;
-
-
-    conversation.paymentProofReceived =
-      false;
-
-
-    conversation.awaitingPaymentConfirmation =
-      true;
-
-
-    conversation.stage =
-      "PAYMENT_PENDING";
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    const version =
-      getManualReplyVersion(
-        key
-      );
-
-
-    await sendReplySafely(
-      page,
-      key,
-      conversation,
-      paymentMessage,
-      version,
-      "PAYMENT_PENDING"
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     GUARANTEE QUESTION
-  ======================================================= */
-
-  if (
-    isGuaranteeQuestion(
-      clientMessage
-    )
-  ) {
-
-    const version =
-      getManualReplyVersion(
-        key
-      );
-
-
-    await sendReplySafely(
-      page,
-      key,
-      conversation,
-      GUARANTEE_MESSAGE,
-      version
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     REAL / ORGANIC QUESTION
-  ======================================================= */
-
-  const normalizedMessage =
-    normalize(
-      clientMessage
-    );
-
-
-  if (
-    /real followers/.test(
-      normalizedMessage
-    ) ||
-
-    /organic followers/.test(
-      normalizedMessage
-    ) ||
-
-    /fake followers/.test(
-      normalizedMessage
-    ) ||
-
-    /bot followers/.test(
-      normalizedMessage
-    ) ||
-
-    /^real$/.test(
-      normalizedMessage
-    )
-  ) {
-
-    const version =
-      getManualReplyVersion(
-        key
-      );
-
-
-    await sendReplySafely(
-      page,
-      key,
-      conversation,
-      REAL_FOLLOWERS_MESSAGE,
-      version
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     NEGATIVE RESPONSE
-  ======================================================= */
-
-  if (
-    isNegative(
-      clientMessage
-    )
-  ) {
-
-    conversation.stage =
-      "CLOSED";
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     FIRST MESSAGE
-  ======================================================= */
-
-  if (
-    !conversation.messageOneSent
-  ) {
-
-    conversation.messageOneSent =
-      true;
-
-
-    conversation.stage =
-      "MESSAGE_ONE_SENT";
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    const version =
-      getManualReplyVersion(
-        key
-      );
-
-
-    await sendReplySafely(
-      page,
-      key,
-      conversation,
-      MESSAGE_ONE,
-      version,
-      "MESSAGE_ONE_SENT"
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     SECOND MESSAGE
-  ======================================================= */
-
-  if (
-    !conversation.messageTwoSent
-  ) {
-
-    if (
-      !isPositiveInterest(
-        clientMessage
-      )
-    ) {
-
-      const ai =
-        await getAIReply(
-          page,
-          conversation,
-          clientMessage,
-          attachmentInfo
-        );
-
-
-      if (
-        ai
-      ) {
-
-        const version =
-          getManualReplyVersion(
-            key
-          );
-
-
-        await sendReplySafely(
-          page,
-          key,
-          conversation,
-          ai,
-          version
-        );
-
-      }
-
-
-      return;
-
-    }
-
-
-    conversation.messageTwoSent =
-      true;
-
-
-    conversation.stage =
-      "MESSAGE_TWO_SENT";
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    const version =
-      getManualReplyVersion(
-        key
-      );
-
-
-    await sendReplySafely(
-      page,
-      key,
-      conversation,
-      MESSAGE_TWO,
-      version,
-      "MESSAGE_TWO_SENT"
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     PACKAGE REQUEST
-  ======================================================= */
-
-  const asksPackages =
-    /\b(package|packages|price|prices|pricing|price list|how much|cost)\b/.test(
-      normalizedMessage
-    );
-
-
-  if (
-    !conversation.packagesSent &&
-    asksPackages
-  ) {
-
-    conversation.packagesSent =
-      true;
-
-
-    conversation.stage =
-      "PACKAGES_SHOWN";
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    const packagesMessage =
-      buildPackagesMessage(
-        page
-      );
-
-
-    const version =
-      getManualReplyVersion(
-        key
-      );
-
-
-    await sendReplySafely(
-      page,
-      key,
-      conversation,
-      packagesMessage,
-      version,
-      "PACKAGES_SHOWN"
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     AI FALLBACK
-  ======================================================= */
-
-  const aiReply =
-    await getAIReply(
-      page,
-      conversation,
-      clientMessage,
-      attachmentInfo
-    );
-
-
-  if (
-    aiReply
-  ) {
-
-    const version =
-      getManualReplyVersion(
-        key
-      );
-
-
-    await sendReplySafely(
-      page,
-      key,
-      conversation,
-      aiReply,
-      version
-    );
-
-
-    return;
-
-  }
-
-
-  /* =======================================================
-     FINAL FALLBACK
-  ======================================================= */
-
-  const version =
-    getManualReplyVersion(
-      key
-    );
-
-
-  await sendReplySafely(
-    page,
-    key,
-    conversation,
-    "Sure dear ❤️ Please tell me what you would like to know.",
-    version
-  );
-
-}
-
-
-/* =========================================================
-   CLIENT MESSAGE QUEUE
-========================================================= */
-
-function enqueueClientMessage(
-  page,
-  senderId,
-  clientMessage,
-  attachmentInfo
-) {
-
-  const key =
-    String(
-      senderId
-    );
-
-
-  const previous =
-    clientQueues.get(
-      key
-    ) ||
-    Promise.resolve();
-
-
-  const next =
-    previous
-      .catch(
-        () => {}
-      )
-      .then(
-        () =>
-          processClientMessage(
-            page,
-            key,
-            clientMessage,
-            attachmentInfo
-          )
-      )
-      .catch(
-        error =>
-          console.error(
-            "CLIENT MESSAGE PROCESSING ERROR:",
-            error.message
-          )
-      );
-
-
-  clientQueues.set(
-    key,
-    next
-  );
-
-
-  next.finally(
-    () => {
-
-      if (
-        clientQueues.get(
-          key
-        ) ===
-        next
-      ) {
-
-        clientQueues.delete(
-          key
-        );
-
-      }
-
-    }
-  );
-
-
-  return next;
-
-}
-
-
-/* =========================================================
-   WEBHOOK VERIFICATION
-========================================================= */
-
-app.get(
-  "/webhook",
-  (
-    req,
-    res
-  ) => {
-
-    const mode =
-      req.query["hub.mode"];
-
-
-    const token =
-      req.query["hub.verify_token"];
-
-
-    const challenge =
-      req.query["hub.challenge"];
-
-
-    if (
-      mode ===
-        "subscribe" &&
-      token ===
-        VERIFY_TOKEN
-    ) {
-
-      return res
-        .status(
-          200
-        )
-        .send(
-          challenge
-        );
-
-    }
-
-
-    return res
-      .sendStatus(
-        403
-      );
-
-  }
-);
-
-
-/* =========================================================
-   WEBHOOK
-========================================================= */
-
-app.post(
-  "/webhook",
-  async (
-    req,
-    res
-  ) => {
-
-    res.sendStatus(
-      200
-    );
-
-
-    try {
-
-      const body =
-        req.body;
-
-
-      if (
-        !body ||
-        body.object !==
-        "instagram"
-      ) {
-
-        return;
-
-      }
-
-
-      const entries =
-        Array.isArray(
-          body.entry
-        )
-          ? body.entry
-          : [];
-
-
-      for (
-        const entry
-        of entries
-      ) {
-
-        const page =
-          getPageById(
-            entry.id
-          );
-
-
-        if (
-          !page
-        ) {
-
-          continue;
-
-        }
-
-
-        const messaging =
-          Array.isArray(
-            entry.messaging
-          )
-            ? entry.messaging
-            : [];
-
-
-        for (
-          const event
-          of messaging
-        ) {
-
-          if (
-            isManagedPageEvent(
-              event
-            )
-          ) {
-
-            continue;
-
-          }
-
-
-          if (
-            event.read ||
-            event.delivery
-          ) {
-
-            continue;
-
-          }
-
-
-          const senderId =
-            String(
-              event?.sender?.id ||
-              ""
-            ).trim();
-
-
-          if (
-            !senderId
-          ) {
-
-            continue;
-
-          }
-
-
-          const message =
-            event?.message;
-
-
-          if (
-            !message
-          ) {
-
-            continue;
-
-          }
-
-
-          if (
-            message.reaction
-          ) {
-
-            continue;
-
-          }
-
-
-          if (
-            message.is_echo ===
-            true
-          ) {
-
-            continue;
-
-          }
-
-
-          const messageId =
-            String(
-              message.mid ||
-              message.id ||
-              ""
-            ).trim();
-
-
-          if (
-            messageId
-          ) {
-
-            const outgoingKey =
-              `${page.key}:${messageId}`;
-
-
-            if (
-              outgoingMessages.has(
-                outgoingKey
-              )
-            ) {
-
-              continue;
-
-            }
-
-
-            if (
-              processedMessageIds.has(
-                outgoingKey
-              )
-            ) {
-
-              continue;
-
-            }
-
-
-            processedMessageIds.set(
-              outgoingKey,
-              Date.now()
-            );
-
-
-            if (
-              processedMessageIds.size >
-              10000
-            ) {
-
-              const oldest =
-                processedMessageIds
-                  .entries()
-                  .next()
-                  .value;
-
-
-              if (
-                oldest
-              ) {
-
-                processedMessageIds.delete(
-                  oldest[0]
-                );
-
-              }
-
-            }
-
-          }
-
-
-          const clientMessage =
-            String(
-              message.text ||
-              ""
-            ).trim();
-
-
-          const attachments =
-            Array.isArray(
-              message.attachments
-            )
-              ? message.attachments
-              : [];
-
-
-          const attachmentInfo =
-            attachments.length
-              ? attachments
-                  .map(
-                    attachment => {
-
-                      const type =
-                        attachment?.type ||
-                        "unknown";
-
-
-                      const url =
-                        attachment?.payload?.url ||
-                        "";
-
-
-                      return `${type}:${url}`;
-
-                    }
-                  )
-                  .join(
-                    " | "
-                  )
-              : null;
-
-
-          if (
-            !clientMessage &&
-            !attachmentInfo
-          ) {
-
-            continue;
-
-          }
-
-
-          const conversation =
-            await getConversation(
-              senderId
-            );
-
-
-          conversation.pageKey =
-            page.key;
-
-
-          if (
-            !conversation.clientUsername
-          ) {
-
-            const username =
-              await getInstagramUsername(
-                page,
-                senderId
-              );
-
-
-            if (
-              username
-            ) {
-
-              conversation.clientUsername =
-                username;
-
-
-              conversation.promotionUsernameReceived =
-                true;
-
-
-              await saveConversation(
-                senderId,
-                conversation
-              );
-
-            }
-
-          }
-
-
-          enqueueClientMessage(
-            page,
-            senderId,
-            clientMessage,
-            attachmentInfo
-          );
-
-        }
-
-      }
-
-    }
-
-    catch (
-      error
-    ) {
-
-      console.error(
-        "WEBHOOK ERROR:",
-        error.message
-      );
-
-    }
-
-  }
-);
-/* =========================================================
-   ADMIN AUTHENTICATION
-========================================================= */
-
-function isAdminAuthorized(
-  req
-) {
-
-  if (
-    !ADMIN_SECRET
-  ) {
-
-    return false;
-
-  }
-
-
-  const provided =
-    req.headers[
-      "x-admin-secret"
-    ] ||
-    req.query.secret ||
-    req.body?.secret;
-
-
-  return (
-    String(
-      provided ||
-      ""
-    ) ===
-    String(
-      ADMIN_SECRET
-    )
-  );
-
-}
-
-
-function requireAdmin(
-  req,
-  res,
-  next
-) {
-
-  if (
-    !isAdminAuthorized(
-      req
-    )
-  ) {
-
-    return res
-      .status(
-        401
-      )
-      .json({
-
-        success:
-          false,
-
-        error:
-          "Unauthorized"
-
-      });
-
-  }
-
-
-  next();
-
-}
-
-
-/* =========================================================
-   ADMIN CLIENT DATA
-========================================================= */
-
-function normalizeAdminHistory(
-  history
-) {
-
-  if (
-    !Array.isArray(
-      history
-    )
-  ) {
-
-    return [];
-
-  }
-
-
-  return history.map(
-    item => ({
-
-      role:
-        item?.role ===
-        "client"
-          ? "client"
-          : "assistant",
-
-      text:
-        String(
-          item?.text ||
-          "[media]"
-        ),
-
-      timestamp:
-        item?.timestamp ||
-        null
-
-    })
-  );
-
-}
-
-
-function buildAdminClient(
-  senderId,
-  conversation
-) {
-
-  return {
-
-    senderId:
-      String(
-        senderId
-      ),
-
-    username:
-      conversation.clientUsername ||
-      null,
-
-    page:
-      conversation.pageKey ||
-      null,
-
-    stage:
-      conversation.stage ||
-      "NEW",
-
-    messageOneSent:
-      Boolean(
-        conversation.messageOneSent
-      ),
-
-    messageTwoSent:
-      Boolean(
-        conversation.messageTwoSent
-      ),
-
-    packagesSent:
-      Boolean(
-        conversation.packagesSent
-      ),
-
-    selectedPackage:
-      conversation.selectedPackage ||
-      null,
-
-    paymentMethod:
-      conversation.paymentMethod ||
-      null,
-
-    paymentConfirmed:
-      Boolean(
-        conversation.paymentConfirmed
-      ),
-
-    paymentProofReceived:
-      Boolean(
-        conversation.paymentProofReceived
-      ),
-
-    promotionMediaReceived:
-      Boolean(
-        conversation.promotionMediaReceived
-      ),
-
-    promotionUsernameReceived:
-      Boolean(
-        conversation.promotionUsernameReceived ||
-        conversation.clientUsername
-      ),
-
-    promotionComplete:
-      Boolean(
-        conversation.promotionComplete
-      ),
-
-    reminder:
-      conversation.reminder ||
-      null,
-
-    messages:
-      Array.isArray(
-        conversation.history
-      )
-        ? conversation.history.length
-        : 0,
-
-    history:
-      normalizeAdminHistory(
-        conversation.history
-      ),
-
-    lastOutgoingText:
-      conversation.lastOutgoingText ||
-      null,
-
-    lastOutgoingMessageId:
-      conversation.lastOutgoingMessageId ||
-      null,
-
-    lastOutgoingAt:
-      conversation.lastOutgoingAt ||
-      null,
-
-    lastCustomerMessageAt:
-      conversation.lastCustomerMessageAt ||
-      null
-
-  };
-
-}
-
-
-/* =========================================================
-   ADMIN CLIENT LIST
-========================================================= */
-
-async function getAdminClients() {
-
-  const rows =
-    await supabaseGetAllConversations();
-
-
-  const clients =
-    [];
-
-
-  for (
-    const row
-    of rows
-  ) {
-
-    const senderId =
-      String(
-        row?.id ||
-        ""
-      ).trim();
-
-
-    if (
-      !senderId
-    ) {
-
-      continue;
-
-    }
-
-
-    const stored =
-      row?.messages;
-
-
-    if (
-      !stored ||
-      typeof stored !==
-        "object" ||
-      Array.isArray(
-        stored
-      )
-    ) {
-
-      continue;
-
-    }
-
-
-    stored.senderId =
-      senderId;
-
-
-    stored.history =
-      normalizeAdminHistory(
-        stored.history
-      );
-
-
-    conversations.set(
-      senderId,
-      stored
-    );
-
-
     clients.push(
       buildAdminClient(
         senderId,
-        stored
+        conversation
       )
     );
 
   }
-
-
-  clients.sort(
-    (
-      a,
-      b
-    ) => {
-
-      const aTime =
-        new Date(
-          a.lastCustomerMessageAt ||
-          a.lastOutgoingAt ||
-          0
-        ).getTime();
-
-
-      const bTime =
-        new Date(
-          b.lastCustomerMessageAt ||
-          b.lastOutgoingAt ||
-          0
-        ).getTime();
-
-
-      return (
-        bTime -
-        aTime
-      );
-
-    }
-  );
 
 
   return clients;
@@ -5483,7 +3295,7 @@ async function getAdminClients() {
 
 
 /* =========================================================
-   ADMIN CLIENTS API
+   ADMIN — GET CLIENTS
 ========================================================= */
 
 app.get(
@@ -5542,7 +3354,7 @@ app.get(
 
 
 /* =========================================================
-   ADMIN SINGLE CLIENT
+   ADMIN — GET SINGLE CLIENT
 ========================================================= */
 
 app.get(
@@ -5589,6 +3401,27 @@ app.get(
         );
 
 
+      if (
+        !conversation
+      ) {
+
+        return res
+          .status(
+            404
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "Conversation not found"
+
+          });
+
+      }
+
+
       return res.json({
 
         success:
@@ -5609,7 +3442,7 @@ app.get(
     ) {
 
       console.error(
-        "ADMIN CLIENT ERROR:",
+        "ADMIN SINGLE CLIENT ERROR:",
         error.message
       );
 
@@ -5635,7 +3468,7 @@ app.get(
 
 
 /* =========================================================
-   ADMIN REPLY
+   ADMIN — SEND MANUAL REPLY
 ========================================================= */
 
 app.post(
@@ -5655,20 +3488,24 @@ app.post(
         ).trim();
 
 
-      const message =
+      const text =
         String(
-          req.body?.message ||
+          req.body?.text ||
           ""
         ).trim();
 
 
-      const requestedPage =
-        req.body?.pageKey ||
-        null;
+      const requestedPageKey =
+        String(
+          req.body?.pageKey ||
+          ""
+        ).trim()
+        .toLowerCase();
 
 
       if (
-        !senderId
+        !senderId ||
+        !text
       ) {
 
         return res
@@ -5681,28 +3518,7 @@ app.post(
               false,
 
             error:
-              "senderId is required"
-
-          });
-
-      }
-
-
-      if (
-        !message
-      ) {
-
-        return res
-          .status(
-            400
-          )
-          .json({
-
-            success:
-              false,
-
-            error:
-              "message is required"
+              "senderId and text are required"
 
           });
 
@@ -5715,14 +3531,31 @@ app.post(
         );
 
 
-      const pageKey =
-        requestedPage ||
-        conversation.pageKey;
+      if (
+        !conversation
+      ) {
+
+        return res
+          .status(
+            404
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "Conversation not found"
+
+          });
+
+      }
 
 
       const page =
         PAGE_CONFIGS[
-          pageKey
+          requestedPageKey ||
+          conversation.pageKey
         ];
 
 
@@ -5740,19 +3573,25 @@ app.post(
               false,
 
             error:
-              "Client page is missing or invalid."
+              "Page not found"
 
           });
 
       }
 
 
-      /*
-         ADMIN REPLY HAS PRIORITY.
+      conversation.pageKey =
+        page.key;
 
-         Cancel:
-         - pending reminder
-         - pending automatic AI reply
+
+      /*
+         IMPORTANT:
+
+         A manual reply invalidates any AI reply that
+         was waiting to be sent.
+
+         This prevents the AI from sending an old/
+         irrelevant response after the admin has replied.
       */
 
       invalidatePendingAI(
@@ -5760,11 +3599,338 @@ app.post(
       );
 
 
+      /*
+         =====================================================
+         RECOGNIZE MANUALLY SENT LOCKED MESSAGES
+         =====================================================
+
+         Message 1:
+         If admin manually sends the exact Message 1,
+         mark it as sent.
+
+         Message 2:
+         If admin manually sends Message 2, mark it as sent.
+
+         Message 3:
+         If admin manually sends the package list,
+         mark packagesSent = true.
+
+         Therefore the automatic bot will NOT send the
+         same locked message again.
+      */
+
+
+      const normalizedManual =
+        normalize(
+          text
+        );
+
+
+      const normalizedMessageOne =
+        normalize(
+          MESSAGE_ONE
+        );
+
+
+      const normalizedMessageTwo =
+        normalize(
+          MESSAGE_TWO
+        );
+
+
+      if (
+        normalizedManual ===
+        normalizedMessageOne
+      ) {
+
+        conversation.messageOneSent =
+          true;
+
+
+        if (
+          conversation.stage ===
+          "NEW"
+        ) {
+
+          conversation.stage =
+            "MESSAGE_ONE_SENT";
+
+        }
+
+      }
+
+
+      if (
+        normalizedManual ===
+        normalizedMessageTwo
+      ) {
+
+        conversation.messageOneSent =
+          true;
+
+        conversation.messageTwoSent =
+          true;
+
+
+        conversation.stage =
+          "MESSAGE_TWO_SENT";
+
+      }
+
+
+      /*
+         PAGE-SPECIFIC PACKAGE MESSAGE
+
+         This is the important Message 3 lock.
+      */
+
+      const packagesMessage =
+        buildPackagesMessage(
+          page
+        );
+
+
+      const normalizedPackages =
+        normalize(
+          packagesMessage
+        );
+
+
+      if (
+        normalizedManual ===
+        normalizedPackages
+      ) {
+
+        conversation.messageOneSent =
+          true;
+
+        conversation.messageTwoSent =
+          true;
+
+        conversation.packagesSent =
+          true;
+
+
+        conversation.stage =
+          "PACKAGES_SHOWN";
+
+      }
+
+
+      /*
+         Also recognize a manually sent package message
+         even if spacing/line breaks differ.
+      */
+
+      if (
+        normalizedPackages &&
+        normalizedManual.length >
+        40
+      ) {
+
+        const packageIndicators = [
+
+          "bronze package",
+
+          "silver package",
+
+          "gold package",
+
+          "diamond package"
+
+        ];
+
+
+        const indicatorCount =
+          packageIndicators.filter(
+            indicator =>
+              normalizedManual.includes(
+                indicator
+              )
+          ).length;
+
+
+        if (
+          indicatorCount >=
+          3
+        ) {
+
+          conversation.messageOneSent =
+            true;
+
+          conversation.messageTwoSent =
+            true;
+
+          conversation.packagesSent =
+            true;
+
+
+          conversation.stage =
+            "PACKAGES_SHOWN";
+
+        }
+
+      }
+
+
+      /*
+         =====================================================
+         MANUAL PACKAGE SELECTION
+         =====================================================
+      */
+
+      const manualPackage =
+        detectPackage(
+          text
+        );
+
+
+      if (
+        manualPackage &&
+        conversation.packagesSent
+      ) {
+
+        conversation.selectedPackage =
+          manualPackage;
+
+
+        conversation.stage =
+          "PACKAGE_SELECTED";
+
+
+        conversation.paymentMethod =
+          null;
+
+
+        conversation.paymentDetailsSent =
+          false;
+
+
+        conversation.paymentConfirmed =
+          false;
+
+
+        conversation.paymentProofReceived =
+          false;
+
+
+        conversation.awaitingPaymentConfirmation =
+          false;
+
+      }
+
+
+      /*
+         =====================================================
+         MANUAL PAYMENT METHOD
+         =====================================================
+      */
+
+      const manualPaymentMethod =
+        detectPaymentMethod(
+          text
+        );
+
+
+      if (
+        manualPaymentMethod &&
+        conversation.selectedPackage
+      ) {
+
+        if (
+          paymentMethodAvailable(
+            page,
+            manualPaymentMethod
+          )
+        ) {
+
+          conversation.paymentMethod =
+            manualPaymentMethod;
+
+
+          conversation.stage =
+            "PAYMENT_PENDING";
+
+
+          conversation.paymentDetailsSent =
+            false;
+
+
+          conversation.awaitingPaymentConfirmation =
+            true;
+
+        }
+
+      }
+
+
+      /*
+         =====================================================
+         MANUAL PAYMENT CONFIRMATION
+         =====================================================
+      */
+
+      if (
+        isSimplePaymentConfirmation(
+          text
+        ) &&
+        conversation.paymentDetailsSent
+      ) {
+
+        conversation.paymentConfirmed =
+          true;
+
+
+        conversation.awaitingPaymentConfirmation =
+          false;
+
+
+        conversation.stage =
+          "PAYMENT_CONFIRMED";
+
+
+        cancelReminder(
+          senderId
+        );
+
+      }
+
+
+      saveMessage(
+        conversation,
+        "assistant",
+        text
+      );
+
+
+      conversation.lastOutgoingText =
+        text;
+
+
+      conversation.lastOutgoingAt =
+        nowISO();
+
+
+      conversation.lastOutgoingStage =
+        conversation.stage;
+
+
+      await saveConversation(
+        senderId,
+        conversation
+      );
+
+
+      /*
+         Try to send the manual message through
+         the selected page.
+      */
+
       const data =
         await sendInstagramMessage(
           page,
           senderId,
-          message
+          text
         );
 
 
@@ -5778,6 +3944,12 @@ app.post(
         messageId
       ) {
 
+        conversation.lastOutgoingMessageId =
+          String(
+            messageId
+          );
+
+
         outgoingMessages.add(
           `${page.key}:${String(
             messageId
@@ -5787,45 +3959,28 @@ app.post(
       }
 
 
-      conversation.pageKey =
-        page.key;
-
-
-      saveMessage(
-        conversation,
-        "assistant",
-        message
-      );
-
-
-      conversation.lastOutgoingMessageId =
-        messageId
-          ? String(
-              messageId
-            )
-          : null;
-
-
-      conversation.lastOutgoingText =
-        message;
-
-
-      conversation.lastOutgoingStage =
-        conversation.stage;
-
-
-      conversation.lastOutgoingAt =
-        nowISO();
-
-
-      conversation.reminder =
-        null;
-
-
       await saveConversation(
         senderId,
         conversation
       );
+
+
+      /*
+         If payment has already been confirmed,
+         continue the promotion flow.
+      */
+
+      if (
+        conversation.paymentConfirmed
+      ) {
+
+        await sendPromotionNextStep(
+          page,
+          senderId,
+          conversation
+        );
+
+      }
 
 
       return res.json({
@@ -5834,17 +3989,29 @@ app.post(
           true,
 
         messageId:
-          messageId,
+          messageId
+            ? String(
+                messageId
+              )
+            : null,
 
-        senderId:
-          senderId,
+        stage:
+          conversation.stage,
 
-        username:
-          conversation.clientUsername ||
-          null,
+        messageOneSent:
+          conversation.messageOneSent,
 
-        page:
-          page.username
+        messageTwoSent:
+          conversation.messageTwoSent,
+
+        packagesSent:
+          conversation.packagesSent,
+
+        selectedPackage:
+          conversation.selectedPackage,
+
+        paymentMethod:
+          conversation.paymentMethod
 
       });
 
@@ -5880,6 +4047,2157 @@ app.post(
 );
 
 
+/* =========================================================
+   ADMIN — RESET CLIENT
+========================================================= */
+
+app.post(
+  "/admin/reset",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
+
+    try {
+
+      const senderId =
+        String(
+          req.body?.senderId ||
+          ""
+        ).trim();
+
+
+      if (
+        !senderId
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "senderId is required"
+
+          });
+
+      }
+
+
+      cancelReminder(
+        senderId
+      );
+
+
+      invalidatePendingAI(
+        senderId
+      );
+
+
+      const conversation =
+        createConversation(
+          senderId
+        );
+
+
+      conversations.set(
+        senderId,
+        conversation
+      );
+
+
+      await saveConversation(
+        senderId,
+        conversation
+      );
+
+
+      return res.json({
+
+        success:
+          true,
+
+        message:
+          "Conversation reset"
+
+      });
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "ADMIN RESET ERROR:",
+        error.message
+      );
+
+
+      return res
+        .status(
+          500
+        )
+        .json({
+
+          success:
+            false,
+
+          error:
+            error.message
+
+        });
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   ADMIN — PAGE CONFIG
+========================================================= */
+
+app.get(
+  "/admin/pages",
+  requireAdmin,
+  (
+    req,
+    res
+  ) => {
+
+    const pages =
+      Object.values(
+        PAGE_CONFIGS
+      ).map(
+        page => ({
+
+          key:
+            page.key,
+
+          username:
+            page.username,
+
+          id:
+            page.id,
+
+          currency:
+            page.currency,
+
+          packages:
+            page.packages,
+
+          paymentMethods:
+            page.paymentMethods
+
+        })
+      );
+
+
+    return res.json({
+
+      success:
+        true,
+
+      pages
+
+    });
+
+  }
+);
+/* =========================================================
+   ADMIN UI — CONTINUED
+========================================================= */
+
+.chat-overlay.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.chat-sheet {
+  width: 100%;
+  max-width: 850px;
+  margin: auto;
+
+  background: #fff;
+
+  border-radius:
+    18px 18px 0 0;
+
+  max-height: 88vh;
+
+  display: flex;
+  flex-direction: column;
+
+  transform:
+    translateY(100%);
+
+  transition:
+    transform .22s ease;
+}
+
+.chat-overlay.show
+.chat-sheet {
+  transform:
+    translateY(0);
+}
+
+
+/* =========================================================
+   CHAT HEADER
+========================================================= */
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 13px 14px;
+
+  border-bottom:
+    1px solid #eee;
+}
+
+.chat-header-left {
+  min-width: 0;
+}
+
+.chat-header-name {
+  font-size: 17px;
+  font-weight: 700;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-header-info {
+  margin-top: 3px;
+
+  color: #777;
+
+  font-size: 11px;
+}
+
+.close-chat {
+  flex: 0 0 auto;
+
+  width: 36px;
+  height: 36px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #eee;
+
+  font-size: 18px;
+}
+
+
+/* =========================================================
+   CHAT MESSAGES
+========================================================= */
+
+.chat-messages {
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding: 14px;
+
+  background: #f5f5f7;
+
+  -webkit-overflow-scrolling:
+    touch;
+}
+
+.chat-message {
+  display: flex;
+
+  margin-bottom: 8px;
+}
+
+.chat-message.client {
+  justify-content: flex-start;
+}
+
+.chat-message.assistant {
+  justify-content: flex-end;
+}
+
+.chat-bubble {
+  max-width: 82%;
+
+  padding: 10px 12px;
+
+  border-radius: 14px;
+
+  font-size: 14px;
+
+  line-height: 1.45;
+
+  white-space: pre-wrap;
+
+  word-break: break-word;
+}
+
+.chat-message.client
+.chat-bubble {
+  background: #fff;
+
+  border:
+    1px solid #e2e2e2;
+
+  border-bottom-left-radius:
+    4px;
+}
+
+.chat-message.assistant
+.chat-bubble {
+  background: #1683ff;
+
+  color: #fff;
+
+  border-bottom-right-radius:
+    4px;
+}
+
+.chat-time {
+  display: block;
+
+  margin-top: 4px;
+
+  font-size: 9px;
+
+  opacity: .6;
+}
+
+
+/* =========================================================
+   CHAT FOOTER
+========================================================= */
+
+.chat-footer {
+  padding: 10px;
+
+  border-top:
+    1px solid #eee;
+
+  background: #fff;
+}
+
+.chat-reply-row {
+  display: flex;
+
+  gap: 8px;
+
+  align-items: flex-end;
+}
+
+.chat-reply-row textarea {
+  flex: 1;
+
+  resize: none;
+
+  min-height: 44px;
+  max-height: 130px;
+
+  margin: 0;
+}
+
+.chat-send {
+  flex: 0 0 auto;
+
+  border: 0;
+
+  border-radius: 10px;
+
+  background: #1683ff;
+
+  color: #fff;
+
+  padding: 12px 16px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (
+  max-width: 600px
+) {
+
+  .container {
+    padding:
+      8px;
+  }
+
+  .section {
+    padding:
+      12px;
+  }
+
+  .chat-sheet {
+    max-height:
+      92vh;
+  }
+
+  .chat-bubble {
+    max-width:
+      88%;
+  }
+
+}
+
+
+/* =========================================================
+   JAVASCRIPT
+========================================================= */
+
+const adminState = {
+
+  secret:
+    "",
+
+  page:
+    "all",
+
+  search:
+    "",
+
+  clients:
+    [],
+
+  currentClient:
+    null,
+
+  currentScroll:
+    0
+
+};
+
+
+/* =========================================================
+   ADMIN ELEMENTS
+========================================================= */
+
+const loginSection =
+  document.getElementById(
+    "loginSection"
+  );
+
+const adminSection =
+  document.getElementById(
+    "adminSection"
+  );
+
+const secretInput =
+  document.getElementById(
+    "secretInput"
+  );
+
+const loginButton =
+  document.getElementById(
+    "loginButton"
+  );
+
+const loginStatus =
+  document.getElementById(
+    "loginStatus"
+  );
+
+const pageButtons =
+  document.getElementById(
+    "pageButtons"
+  );
+
+const searchInput =
+  document.getElementById(
+    "searchInput"
+  );
+
+const refreshButton =
+  document.getElementById(
+    "refreshButton"
+  );
+
+const clientsList =
+  document.getElementById(
+    "clientsList"
+  );
+
+const clientCount =
+  document.getElementById(
+    "clientCount"
+  );
+
+const chatOverlay =
+  document.getElementById(
+    "chatOverlay"
+  );
+
+const chatName =
+  document.getElementById(
+    "chatName"
+  );
+
+const chatInfo =
+  document.getElementById(
+    "chatInfo"
+  );
+
+const chatMessages =
+  document.getElementById(
+    "chatMessages"
+  );
+
+const chatInput =
+  document.getElementById(
+    "chatInput"
+  );
+
+const chatSend =
+  document.getElementById(
+    "chatSend"
+  );
+
+const closeChatButton =
+  document.getElementById(
+    "closeChat"
+  );
+
+
+/* =========================================================
+   ADMIN REQUEST
+========================================================= */
+
+async function adminFetch(
+  url,
+  options = {}
+) {
+
+  const headers = {
+
+    ...(options.headers || {}),
+
+    "x-admin-secret":
+      adminState.secret
+
+  };
+
+
+  const response =
+    await fetch(
+      url,
+      {
+
+        ...options,
+
+        headers
+
+      }
+    );
+
+
+  let data =
+    null;
+
+
+  try {
+
+    data =
+      await response.json();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    data =
+      {};
+
+  }
+
+
+  if (
+    !response.ok
+  ) {
+
+    throw new Error(
+      data?.error ||
+      `Request failed: ${response.status}`
+    );
+
+  }
+
+
+  return data;
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+loginButton.onclick =
+  async function () {
+
+    const secret =
+      secretInput.value.trim();
+
+
+    if (
+      !secret
+    ) {
+
+      loginStatus.textContent =
+        "Enter admin secret.";
+
+      return;
+
+    }
+
+
+    adminState.secret =
+      secret;
+
+
+    try {
+
+      const data =
+        await adminFetch(
+          "/admin/clients"
+        );
+
+
+      if (
+        !data.success
+      ) {
+
+        throw new Error(
+          "Authentication failed"
+        );
+
+      }
+
+
+      loginSection.style.display =
+        "none";
+
+      adminSection.style.display =
+        "block";
+
+
+      loginStatus.textContent =
+        "";
+
+
+      await loadClients();
+
+    }
+
+    catch (
+      error
+    ) {
+
+      adminState.secret =
+        "";
+
+      loginStatus.textContent =
+        error.message;
+
+    }
+
+  };
+
+
+/* =========================================================
+   PAGE FILTER
+========================================================= */
+
+function setPageFilter(
+  page
+) {
+
+  adminState.page =
+    page;
+
+
+  document
+    .querySelectorAll(
+      ".page-button"
+    )
+    .forEach(
+      button => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset.page ===
+            page
+        );
+
+      }
+    );
+
+
+  renderClients();
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+searchInput.addEventListener(
+  "input",
+  function () {
+
+    adminState.search =
+      this.value
+        .trim()
+        .toLowerCase();
+
+
+    renderClients();
+
+  }
+);
+
+
+/* =========================================================
+   LOAD CLIENTS
+========================================================= */
+
+async function loadClients() {
+
+  try {
+
+    const data =
+      await adminFetch(
+        "/admin/clients"
+      );
+
+
+    adminState.clients =
+      Array.isArray(
+        data.clients
+      )
+        ? data.clients
+        : [];
+
+
+    renderClients();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    clientsList.innerHTML =
+      `<div class="empty">${escapeHtml(
+        error.message
+      )}</div>`;
+
+  }
+
+}
+
+
+/* =========================================================
+   FILTER CLIENTS
+========================================================= */
+
+function filteredClients() {
+
+  const page =
+    adminState.page;
+
+
+  const search =
+    adminState.search;
+
+
+  return adminState.clients
+    .filter(
+      client => {
+
+        if (
+          page !==
+          "all" &&
+          client.page !==
+          page
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          !search
+        ) {
+
+          return true;
+
+        }
+
+
+        const text =
+          [
+            client.username,
+            client.senderId,
+            client.page,
+            client.stage,
+            client.selectedPackage,
+            client.paymentMethod
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+
+
+        return text.includes(
+          search
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value ??
+    ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   RENDER CLIENTS
+========================================================= */
+
+function renderClients() {
+
+  const clients =
+    filteredClients();
+
+
+  clientCount.textContent =
+    `${clients.length} client${
+      clients.length === 1
+        ? ""
+        : "s"
+    }`;
+
+
+  if (
+    !clients.length
+  ) {
+
+    clientsList.innerHTML =
+      `<div class="empty">No clients found.</div>`;
+
+    return;
+
+  }
+
+
+  clientsList.innerHTML =
+    clients
+      .map(
+        client => {
+
+          const name =
+            client.username ||
+            client.senderId ||
+            "Unknown";
+
+
+          const page =
+            client.page ||
+            "unknown";
+
+
+          const stage =
+            client.stage ||
+            "NEW";
+
+
+          const packageName =
+            client.selectedPackage ||
+            "—";
+
+
+          const payment =
+            client.paymentMethod ||
+            "—";
+
+
+          return `
+<div class="client-card">
+
+  <div class="client-name">
+    ${escapeHtml(name)}
+  </div>
+
+  <div class="client-details">
+
+    Page:
+    ${escapeHtml(page)}
+
+    <br>
+
+    Stage:
+    ${escapeHtml(stage)}
+
+    <br>
+
+    Package:
+    ${escapeHtml(packageName)}
+
+    <br>
+
+    Payment:
+    ${escapeHtml(payment)}
+
+  </div>
+
+  <button
+    class="open-chat"
+    onclick="openChat('${escapeHtml(
+      client.senderId
+    )}')"
+  >
+    Open Chat
+  </button>
+
+</div>`;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   OPEN CHAT
+========================================================= */
+
+async function openChat(
+  senderId
+) {
+
+  try {
+
+    const data =
+      await adminFetch(
+        `/admin/client/${encodeURIComponent(
+          senderId
+        )}`
+      );
+
+
+    adminState.currentClient =
+      data.client;
+
+
+    chatName.textContent =
+      data.client.username ||
+      senderId;
+
+
+    chatInfo.textContent =
+      `${data.client.page || "unknown"} • ${
+        data.client.stage || "NEW"
+      }`;
+
+
+    renderChat(
+      data.client.history ||
+      []
+    );
+
+
+    chatOverlay.classList.add(
+      "show"
+    );
+
+
+    document.body.style.overflow =
+      "hidden";
+
+
+    setTimeout(
+      () => {
+
+        chatMessages.scrollTop =
+          chatMessages.scrollHeight;
+
+      },
+      50
+    );
+
+  }
+
+  catch (
+    error
+  ) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   CLOSE CHAT
+========================================================= */
+
+function closeChat() {
+
+  chatOverlay.classList.remove(
+    "show"
+  );
+
+
+  document.body.style.overflow =
+    "";
+
+
+  loadClients();
+
+}
+
+
+/* =========================================================
+   RENDER CHAT
+========================================================= */
+
+function renderChat(
+  history
+) {
+
+  chatMessages.innerHTML =
+    "";
+
+
+  if (
+    !Array.isArray(
+      history
+    ) ||
+    !history.length
+  ) {
+
+    chatMessages.innerHTML =
+      `<div class="empty">No messages yet.</div>`;
+
+    return;
+
+  }
+
+
+  history.forEach(
+    item => {
+
+      const wrapper =
+        document.createElement(
+          "div"
+        );
+
+
+      wrapper.className =
+        `chat-message ${
+          item.role ===
+          "client"
+            ? "client"
+            : "assistant"
+        }`;
+
+
+      const bubble =
+        document.createElement(
+          "div"
+        );
+
+
+      bubble.className =
+        "chat-bubble";
+
+
+      bubble.textContent =
+        item.text ||
+        "";
+
+
+      if (
+        item.timestamp
+      ) {
+
+        const time =
+          document.createElement(
+            "span"
+          );
+
+
+        time.className =
+          "chat-time";
+
+
+        time.textContent =
+          formatTime(
+            item.timestamp
+          );
+
+
+        bubble.appendChild(
+          time
+        );
+
+      }
+
+
+      wrapper.appendChild(
+        bubble
+      );
+
+
+      chatMessages.appendChild(
+        wrapper
+      );
+
+    }
+  );
+
+
+  chatMessages.scrollTop =
+    chatMessages.scrollHeight;
+
+}
+
+
+/* =========================================================
+   FORMAT TIME
+========================================================= */
+
+function formatTime(
+  timestamp
+) {
+
+  try {
+
+    return new Date(
+      timestamp
+    ).toLocaleString();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    return "";
+
+  }
+
+}
+/* =========================================================
+   FILTER CLIENTS — CONTINUED
+========================================================= */
+
+function getFilteredClients() {
+
+  let result =
+    allClients.slice();
+
+
+  if (
+    selectedPage !==
+    "all"
+  ) {
+
+    result =
+      result.filter(
+        function(client) {
+
+          return (
+            client.pageKey ===
+            selectedPage
+          );
+
+        }
+      );
+
+  }
+
+
+  const search =
+    (
+      document.getElementById(
+        "search"
+      )?.value ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    search
+  ) {
+
+    result =
+      result.filter(
+        function(client) {
+
+          const username =
+            String(
+              client.username ||
+              ""
+            ).toLowerCase();
+
+
+          const senderId =
+            String(
+              client.senderId ||
+              ""
+            ).toLowerCase();
+
+
+          return (
+            username.includes(
+              search
+            ) ||
+            senderId.includes(
+              search
+            )
+          );
+
+        }
+      );
+
+  }
+
+
+  return result;
+
+}
+
+
+/* =========================================================
+   RENDER CLIENTS
+========================================================= */
+
+function renderClients() {
+
+  const container =
+    document.getElementById(
+      "clients"
+    );
+
+
+  const count =
+    document.getElementById(
+      "clientCount"
+    );
+
+
+  const clients =
+    getFilteredClients();
+
+
+  count.textContent =
+    clients.length;
+
+
+  if (
+    !clients.length
+  ) {
+
+    container.innerHTML =
+      `
+      <div class="empty">
+        No clients found.
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    clients
+      .map(
+        function(client) {
+
+          const username =
+            client.username ||
+            "Unknown";
+
+
+          const page =
+            client.page ||
+            client.pageKey ||
+            "Unknown";
+
+
+          const stage =
+            client.stage ||
+            "NEW";
+
+
+          const lastMessage =
+            client.lastCustomerMessage ||
+            client.lastOutgoingText ||
+            "";
+
+
+          return `
+          <div
+            class="client-card"
+            onclick="openClient('${escapeHtml(
+              client.senderId
+            )}')"
+          >
+
+            <div class="client-name">
+              ${escapeHtml(
+                username
+              )}
+            </div>
+
+            <div class="client-details">
+
+              Page:
+              ${escapeHtml(
+                page
+              )}
+
+              <br>
+
+              Stage:
+              ${escapeHtml(
+                stage
+              )}
+
+              <br>
+
+              ${escapeHtml(
+                lastMessage
+              )}
+
+            </div>
+
+          </div>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   OPEN CLIENT
+========================================================= */
+
+async function openClient(
+  senderId
+) {
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin/client/" +
+        encodeURIComponent(
+          senderId
+        ) +
+        "?secret=" +
+        encodeURIComponent(
+          adminSecret
+        ),
+        {
+          cache:
+            "no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Unable to load client"
+      );
+
+    }
+
+
+    selectedClient =
+      data.client;
+
+
+    savedScrollPosition =
+      window.scrollY;
+
+
+    renderChat();
+
+
+    document
+      .getElementById(
+        "chatOverlay"
+      )
+      .classList.add(
+        "show"
+      );
+
+
+    document.body.style.overflow =
+      "hidden";
+
+
+    setTimeout(
+      function() {
+
+        const messages =
+          document.getElementById(
+            "chatMessages"
+          );
+
+
+        messages.scrollTop =
+          messages.scrollHeight;
+
+      },
+      50
+    );
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      error
+    );
+
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   CLOSE CHAT
+========================================================= */
+
+function closeChat() {
+
+  const overlay =
+    document.getElementById(
+      "chatOverlay"
+    );
+
+
+  overlay.classList.remove(
+    "show"
+  );
+
+
+  document.body.style.overflow =
+    "";
+
+
+  selectedClient =
+    null;
+
+
+  setTimeout(
+    function() {
+
+      window.scrollTo(
+        0,
+        savedScrollPosition
+      );
+
+    },
+    50
+  );
+
+}
+
+
+/* =========================================================
+   OVERLAY CLICK
+========================================================= */
+
+function overlayClick(
+  event
+) {
+
+  if (
+    event.target &&
+    event.target.id ===
+      "chatOverlay"
+  ) {
+
+    closeChat();
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER CHAT
+========================================================= */
+
+function renderChat() {
+
+  if (
+    !selectedClient
+  ) {
+
+    return;
+
+  }
+
+
+  const title =
+    document.getElementById(
+      "chatTitle"
+    );
+
+
+  const messages =
+    document.getElementById(
+      "chatMessages"
+    );
+
+
+  title.innerHTML =
+    `
+    <strong>
+      ${escapeHtml(
+        selectedClient.username ||
+        selectedClient.senderId
+      )}
+    </strong>
+
+    <span>
+      ${escapeHtml(
+        selectedClient.page ||
+        selectedClient.pageKey ||
+        ""
+      )}
+    </span>
+    `;
+
+
+  const history =
+    Array.isArray(
+      selectedClient.history
+    )
+      ? selectedClient.history
+      : [];
+
+
+  if (
+    !history.length
+  ) {
+
+    messages.innerHTML =
+      `
+      <div class="empty">
+        No messages yet.
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  messages.innerHTML =
+    history
+      .map(
+        function(item) {
+
+          const role =
+            item.role ===
+            "client"
+              ? "client"
+              : "assistant";
+
+
+          return `
+          <div
+            class="chat-message ${role}"
+          >
+
+            ${escapeHtml(
+              item.text ||
+              ""
+            )}
+
+            ${
+              item.timestamp
+                ? `
+                  <span class="chat-time">
+                    ${escapeHtml(
+                      formatTime(
+                        item.timestamp
+                      )
+                    )}
+                  </span>
+                `
+                : ""
+            }
+
+          </div>
+          `;
+
+        }
+      )
+      .join("");
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+}
+
+
+/* =========================================================
+   SEND ADMIN REPLY
+========================================================= */
+
+async function sendAdminReply() {
+
+  const clientId =
+    document
+      .getElementById(
+        "adminClientId"
+      )
+      .value
+      .trim();
+
+
+  const pageKey =
+    document
+      .getElementById(
+        "adminPage"
+      )
+      .value;
+
+
+  const message =
+    document
+      .getElementById(
+        "adminMessage"
+      )
+      .value
+      .trim();
+
+
+  if (
+    !clientId
+  ) {
+
+    alert(
+      "Enter Client ID."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !message
+  ) {
+
+    alert(
+      "Write a message."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin/reply",
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              secret:
+                adminSecret,
+
+              senderId:
+                clientId,
+
+              pageKey:
+                pageKey,
+
+              message:
+                message
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Unable to send reply"
+      );
+
+    }
+
+
+    document
+      .getElementById(
+        "adminMessage"
+      )
+      .value =
+      "";
+
+
+    setStatus(
+      "Reply sent."
+    );
+
+
+    await loadClients();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SEND CHAT REPLY
+========================================================= */
+
+async function sendChatReply() {
+
+  if (
+    !selectedClient
+  ) {
+
+    return;
+
+  }
+
+
+  const textarea =
+    document.getElementById(
+      "chatReply"
+    );
+
+
+  const message =
+    textarea.value.trim();
+
+
+  if (
+    !message
+  ) {
+
+    return;
+
+  }
+
+
+  const senderId =
+    selectedClient.senderId;
+
+
+  const pageKey =
+    selectedClient.pageKey ||
+    selectedClient.page;
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin/reply",
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              secret:
+                adminSecret,
+
+              senderId:
+                senderId,
+
+              pageKey:
+                pageKey,
+
+              message:
+                message
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Unable to send reply"
+      );
+
+    }
+
+
+    textarea.value =
+      "";
+
+
+    await refreshSelectedClient();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   REFRESH SELECTED CLIENT
+========================================================= */
+
+async function refreshSelectedClient() {
+
+  if (
+    !selectedClient
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin/client/" +
+        encodeURIComponent(
+          selectedClient.senderId
+        ) +
+        "?secret=" +
+        encodeURIComponent(
+          adminSecret
+        ),
+        {
+          cache:
+            "no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Unable to refresh client"
+      );
+
+    }
+
+
+    selectedClient =
+      data.client;
+
+
+    renderChat();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   TOGGLE ADMIN REPLY
+========================================================= */
+
+function toggleAdminReply() {
+
+  const form =
+    document.getElementById(
+      "adminForm"
+    );
+
+
+  form.classList.toggle(
+    "show"
+  );
+
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+window.addEventListener(
+  "load",
+  function() {
+
+    adminSecret =
+      localStorage.getItem(
+        "adminSecret"
+      ) ||
+      "";
+
+
+    if (
+      adminSecret
+    ) {
+
+      loadClients();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CHAT ESCAPE KEY
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (
+      event.key ===
+      "Escape"
+    ) {
+
+      const overlay =
+        document.getElementById(
+          "chatOverlay"
+        );
+
+
+      if (
+        overlay.classList.contains(
+          "show"
+        )
+      ) {
+
+        closeChat();
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CHAT SEND — ENTER
+========================================================= */
+
+document
+  .getElementById(
+    "chatReply"
+  )
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        event.key ===
+          "Enter" &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        sendChatReply();
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   SEARCH ENTER
+========================================================= */
+
+document
+  .getElementById(
+    "search"
+  )
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        event.key ===
+        "Enter"
+      ) {
+
+        renderClients();
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   END ADMIN UI
+========================================================= */
 /* =========================================================
    ADMIN RESET CLIENT
 ========================================================= */
@@ -5979,9 +6297,11 @@ app.post(
 
   }
 );
-  
+
+
 /* =========================================================
    ADMIN PAGE — SIMPLE VERSION 2
+
    - Page filters
    - Search
    - Client list
@@ -5992,10 +6312,15 @@ app.post(
 
 app.get(
   "/admin",
-  (req, res) => {
+  (
+    req,
+    res
+  ) => {
 
     res.send(`
+
 <!DOCTYPE html>
+
 <html>
 
 <head>
@@ -6017,26 +6342,43 @@ app.get(
 
 html,
 body {
+
   margin: 0;
+
   padding: 0;
+
   background: #f5f5f7;
+
   color: #111;
-  font-family: Arial, sans-serif;
+
+  font-family:
+    Arial,
+    sans-serif;
+
 }
 
 body {
-  min-height: 100vh;
+
+  min-height:
+    100vh;
+
 }
 
 button,
 input,
 textarea,
 select {
-  font-family: inherit;
+
+  font-family:
+    inherit;
+
 }
 
 button {
-  cursor: pointer;
+
+  cursor:
+    pointer;
+
 }
 
 
@@ -6045,25 +6387,56 @@ button {
 ========================================================= */
 
 .container {
-  width: 100%;
-  max-width: 850px;
-  margin: auto;
-  padding: 10px;
+
+  width:
+    100%;
+
+  max-width:
+    850px;
+
+  margin:
+    auto;
+
+  padding:
+    10px;
+
 }
 
 .title {
-  font-size: 25px;
-  font-weight: 700;
-  margin: 5px 0 14px;
+
+  font-size:
+    25px;
+
+  font-weight:
+    700;
+
+  margin:
+    5px 0 14px;
+
 }
 
 .section {
-  background: #fff;
-  border-radius: 16px;
-  padding: 14px;
-  margin-bottom: 12px;
+
+  background:
+    #fff;
+
+  border-radius:
+    16px;
+
+  padding:
+    14px;
+
+  margin-bottom:
+    12px;
+
   box-shadow:
-    0 2px 8px rgba(0,0,0,.06);
+    0 2px 8px rgba(
+      0,
+      0,
+      0,
+      .06
+    );
+
 }
 
 
@@ -6072,46 +6445,94 @@ button {
 ========================================================= */
 
 .login-row {
-  display: flex;
-  gap: 8px;
+
+  display:
+    flex;
+
+  gap:
+    8px;
+
 }
 
 .login-row input {
-  flex: 1;
-  min-width: 0;
+
+  flex:
+    1;
+
+  min-width:
+    0;
+
 }
 
 .login-row button {
-  background: #1683ff;
-  color: #fff;
-  border: 0;
-  border-radius: 10px;
-  padding: 0 18px;
-  font-weight: 600;
+
+  background:
+    #1683ff;
+
+  color:
+    #fff;
+
+  border:
+    0;
+
+  border-radius:
+    10px;
+
+  padding:
+    0 18px;
+
+  font-weight:
+    600;
+
 }
 
 input,
 textarea,
 select {
-  width: 100%;
-  border: 1px solid #d1d1d1;
-  border-radius: 10px;
-  padding: 12px;
-  font-size: 15px;
-  outline: none;
-  background: #fff;
+
+  width:
+    100%;
+
+  border:
+    1px solid #d1d1d1;
+
+  border-radius:
+    10px;
+
+  padding:
+    12px;
+
+  font-size:
+    15px;
+
+  outline:
+    none;
+
+  background:
+    #fff;
+
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: #1683ff;
+
+  border-color:
+    #1683ff;
+
 }
 
 .status {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #777;
+
+  margin-top:
+    8px;
+
+  font-size:
+    12px;
+
+  color:
+    #777;
+
 }
 
 
@@ -6120,32 +6541,70 @@ select:focus {
 ========================================================= */
 
 .page-title {
-  font-size: 17px;
-  font-weight: 700;
-  margin-bottom: 10px;
+
+  font-size:
+    17px;
+
+  font-weight:
+    700;
+
+  margin-bottom:
+    10px;
+
 }
 
 .page-buttons {
-  display: flex;
-  gap: 7px;
-  overflow-x: auto;
-  padding-bottom: 2px;
+
+  display:
+    flex;
+
+  gap:
+    7px;
+
+  overflow-x:
+    auto;
+
+  padding-bottom:
+    2px;
+
 }
 
 .page-button {
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 9px;
-  background: #eee;
-  color: #1683ff;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 600;
+
+  flex:
+    0 0 auto;
+
+  border:
+    0;
+
+  border-radius:
+    9px;
+
+  background:
+    #eee;
+
+  color:
+    #1683ff;
+
+  padding:
+    10px 14px;
+
+  font-size:
+    13px;
+
+  font-weight:
+    600;
+
 }
 
 .page-button.active {
-  background: #1683ff;
-  color: #fff;
+
+  background:
+    #1683ff;
+
+  color:
+    #fff;
+
 }
 
 
@@ -6154,40 +6613,85 @@ select:focus {
 ========================================================= */
 
 .reply-toggle {
-  width: 100%;
-  border: 0;
-  border-radius: 10px;
-  padding: 12px;
-  background: #eee;
-  color: #1683ff;
-  font-size: 15px;
-  font-weight: 600;
+
+  width:
+    100%;
+
+  border:
+    0;
+
+  border-radius:
+    10px;
+
+  padding:
+    12px;
+
+  background:
+    #eee;
+
+  color:
+    #1683ff;
+
+  font-size:
+    15px;
+
+  font-weight:
+    600;
+
 }
 
 .admin-form {
-  display: none;
-  margin-top: 10px;
+
+  display:
+    none;
+
+  margin-top:
+    10px;
+
 }
 
 .admin-form.show {
-  display: block;
+
+  display:
+    block;
+
 }
 
 .admin-form input,
 .admin-form select,
 .admin-form textarea {
-  margin-bottom: 8px;
+
+  margin-bottom:
+    8px;
+
 }
 
 .send-button {
-  width: 100%;
-  border: 0;
-  border-radius: 10px;
-  padding: 13px;
-  background: #1683ff;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
+
+  width:
+    100%;
+
+  border:
+    0;
+
+  border-radius:
+    10px;
+
+  padding:
+    13px;
+
+  background:
+    #1683ff;
+
+  color:
+    #fff;
+
+  font-size:
+    15px;
+
+  font-weight:
+    600;
+
 }
 
 
@@ -6196,23 +6700,48 @@ select:focus {
 ========================================================= */
 
 .search-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+
+  display:
+    flex;
+
+  gap:
+    8px;
+
+  align-items:
+    center;
+
 }
 
 .search-row input {
-  flex: 1;
+
+  flex:
+    1;
+
 }
 
 .refresh-button {
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 10px;
-  background: #eee;
-  color: #1683ff;
-  padding: 12px 14px;
-  font-size: 14px;
+
+  flex:
+    0 0 auto;
+
+  border:
+    0;
+
+  border-radius:
+    10px;
+
+  background:
+    #eee;
+
+  color:
+    #1683ff;
+
+  padding:
+    12px 14px;
+
+  font-size:
+    14px;
+
 }
 
 
@@ -6221,60 +6750,134 @@ select:focus {
 ========================================================= */
 
 .clients-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+
+  display:
+    flex;
+
+  justify-content:
+    space-between;
+
+  align-items:
+    center;
+
+  margin-bottom:
+    10px;
+
 }
 
 .clients-title {
-  font-size: 18px;
-  font-weight: 700;
+
+  font-size:
+    18px;
+
+  font-weight:
+    700;
+
 }
 
 .client-count {
-  font-size: 12px;
-  color: #777;
+
+  font-size:
+    12px;
+
+  color:
+    #777;
+
 }
 
 .client-card {
-  border: 1px solid #e0e0e0;
-  border-radius: 14px;
-  padding: 13px;
-  margin-bottom: 9px;
-  background: #fff;
+
+  border:
+    1px solid #e0e0e0;
+
+  border-radius:
+    14px;
+
+  padding:
+    13px;
+
+  margin-bottom:
+    9px;
+
+  background:
+    #fff;
+
 }
 
 .client-name {
-  font-size: 17px;
-  font-weight: 700;
-  word-break: break-word;
+
+  font-size:
+    17px;
+
+  font-weight:
+    700;
+
+  word-break:
+    break-word;
+
 }
 
 .client-details {
-  color: #666;
-  font-size: 12px;
-  line-height: 1.7;
-  margin-top: 5px;
+
+  color:
+    #666;
+
+  font-size:
+    12px;
+
+  line-height:
+    1.7;
+
+  margin-top:
+    5px;
+
 }
 
 .open-chat {
-  width: 100%;
-  margin-top: 9px;
-  border: 0;
-  border-radius: 9px;
-  background: #eee;
-  color: #1683ff;
-  padding: 10px;
-  font-size: 14px;
-  font-weight: 600;
+
+  width:
+    100%;
+
+  margin-top:
+    9px;
+
+  border:
+    0;
+
+  border-radius:
+    9px;
+
+  background:
+    #eee;
+
+  color:
+    #1683ff;
+
+  padding:
+    10px;
+
+  font-size:
+    14px;
+
+  font-weight:
+    600;
+
 }
 
 .empty {
-  text-align: center;
-  color: #777;
-  padding: 25px 10px;
-  font-size: 14px;
+
+  text-align:
+    center;
+
+  color:
+    #777;
+
+  padding:
+    25px 10px;
+
+  font-size:
+    14px;
+
 }
 
 
@@ -6283,43 +6886,77 @@ select:focus {
 ========================================================= */
 
 .chat-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
+
+  position:
+    fixed;
+
+  inset:
+    0;
+
+  z-index:
+    1000;
 
   background:
-    rgba(0,0,0,.42);
+    rgba(
+      0,
+      0,
+      0,
+      .42
+    );
 
-  display: flex;
-  align-items: flex-end;
+  display:
+    flex;
 
-  visibility: hidden;
-  opacity: 0;
+  align-items:
+    flex-end;
+
+  visibility:
+    hidden;
+
+  opacity:
+    0;
 
   transition:
     opacity .2s ease,
     visibility .2s ease;
+
 }
 
 .chat-overlay.show {
-  visibility: visible;
-  opacity: 1;
+
+  visibility:
+    visible;
+
+  opacity:
+    1;
+
 }
 
 .chat-panel {
-  width: 100%;
-  max-width: 850px;
-  margin: 0 auto;
 
-  height: 88vh;
+  width:
+    100%;
 
-  background: #fff;
+  max-width:
+    850px;
+
+  margin:
+    0 auto;
+
+  height:
+    88vh;
+
+  background:
+    #fff;
 
   border-radius:
     18px 18px 0 0;
 
-  display: flex;
-  flex-direction: column;
+  display:
+    flex;
+
+  flex-direction:
+    column;
 
   transform:
     translateY(100%);
@@ -6327,13 +6964,17 @@ select:focus {
   transition:
     transform .25s ease;
 
-  overflow: hidden;
+  overflow:
+    hidden;
+
 }
 
 .chat-overlay.show
 .chat-panel {
+
   transform:
     translateY(0);
+
 }
 
 
@@ -6342,59 +6983,112 @@ select:focus {
 ========================================================= */
 
 .chat-top {
-  flex: 0 0 auto;
 
-  padding: 12px 14px;
+  flex:
+    0 0 auto;
+
+  padding:
+    12px 14px;
 
   border-bottom:
     1px solid #e5e5e5;
 
-  background: #fff;
+  background:
+    #fff;
+
 }
 
 .drag-line {
-  width: 38px;
-  height: 4px;
 
-  border-radius: 10px;
+  width:
+    38px;
 
-  background: #ccc;
+  height:
+    4px;
+
+  border-radius:
+    10px;
+
+  background:
+    #ccc;
 
   margin:
     0 auto 10px;
+
 }
 
 .chat-header-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+
 }
 
 .chat-title {
-  flex: 1;
-  min-width: 0;
+
+  flex:
+    1;
+
+  min-width:
+    0;
+
 }
 
 .chat-title strong {
-  display: block;
-  font-size: 17px;
-  word-break: break-word;
+
+  display:
+    block;
+
+  font-size:
+    17px;
+
+  word-break:
+    break-word;
+
 }
 
 .chat-title span {
-  display: block;
-  color: #777;
-  font-size: 11px;
-  margin-top: 3px;
+
+  display:
+    block;
+
+  color:
+    #777;
+
+  font-size:
+    11px;
+
+  margin-top:
+    3px;
+
 }
 
 .close-chat {
-  border: 0;
-  background: #eee;
-  color: #333;
-  border-radius: 9px;
-  padding: 9px 12px;
-  font-size: 14px;
+
+  border:
+    0;
+
+  background:
+    #eee;
+
+  color:
+    #333;
+
+  border-radius:
+    9px;
+
+  padding:
+    9px 12px;
+
+  font-size:
+    14px;
+
 }
 
 
@@ -6403,52 +7097,83 @@ select:focus {
 ========================================================= */
 
 .chat-messages {
-  flex: 1;
 
-  overflow-y: auto;
+  flex:
+    1;
 
-  padding: 14px;
+  overflow-y:
+    auto;
 
-  background: #f7f7f8;
+  padding:
+    14px;
+
+  background:
+    #f7f7f8;
+
 }
 
 .chat-message {
-  max-width: 85%;
+
+  max-width:
+    85%;
 
   padding:
     10px 12px;
 
-  border-radius: 13px;
+  border-radius:
+    13px;
 
-  margin-bottom: 9px;
+  margin-bottom:
+    9px;
 
-  white-space: pre-wrap;
+  white-space:
+    pre-wrap;
 
-  word-break: break-word;
+  word-break:
+    break-word;
 
-  font-size: 14px;
+  font-size:
+    14px;
 
-  line-height: 1.4;
+  line-height:
+    1.4;
+
 }
 
 .chat-message.client {
-  margin-right: auto;
-  background: #e8e8ea;
+
+  margin-right:
+    auto;
+
+  background:
+    #e8e8ea;
+
 }
 
 .chat-message.assistant {
-  margin-left: auto;
-  background: #d9f7ef;
+
+  margin-left:
+    auto;
+
+  background:
+    #d9f7ef;
+
 }
 
 .chat-time {
-  display: block;
 
-  margin-top: 5px;
+  display:
+    block;
 
-  font-size: 10px;
+  margin-top:
+    5px;
 
-  color: #777;
+  font-size:
+    10px;
+
+  color:
+    #777;
+
 }
 
 
@@ -6457,56 +7182,89 @@ select:focus {
 ========================================================= */
 
 .chat-reply {
-  flex: 0 0 auto;
 
-  padding: 10px;
+  flex:
+    0 0 auto;
+
+  padding:
+    10px;
 
   border-top:
     1px solid #ddd;
 
-  background: #fff;
+  background:
+    #fff;
+
 }
 
 .chat-reply textarea {
-  min-height: 65px;
-  max-height: 130px;
 
-  resize: vertical;
+  min-height:
+    65px;
 
-  margin-bottom: 7px;
+  max-height:
+    130px;
+
+  resize:
+    vertical;
+
+  margin-bottom:
+    7px;
+
 }
 
 .chat-actions {
-  display: flex;
-  gap: 7px;
+
+  display:
+    flex;
+
+  gap:
+    7px;
+
 }
 
 .chat-send {
-  flex: 1;
 
-  border: 0;
+  flex:
+    1;
 
-  border-radius: 9px;
+  border:
+    0;
 
-  background: #1683ff;
+  border-radius:
+    9px;
 
-  color: white;
+  background:
+    #1683ff;
 
-  padding: 11px;
+  color:
+    white;
 
-  font-weight: 600;
+  padding:
+    11px;
+
+  font-weight:
+    600;
+
 }
 
 .chat-refresh {
-  border: 0;
 
-  border-radius: 9px;
+  border:
+    0;
 
-  background: #eee;
+  border-radius:
+    9px;
 
-  color: #1683ff;
+  background:
+    #eee;
 
-  padding: 11px 13px;
+  color:
+    #1683ff;
+
+  padding:
+    11px 13px;
+
 }
 
 
@@ -6519,15 +7277,24 @@ select:focus {
 ) {
 
   .container {
-    padding: 9px;
+
+    padding:
+      9px;
+
   }
 
   .chat-panel {
-    height: 92vh;
+
+    height:
+      92vh;
+
   }
 
   .chat-message {
-    max-width: 90%;
+
+    max-width:
+      90%;
+
   }
 
 }
@@ -6536,1251 +7303,9 @@ select:focus {
 
 </head>
 
-
 <body>
-
-
-<div class="container">
-
-
-  <div class="title">
-    Instagram Admin
-  </div>
-
-
-  <!-- =====================================================
-       LOGIN
-  ====================================================== -->
-
-  <div class="section">
-
-    <div class="login-row">
-
-      <input
-        id="secret"
-        type="password"
-        placeholder="Admin Secret"
-      >
-
-      <button
-        onclick="login()"
-      >
-        Login
-      </button>
-
-    </div>
-
-
-    <div
-      id="status"
-      class="status"
-    >
-      Enter Admin Secret.
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       PAGES
-  ====================================================== -->
-
-  <div class="section">
-
-    <div class="page-title">
-      Pages
-    </div>
-
-
-    <div class="page-buttons">
-
-      <button
-        id="page-all"
-        class="page-button active"
-        onclick="selectPage('all')"
-      >
-        ALL
-      </button>
-
-
-      <button
-        id="page-europe"
-        class="page-button"
-        onclick="selectPage('europe')"
-      >
-        EUROPE
-      </button>
-
-
-      <button
-        id="page-miami"
-        class="page-button"
-        onclick="selectPage('miami')"
-      >
-        MIAMI
-      </button>
-
-
-      <button
-        id="page-canada"
-        class="page-button"
-        onclick="selectPage('canada')"
-      >
-        CANADA
-      </button>
-
-
-      <button
-        id="page-mentalxheal"
-        class="page-button"
-        onclick="selectPage('mentalxheal')"
-      >
-        MENTALXHEAL
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       ADMIN REPLY
-  ====================================================== -->
-
-  <div class="section">
-
-    <button
-      id="replyToggle"
-      class="reply-toggle"
-      onclick="toggleAdminReply()"
-    >
-      ✉️ Admin Reply
-    </button>
-
-
-    <div
-      id="adminForm"
-      class="admin-form"
-    >
-
-      <input
-        id="adminClientId"
-        placeholder="Client ID"
-      >
-
-
-      <select
-        id="adminPage"
-      >
-
-        <option value="europe">
-          @expl.europe
-        </option>
-
-        <option value="miami">
-          @expl.miami
-        </option>
-
-        <option value="canada">
-          @expl.canada
-        </option>
-
-        <option value="mentalxheal">
-          @mentalxheal
-        </option>
-
-      </select>
-
-
-      <textarea
-        id="adminMessage"
-        placeholder="Write your reply..."
-      ></textarea>
-
-
-      <button
-        class="send-button"
-        onclick="sendAdminReply()"
-      >
-        Send Reply
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       SEARCH
-  ====================================================== -->
-
-  <div class="section">
-
-    <div class="search-row">
-
-      <input
-        id="search"
-        placeholder="🔎 Search username or client ID"
-        oninput="renderClients()"
-      >
-
-
-      <button
-        class="refresh-button"
-        onclick="loadClients()"
-      >
-        ↻
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       CLIENTS
-  ====================================================== -->
-
-  <div class="section">
-
-    <div class="clients-header">
-
-      <div class="clients-title">
-        Clients
-      </div>
-
-
-      <div
-        id="clientCount"
-        class="client-count"
-      >
-        0
-      </div>
-
-    </div>
-
-
-    <div
-      id="clients"
-    >
-
-      <div class="empty">
-        Login to load clients.
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- =======================================================
-     SLIDE-UP CHAT
-======================================================== -->
-
-<div
-  id="chatOverlay"
-  class="chat-overlay"
-  onclick="overlayClick(event)"
->
-
-
-  <div
-    class="chat-panel"
-    onclick="event.stopPropagation()"
-  >
-
-
-    <div class="chat-top">
-
-      <div class="drag-line"></div>
-
-
-      <div class="chat-header-row">
-
-        <div
-          id="chatTitle"
-          class="chat-title"
-        ></div>
-
-
-        <button
-          class="close-chat"
-          onclick="closeChat()"
-        >
-          Close
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <div
-      id="chatMessages"
-      class="chat-messages"
-    ></div>
-
-
-    <div class="chat-reply">
-
-      <textarea
-        id="chatReply"
-        placeholder="Write your reply..."
-      ></textarea>
-
-
-      <div class="chat-actions">
-
-        <button
-          class="chat-send"
-          onclick="sendChatReply()"
-        >
-          Send Reply
-        </button>
-
-
-        <button
-          class="chat-refresh"
-          onclick="refreshSelectedClient()"
-        >
-          ↻
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<script>
-
-
 /* =========================================================
-   STATE
-========================================================= */
-
-let adminSecret = "";
-
-let allClients = [];
-
-let selectedPage = "all";
-
-let selectedClient = null;
-
-let savedScrollPosition = 0;
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-function login() {
-
-  const input =
-    document.getElementById(
-      "secret"
-    );
-
-  const value =
-    input.value.trim();
-
-
-  if (!value) {
-
-    setStatus(
-      "Please enter Admin Secret."
-    );
-
-    return;
-
-  }
-
-
-  adminSecret =
-    value;
-
-
-  localStorage.setItem(
-    "adminSecret",
-    adminSecret
-  );
-
-
-  loadClients();
-
-}
-
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-function setStatus(
-  text
-) {
-
-  document.getElementById(
-    "status"
-  ).textContent =
-    text;
-
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value == null
-      ? ""
-      : value
-  )
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-/* =========================================================
-   TIME
-========================================================= */
-
-function formatTime(
-  value
-) {
-
-  if (!value) {
-
-    return "";
-
-  }
-
-
-  const date =
-    new Date(
-      value
-    );
-
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return "";
-
-  }
-
-
-  return date.toLocaleString();
-
-}
-
-
-/* =========================================================
-   LOAD CLIENTS
-========================================================= */
-
-async function loadClients() {
-
-  if (!adminSecret) {
-
-    adminSecret =
-      localStorage.getItem(
-        "adminSecret"
-      ) ||
-      "";
-
-  }
-
-
-  if (!adminSecret) {
-
-    setStatus(
-      "Please enter Admin Secret."
-    );
-
-    return;
-
-  }
-
-
-  setStatus(
-    "Loading clients..."
-  );
-
-
-  try {
-
-    const response =
-      await fetch(
-        "/admin/clients?secret=" +
-        encodeURIComponent(
-          adminSecret
-        ),
-        {
-          cache:
-            "no-store"
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.error ||
-        "Unable to load clients"
-      );
-
-    }
-
-
-    allClients =
-      Array.isArray(
-        data.clients
-      )
-        ? data.clients
-        : [];
-
-
-    renderClients();
-
-
-    setStatus(
-      allClients.length +
-      " clients loaded."
-    );
-
-
-    if (
-      selectedClient
-    ) {
-
-      const updated =
-        allClients.find(
-          function(client) {
-
-            return (
-              String(
-                client.senderId
-              ) ===
-              String(
-                selectedClient.senderId
-              )
-            );
-
-          }
-        );
-
-
-      if (updated) {
-
-        selectedClient =
-          updated;
-
-        renderChat();
-
-      }
-
-    }
-
-  }
-
-  catch (
-    error
-  ) {
-
-    console.error(
-      error
-    );
-
-
-    setStatus(
-      "ERROR: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   SELECT PAGE
-========================================================= */
-
-function selectPage(
-  page
-) {
-
-  selectedPage =
-    page;
-
-
-  document
-    .querySelectorAll(
-      ".page-button"
-    )
-    .forEach(
-      function(button) {
-
-        button.classList.remove(
-          "active"
-        );
-
-      }
-    );
-
-
-  const button =
-    document.getElementById(
-      "page-" +
-      page
-    );
-
-
-  if (button) {
-
-    button.classList.add(
-      "active"
-    );
-
-  }
-
-
-  renderClients();
-
-}
-
-
-/* =========================================================
-   FILTER CLIENTS
-========================================================= */
-
-function getFilteredClients() {
-
-  let result =
-    allClients;
-
-
-  if (
-    selectedPage !==
-    "all"
-  ) {
-
-    result =
-      result.filter(
-        function(client) {
-
-          return (
-            String(
-              client.page ||
-              ""
-            ).toLowerCase() ===
-            selectedPage.toLowerCase()
-          );
-
-        }
-      );
-
-  }
-
-
-  const search =
-    document.getElementById(
-      "search"
-    )
-      .value
-      .trim()
-      .toLowerCase();
-
-
-  if (search) {
-
-    result =
-      result.filter(
-        function(client) {
-
-          const username =
-            String(
-              client.username ||
-              ""
-            ).toLowerCase();
-
-
-          const id =
-            String(
-              client.senderId ||
-              ""
-            ).toLowerCase();
-
-
-          return (
-            username.includes(
-              search
-            ) ||
-            id.includes(
-              search
-            )
-          );
-
-        }
-      );
-
-  }
-
-
-  return result;
-
-}
-
-
-/* =========================================================
-   RENDER CLIENTS
-========================================================= */
-
-function renderClients() {
-
-  const container =
-    document.getElementById(
-      "clients"
-    );
-
-
-  const clients =
-    getFilteredClients();
-
-
-  document.getElementById(
-    "clientCount"
-  ).textContent =
-    clients.length +
-    (
-      clients.length === 1
-        ? " client"
-        : " clients"
-    );
-
-
-  if (!clients.length) {
-
-    container.innerHTML =
-      '<div class="empty">' +
-      'No clients found.' +
-      '</div>';
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    clients.map(
-      function(client) {
-
-        const username =
-          client.username ||
-          "Username not available";
-
-
-        const packageName =
-          client.selectedPackage ||
-          "none";
-
-
-        const payment =
-          client.paymentMethod ||
-          "none";
-
-
-        const stage =
-          client.stage ||
-          "NEW";
-
-
-        const reminder =
-          client.reminder
-            ? "Active"
-            : "No reminder";
-
-
-        const id =
-          escapeHtml(
-            client.senderId ||
-            ""
-          );
-
-
-        return (
-
-          '<div class="client-card">' +
-
-            '<div class="client-name">' +
-              escapeHtml(
-                username
-              ) +
-            '</div>' +
-
-            '<div class="client-details">' +
-
-              'Page: ' +
-              escapeHtml(
-                client.page ||
-                "unknown"
-              ) +
-
-              '<br>' +
-
-              'Stage: ' +
-              escapeHtml(
-                stage
-              ) +
-
-              '<br>' +
-
-              'Package: ' +
-              escapeHtml(
-                packageName
-              ) +
-
-              '<br>' +
-
-              'Payment: ' +
-              escapeHtml(
-                payment
-              ) +
-
-              '<br>' +
-
-              'Reminder: ' +
-              escapeHtml(
-                reminder
-              ) +
-
-              '<br>' +
-
-              'ID: ' +
-              id +
-
-            '</div>' +
-
-            '<button ' +
-              'class="open-chat" ' +
-              'onclick="openChat(\\'' +
-                id +
-              '\\')">' +
-
-              '💬 Open Chat' +
-
-            '</button>' +
-
-          '</div>'
-
-        );
-
-      }
-    )
-    .join("");
-
-}
-
-
-/* =========================================================
-   OPEN CHAT
-========================================================= */
-
-function openChat(
-  senderId
-) {
-
-  selectedClient =
-    allClients.find(
-      function(client) {
-
-        return (
-          String(
-            client.senderId
-          ) ===
-          String(
-            senderId
-          )
-        );
-
-      }
-    ) ||
-    null;
-
-
-  if (!selectedClient) {
-
-    return;
-
-  }
-
-
-  /*
-   * Save exact page position.
-   */
-
-  savedScrollPosition =
-    window.scrollY;
-
-
-  renderChat();
-
-
-  document
-    .getElementById(
-      "chatOverlay"
-    )
-    .classList.add(
-      "show"
-    );
-
-
-  document.body.style.overflow =
-    "hidden";
-
-}
-
-
-/* =========================================================
-   RENDER CHAT
-========================================================= */
-
-function renderChat() {
-
-  if (!selectedClient) {
-
-    return;
-
-  }
-
-
-  const username =
-    selectedClient.username ||
-    "Username not available";
-
-
-  const page =
-    selectedClient.page ||
-    "unknown";
-
-
-  const stage =
-    selectedClient.stage ||
-    "NEW";
-
-
-  document.getElementById(
-    "chatTitle"
-  ).innerHTML =
-
-    '<strong>' +
-      escapeHtml(
-        username
-      ) +
-    '</strong>' +
-
-    '<span>' +
-
-      'Page: ' +
-      escapeHtml(
-        page
-      ) +
-
-      ' &nbsp; | &nbsp; ' +
-
-      'Stage: ' +
-      escapeHtml(
-        stage
-      ) +
-
-    '</span>';
-
-
-  const messages =
-    document.getElementById(
-      "chatMessages"
-    );
-
-
-  const history =
-    Array.isArray(
-      selectedClient.history
-    )
-      ? selectedClient.history
-      : [];
-
-
-  if (!history.length) {
-
-    messages.innerHTML =
-      '<div class="empty">' +
-      'No messages found.' +
-      '</div>';
-
-    return;
-
-  }
-
-
-  messages.innerHTML =
-    history.map(
-      function(item) {
-
-        const role =
-          item.role ===
-          "client"
-            ? "client"
-            : "assistant";
-
-
-        let html =
-          '<div class="chat-message ' +
-          role +
-          '">' +
-
-          escapeHtml(
-            item.text ||
-            ""
-          );
-
-
-        if (
-          item.timestamp
-        ) {
-
-          html +=
-
-            '<span class="chat-time">' +
-
-              escapeHtml(
-                formatTime(
-                  item.timestamp
-                )
-              ) +
-
-            '</span>';
-
-        }
-
-
-        html +=
-          '</div>';
-
-
-        return html;
-
-      }
-    )
-    .join("");
-
-
-  messages.scrollTop =
-    messages.scrollHeight;
-
-}
-
-
-/* =========================================================
-   CLOSE CHAT
-========================================================= */
-
-function closeChat() {
-
-  document
-    .getElementById(
-      "chatOverlay"
-    )
-    .classList.remove(
-      "show"
-    );
-
-
-  document.body.style.overflow =
-    "";
-
-
-  selectedClient =
-    null;
-
-
-  setTimeout(
-    function() {
-
-      window.scrollTo(
-        0,
-        savedScrollPosition
-      );
-
-    },
-    30
-  );
-
-}
-
-
-/* =========================================================
-   CLOSE BY CLICKING OUTSIDE
-========================================================= */
-
-function overlayClick(
-  event
-) {
-
-  if (
-    event.target.id ===
-    "chatOverlay"
-  ) {
-
-    closeChat();
-
-  }
-
-}
-
-
-/* =========================================================
-   REFRESH SELECTED CLIENT
-========================================================= */
-
-async function refreshSelectedClient() {
-
-  const senderId =
-    selectedClient
-      ? selectedClient.senderId
-      : null;
-
-
-  await loadClients();
-
-
-  if (!senderId) {
-
-    return;
-
-  }
-
-
-  const updated =
-    allClients.find(
-      function(client) {
-
-        return (
-          String(
-            client.senderId
-          ) ===
-          String(
-            senderId
-          )
-        );
-
-      }
-    );
-
-
-  if (updated) {
-
-    selectedClient =
-      updated;
-
-    renderChat();
-
-  }
-
-}
-
-
-/* =========================================================
-   TOGGLE ADMIN REPLY
-========================================================= */
-
-function toggleAdminReply() {
-
-  const form =
-    document.getElementById(
-      "adminForm"
-    );
-
-
-  const button =
-    document.getElementById(
-      "replyToggle"
-    );
-
-
-  if (
-    form.classList.contains(
-      "show"
-    )
-  ) {
-
-    form.classList.remove(
-      "show"
-    );
-
-
-    button.textContent =
-      "✉️ Admin Reply";
-
-  }
-
-  else {
-
-    form.classList.add(
-      "show"
-    );
-
-
-    button.textContent =
-      "✕ Close Admin Reply";
-
-  }
-
-}
-
-
-/* =========================================================
-   ADMIN REPLY
+   ADMIN REPLY — CONTINUED
 ========================================================= */
 
 async function sendAdminReply() {
@@ -7876,7 +7401,7 @@ async function sendAdminReply() {
 
       throw new Error(
         data.error ||
-        "Reply failed"
+        "Unable to send reply"
       );
 
     }
@@ -7884,23 +7409,27 @@ async function sendAdminReply() {
 
     document.getElementById(
       "adminMessage"
-    )
-      .value =
+    ).value =
       "";
 
 
     setStatus(
-      "Admin reply sent successfully."
+      "Reply sent successfully."
     );
 
 
-    await loadClients();
+    await refreshSelectedClient();
 
   }
 
   catch (
     error
   ) {
+
+    console.error(
+      error
+    );
+
 
     alert(
       error.message
@@ -7913,6 +7442,280 @@ async function sendAdminReply() {
 
 /* =========================================================
    CHAT REPLY
+========================================================= */
+
+async function sendChatReply() {
+
+  if (
+    !selectedClient
+  ) {
+
+    return;
+
+  }
+
+
+  const textarea =
+    document.getElementById(
+      "chatReply"
+    );
+
+
+  const message =
+    textarea.value.trim();
+
+
+  if (!message) {
+
+    return;
+
+  }
+
+
+  const senderId =
+    selectedClient.senderId;
+
+
+  const pageKey =
+    selectedClient.pageKey ||
+    selectedClient.page;
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin/reply",
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "x-admin-secret":
+              adminSecret
+
+          },
+
+          body:
+            JSON.stringify({
+
+              senderId:
+                senderId,
+
+              pageKey:
+                pageKey,
+
+              message:
+                message
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Unable to send reply"
+      );
+
+    }
+
+
+    textarea.value =
+      "";
+
+
+    await refreshSelectedClient();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      error
+    );
+
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ENTER KEY — CHAT
+========================================================= */
+
+document
+  .getElementById(
+    "chatReply"
+  )
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        event.key ===
+          "Enter" &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        sendChatReply();
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   ENTER KEY — LOGIN
+========================================================= */
+
+document
+  .getElementById(
+    "secret"
+  )
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        event.key ===
+        "Enter"
+      ) {
+
+        event.preventDefault();
+
+        login();
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+window.addEventListener(
+  "load",
+  function() {
+
+    const savedSecret =
+      localStorage.getItem(
+        "adminSecret"
+      );
+
+
+    if (
+      savedSecret
+    ) {
+
+      adminSecret =
+        savedSecret;
+
+
+      document
+        .getElementById(
+          "secret"
+        )
+        .value =
+        savedSecret;
+
+
+      loadClients();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   ESCAPE KEY — CLOSE CHAT
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (
+      event.key ===
+      "Escape"
+    ) {
+
+      const overlay =
+        document.getElementById(
+          "chatOverlay"
+        );
+
+
+      if (
+        overlay &&
+        overlay.classList.contains(
+          "show"
+        )
+      ) {
+
+        closeChat();
+
+      }
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+
+</html>
+
+    `);
+
+  }
+
+);
+
+
+/* =========================================================
+   SERVER START
+========================================================= */
+
+app.listen(
+  PORT,
+  () => {
+
+    console.log(
+      `${BUSINESS_NAME} server running on port ${PORT}`
+    );
+
+  }
+);
+/* =========================================================
+   CHAT REPLY — CONTINUED
 ========================================================= */
 
 async function sendChatReply() {
@@ -8033,7 +7836,7 @@ document
 
       if (
         event.key ===
-        "Enter" &&
+          "Enter" &&
         (
           event.ctrlKey ||
           event.metaKey
@@ -8068,9 +7871,10 @@ document
       saved;
 
 
-    document.getElementById(
-      "secret"
-    )
+    document
+      .getElementById(
+        "secret"
+      )
       .value =
       saved;
 
@@ -8087,10 +7891,14 @@ document
 </body>
 
 </html>
+
     `);
 
   }
+
 );
+
+
 /* =========================================================
    HEALTH CHECK
 ========================================================= */
