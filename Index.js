@@ -38,64 +38,6 @@ const PORT =
 
 const ADMIN_SECRET =
   process.env.ADMIN_SECRET || "";
-/* =========================================================
-   ADMIN AUTHENTICATION
-========================================================= */
-
-function requireAdmin(
-  req,
-  res,
-  next
-) {
-
-  const secret =
-    String(
-      req.headers["x-admin-secret"] ||
-      ""
-    ).trim();
-
-
-  if (
-    !ADMIN_SECRET ||
-    secret !== ADMIN_SECRET
-  ) {
-
-    return res
-      .status(401)
-      .json({
-        success:
-          false,
-        error:
-          "Unauthorized"
-      });
-
-  }
-
-
-  next();
-
-}
-
-/* =========================================================
-   SUPABASE
-========================================================= */
-
-const SUPABASE_URL =
-  process.env.SUPABASE_URL || "";
-
-const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-
-const SUPABASE_TABLE =
-  process.env.SUPABASE_TABLE || "Conversations";
-
-
-/* =========================================================
-   BUSINESS
-========================================================= */
-
-const BUSINESS_NAME =
-  "Global Promote";
 
 
 /* =========================================================
@@ -121,6 +63,9 @@ const PAGE_CONFIGS = {
     currency:
       "€",
 
+    locationFocus:
+      "Europe",
+
     packages: {
 
       bronze: {
@@ -135,7 +80,10 @@ const PAGE_CONFIGS = {
           "2 story",
 
         followers:
-          "1.5K followers guaranteed"
+          "1.5K followers guaranteed",
+
+        timeframe:
+          "48 hours"
 
       },
 
@@ -151,7 +99,10 @@ const PAGE_CONFIGS = {
           "1 post and 3 story + 2 highlights",
 
         followers:
-          "4K followers guaranteed"
+          "4K followers guaranteed",
+
+        timeframe:
+          "48 hours"
 
       },
 
@@ -167,7 +118,10 @@ const PAGE_CONFIGS = {
           "3 post and 4 story + 3 highlights",
 
         followers:
-          "7K followers guaranteed"
+          "7K followers guaranteed",
+
+        timeframe:
+          "3 days"
 
       },
 
@@ -183,7 +137,10 @@ const PAGE_CONFIGS = {
           "5 post and 8 story + 7 highlights",
 
         followers:
-          "10K followers guaranteed"
+          "10K followers guaranteed",
+
+        timeframe:
+          "48 hours"
 
       }
 
@@ -227,6 +184,9 @@ const PAGE_CONFIGS = {
     currency:
       "$",
 
+    locationFocus:
+      "Miami",
+
     packages: {
 
       bronze: {
@@ -241,7 +201,10 @@ const PAGE_CONFIGS = {
           "2 story",
 
         followers:
-          "1K followers guaranteed"
+          "1K followers guaranteed",
+
+        timeframe:
+          "48 hours"
 
       },
 
@@ -257,7 +220,10 @@ const PAGE_CONFIGS = {
           "1 post and 3 story + 2 highlights",
 
         followers:
-          "3K followers guaranteed"
+          "3K followers guaranteed",
+
+        timeframe:
+          "48 hours"
 
       },
 
@@ -273,7 +239,10 @@ const PAGE_CONFIGS = {
           "3 post and 4 story + 3 highlights",
 
         followers:
-          "5K followers guaranteed"
+          "5K followers guaranteed",
+
+        timeframe:
+          "3 days"
 
       },
 
@@ -289,7 +258,10 @@ const PAGE_CONFIGS = {
           "5 post and 8 story + 7 highlights",
 
         followers:
-          "8K followers guaranteed"
+          "8K followers guaranteed",
+
+        timeframe:
+          "48 hours"
 
       }
 
@@ -331,6 +303,9 @@ const PAGE_CONFIGS = {
     currency:
       "$",
 
+    locationFocus:
+      "Canada",
+
     packages: {
 
       bronze: {
@@ -345,7 +320,10 @@ const PAGE_CONFIGS = {
           "2 Stories",
 
         followers:
-          "300–400 Global Followers Guaranteed"
+          "300–400 Global Followers Guaranteed",
+
+        timeframe:
+          "48 hours"
 
       },
 
@@ -361,7 +339,10 @@ const PAGE_CONFIGS = {
           "1 Feed Post + 2 Stories",
 
         followers:
-          "1.5K Followers Guaranteed (Includes 300–400 Canadian audience)"
+          "1.5K Followers Guaranteed (Includes 300–400 Canadian audience)",
+
+        timeframe:
+          "48 hours"
 
       },
 
@@ -377,7 +358,10 @@ const PAGE_CONFIGS = {
           "3 Feed Posts + 4 Stories",
 
         followers:
-          "4.5K Guaranteed Followers (Only Canadian Audience)"
+          "4.5K Guaranteed Followers (Only Canadian Audience)",
+
+        timeframe:
+          "3 days"
 
       },
 
@@ -393,7 +377,10 @@ const PAGE_CONFIGS = {
           "5 Feed Posts + 8 Stories",
 
         followers:
-          "10K Guaranteed Followers (Only Toronto Audience)"
+          "10K Guaranteed Followers (Only Toronto Audience)",
+
+        timeframe:
+          "48 hours"
 
       }
 
@@ -433,6 +420,9 @@ const PAGE_CONFIGS = {
     currency:
       "$",
 
+    locationFocus:
+      "mental-health audiences",
+
     packages: {
 
       bronze: {
@@ -447,7 +437,10 @@ const PAGE_CONFIGS = {
           "2 story",
 
         followers:
-          "1K followers guaranteed"
+          "1K followers guaranteed",
+
+        timeframe:
+          "48 hours"
 
       },
 
@@ -463,7 +456,10 @@ const PAGE_CONFIGS = {
           "1 post and 3 story + 2 highlights",
 
         followers:
-          "3K followers guaranteed"
+          "3K followers guaranteed",
+
+        timeframe:
+          "48 hours"
 
       },
 
@@ -479,7 +475,10 @@ const PAGE_CONFIGS = {
           "3 post and 4 story +3 highlights",
 
         followers:
-          "5K followers guaranteed"
+          "5K followers guaranteed",
+
+        timeframe:
+          "3 days"
 
       },
 
@@ -495,7 +494,10 @@ const PAGE_CONFIGS = {
           "5 post and 8 story + 7 highlights",
 
         followers:
-          "8K followers guaranteed"
+          "8K followers guaranteed",
+
+        timeframe:
+          "48 hours"
 
       }
 
@@ -657,7 +659,7 @@ I will upload your post on these pages and from that you will gain 1k to 15k gua
 
 
 /* =========================================================
-   GUARANTEE
+   GUARANTEE MESSAGE
 ========================================================= */
 
 const GUARANTEE_MESSAGE =
@@ -667,15 +669,285 @@ If you don't gain the guaranteed followers, the amount will be refunded accordin
 
 
 /* =========================================================
-   REAL / ORGANIC
+   REAL / ORGANIC FOLLOWERS
 ========================================================= */
 
 const REAL_FOLLOWERS_MESSAGE =
 `Of course ❤️ All the followers are real and organic because followers are achieved by sharing and promoting your content on different pages until you reach the followers included in your package.
 
 We don't simply add random followers. Your content is promoted to real audiences through our network of pages. ❤️`;
+
+
 /* =========================================================
-   CONTINUED — MESSAGE HISTORY
+   PAYMENT DETAILS
+========================================================= */
+
+const PAYMENT_DETAILS = {
+
+  paypal:
+`PayPal:
+pay@globalpromote.in
+https://paypal.me/RamanKumar4257`,
+
+  venmo:
+`Venmo:
+Risa-Ramos-2
+https://venmo.com/u/Risa-Ramos-2`,
+
+  etransfer:
+`E-transfer:
+pay@globalpromote.in`,
+
+  iban:
+`Bank / Wise:
+
+Account name: Rahul Kumar
+IBAN: BE36967747881581
+SWIFT/BIC: TRWIBEB1XXX
+Bank: Wise
+
+Bank address:
+Rue du Trône 100, 3rd floor
+Brussels, 1050
+Belgium`,
+
+  achWire:
+`Bank Transfer / ACH / Wire:
+
+Name: Rahul
+Account type: Checking
+Routing number: 026073150
+Account number: 8313696908
+
+Bank:
+Community Federal Savings Bank
+
+Bank address:
+89-16 Jamaica Ave
+Woodhaven, NY 11421
+United States
+
+SWIFT/BIC:
+CMFGUS33`,
+
+  revolut:
+`Revolut:
+Tag: @clavis02pk
+Payment link:
+https://revolut.me/clavis02pk`,
+
+  mbway:
+`MB WAY:
+Number: +351 968 188 499
+Name: Andre Santana`,
+
+  card:
+`Credit/Debit Card:
+Our team will provide the secure card payment instructions.`
+
+};
+
+
+/* =========================================================
+   PAGE-SPECIFIC PAYMENT DETAILS
+========================================================= */
+
+PAGE_CONFIGS.europe.paymentDetails = {
+
+  paypal:
+    PAYMENT_DETAILS.paypal,
+
+  iban:
+    PAYMENT_DETAILS.iban,
+
+  revolut:
+    PAYMENT_DETAILS.revolut,
+
+  mbway:
+    PAYMENT_DETAILS.mbway,
+
+  card:
+    PAYMENT_DETAILS.card
+
+};
+
+
+PAGE_CONFIGS.miami.paymentDetails = {
+
+  paypal:
+    PAYMENT_DETAILS.paypal,
+
+  venmo:
+    PAYMENT_DETAILS.venmo,
+
+  card:
+    PAYMENT_DETAILS.card,
+
+  achWire:
+    PAYMENT_DETAILS.achWire
+
+};
+
+
+PAGE_CONFIGS.canada.paymentDetails = {
+
+  etransfer:
+    PAYMENT_DETAILS.etransfer,
+
+  achWire:
+    PAYMENT_DETAILS.achWire,
+
+  card:
+    PAYMENT_DETAILS.card
+
+};
+
+
+PAGE_CONFIGS.mentalxheal.paymentDetails = {
+
+  paypal:
+    PAYMENT_DETAILS.paypal,
+
+  venmo:
+    PAYMENT_DETAILS.venmo,
+
+  iban:
+    PAYMENT_DETAILS.iban,
+
+  etransfer:
+    PAYMENT_DETAILS.etransfer,
+
+  card:
+    PAYMENT_DETAILS.card,
+
+  revolut:
+    PAYMENT_DETAILS.revolut
+
+};
+
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+const conversations =
+  new Map();
+
+
+const clientQueues =
+  new Map();
+
+
+const processedMessageIds =
+  new Map();
+
+
+const outgoingMessages =
+  new Set();
+
+
+const manualReplyVersion =
+  new Map();
+
+
+const reminderTimers =
+  new Map();
+
+
+/* =========================================================
+   CONVERSATION
+========================================================= */
+
+function createConversation(
+  senderId
+) {
+
+  return {
+
+    senderId:
+      String(
+        senderId
+      ),
+
+    pageKey:
+      null,
+
+    clientUsername:
+      null,
+
+    stage:
+      "NEW",
+
+    messageOneSent:
+      false,
+
+    messageTwoSent:
+      false,
+
+    packagesSent:
+      false,
+
+    promotionMediaReceived:
+      false,
+
+    promotionUsernameReceived:
+      false,
+
+    promotionUsernameRequested:
+      false,
+
+    promotionComplete:
+      false,
+
+    history:
+      [],
+
+    selectedPackage:
+      null,
+
+    paymentMethod:
+      null,
+
+    paymentDetailsSent:
+      false,
+
+    paymentConfirmed:
+      false,
+
+    paymentProofReceived:
+      false,
+
+    awaitingPaymentConfirmation:
+      false,
+
+    customerMessageVersion:
+      0,
+
+    lastSeenAt:
+      nowISO(),
+
+    lastOutgoingMessageId:
+      null,
+
+    lastOutgoingText:
+      null,
+
+    lastOutgoingStage:
+      null,
+
+    lastOutgoingAt:
+      null,
+
+    reminder:
+      null
+
+  };
+
+}
+
+
+/* =========================================================
+   SAVE MESSAGE
 ========================================================= */
 
 function saveMessage(
@@ -728,7 +1000,10 @@ function saveMessage(
 
 
 /* =========================================================
-   SUPABASE
+   END PART 1
+========================================================= */
+/* =========================================================
+   SUPABASE HELPERS
 ========================================================= */
 
 function supabaseConfigured() {
@@ -759,6 +1034,10 @@ function supabaseHeaders() {
 }
 
 
+/* =========================================================
+   LOAD ONE CONVERSATION
+========================================================= */
+
 async function supabaseGetConversation(
   senderId
 ) {
@@ -766,10 +1045,6 @@ async function supabaseGetConversation(
   if (
     !supabaseConfigured()
   ) {
-
-    console.error(
-      "SUPABASE NOT CONFIGURED"
-    );
 
     return null;
 
@@ -811,22 +1086,22 @@ async function supabaseGetConversation(
       );
 
 
-    const data =
-      await response.json();
-
-
     if (
       !response.ok
     ) {
 
       console.error(
-        "SUPABASE GET ERROR:",
-        data
+        "Supabase GET:",
+        await response.text()
       );
 
       return null;
 
     }
+
+
+    const data =
+      await response.json();
 
 
     if (
@@ -853,7 +1128,7 @@ async function supabaseGetConversation(
   ) {
 
     console.error(
-      "SUPABASE GET EXCEPTION:",
+      "Supabase GET error:",
       error.message
     );
 
@@ -863,6 +1138,10 @@ async function supabaseGetConversation(
 
 }
 
+
+/* =========================================================
+   SAVE ONE CONVERSATION
+========================================================= */
 
 async function supabaseSaveConversation(
   senderId,
@@ -927,17 +1206,13 @@ async function supabaseSaveConversation(
       );
 
 
-    const data =
-      await response.text();
-
-
     if (
       !response.ok
     ) {
 
       console.error(
-        "SUPABASE SAVE ERROR:",
-        data
+        "Supabase SAVE:",
+        await response.text()
       );
 
       return false;
@@ -954,7 +1229,7 @@ async function supabaseSaveConversation(
   ) {
 
     console.error(
-      "SUPABASE SAVE EXCEPTION:",
+      "Supabase SAVE error:",
       error.message
     );
 
@@ -964,6 +1239,10 @@ async function supabaseSaveConversation(
 
 }
 
+
+/* =========================================================
+   LOAD ALL CONVERSATIONS
+========================================================= */
 
 async function supabaseGetAllConversations() {
 
@@ -1007,22 +1286,22 @@ async function supabaseGetAllConversations() {
       );
 
 
-    const data =
-      await response.json();
-
-
     if (
       !response.ok
     ) {
 
       console.error(
-        "SUPABASE LIST ERROR:",
-        data
+        "Supabase LIST:",
+        await response.text()
       );
 
       return [];
 
     }
+
+
+    const data =
+      await response.json();
 
 
     return Array.isArray(
@@ -1038,13 +1317,142 @@ async function supabaseGetAllConversations() {
   ) {
 
     console.error(
-      "SUPABASE LIST EXCEPTION:",
+      "Supabase LIST error:",
       error.message
     );
 
     return [];
 
   }
+
+}
+
+
+/* =========================================================
+   RESTORE LOCKED MESSAGE STATE
+========================================================= */
+
+function syncLockedFlagsFromHistory(
+  conversation
+) {
+
+  if (
+    !conversation ||
+    !Array.isArray(
+      conversation.history
+    )
+  ) {
+
+    return conversation;
+
+  }
+
+
+  for (
+    const item
+    of conversation.history
+  ) {
+
+    if (
+      item?.role !==
+      "assistant"
+    ) {
+
+      continue;
+
+    }
+
+
+    const text =
+      String(
+        item.text ||
+        ""
+      );
+
+
+    if (
+      text ===
+      MESSAGE_ONE
+    ) {
+
+      conversation.messageOneSent =
+        true;
+
+    }
+
+
+    if (
+      text ===
+      MESSAGE_TWO
+    ) {
+
+      conversation.messageOneSent =
+        true;
+
+      conversation.messageTwoSent =
+        true;
+
+    }
+
+
+    if (
+      text.includes(
+        "BRONZE"
+      ) &&
+      text.includes(
+        "SILVER"
+      ) &&
+      text.includes(
+        "GOLD"
+      ) &&
+      text.includes(
+        "DIAMOND"
+      )
+    ) {
+
+      conversation.messageOneSent =
+        true;
+
+      conversation.messageTwoSent =
+        true;
+
+      conversation.packagesSent =
+        true;
+
+    }
+
+  }
+
+
+  if (
+    conversation.packagesSent
+  ) {
+
+    conversation.stage =
+      "PACKAGES_SHOWN";
+
+  }
+
+  else if (
+    conversation.messageTwoSent
+  ) {
+
+    conversation.stage =
+      "MESSAGE_TWO_SENT";
+
+  }
+
+  else if (
+    conversation.messageOneSent
+  ) {
+
+    conversation.stage =
+      "MESSAGE_ONE_SENT";
+
+  }
+
+
+  return conversation;
 
 }
 
@@ -1073,6 +1481,10 @@ async function getConversation(
     conversation
   ) {
 
+    syncLockedFlagsFromHistory(
+      conversation
+    );
+
     return conversation;
 
   }
@@ -1092,7 +1504,6 @@ async function getConversation(
 
     conversation =
       stored;
-
 
     conversation.senderId =
       key;
@@ -1123,60 +1534,9 @@ async function getConversation(
       );
 
 
-    /* MESSAGE 3 / PACKAGES
-       IS ALSO LOCKED */
-
     conversation.packagesSent =
       Boolean(
         conversation.packagesSent
-      );
-
-
-    conversation.paymentDetailsSent =
-      Boolean(
-        conversation.paymentDetailsSent
-      );
-
-
-    conversation.paymentConfirmed =
-      Boolean(
-        conversation.paymentConfirmed
-      );
-
-
-    conversation.paymentProofReceived =
-      Boolean(
-        conversation.paymentProofReceived
-      );
-
-
-    conversation.awaitingPaymentConfirmation =
-      Boolean(
-        conversation.awaitingPaymentConfirmation
-      );
-
-
-    conversation.promotionMediaReceived =
-      Boolean(
-        conversation.promotionMediaReceived
-      );
-
-
-    conversation.promotionUsernameReceived =
-      Boolean(
-        conversation.promotionUsernameReceived
-      );
-
-
-    conversation.promotionUsernameRequested =
-      Boolean(
-        conversation.promotionUsernameRequested
-      );
-
-
-    conversation.promotionComplete =
-      Boolean(
-        conversation.promotionComplete
       );
 
 
@@ -1185,6 +1545,11 @@ async function getConversation(
         conversation.customerMessageVersion ||
         0
       );
+
+
+    syncLockedFlagsFromHistory(
+      conversation
+    );
 
 
     conversations.set(
@@ -1258,7 +1623,7 @@ async function saveConversation(
 
 
 /* =========================================================
-   HYDRATE ADMIN CONVERSATIONS
+   RESTORE ALL CONVERSATIONS
 ========================================================= */
 
 async function hydrateAdminConversations() {
@@ -1288,19 +1653,19 @@ async function hydrateAdminConversations() {
     }
 
 
+    const conversation =
+      row?.messages;
+
+
     if (
-      !row?.messages ||
-      typeof row.messages !==
+      !conversation ||
+      typeof conversation !==
         "object"
     ) {
 
       continue;
 
     }
-
-
-    const conversation =
-      row.messages;
 
 
     conversation.senderId =
@@ -1315,14 +1680,9 @@ async function hydrateAdminConversations() {
         : [];
 
 
-    conversation.clientUsername =
-      conversation.clientUsername ||
-      null;
-
-
-    conversation.pageKey =
-      conversation.pageKey ||
-      null;
+    syncLockedFlagsFromHistory(
+      conversation
+    );
 
 
     conversations.set(
@@ -1332,45 +1692,45 @@ async function hydrateAdminConversations() {
 
   }
 
-
-  return conversations;
-
 }
 
 
 /* =========================================================
-   USERNAME NORMALIZATION
+   USERNAME HELPERS
 ========================================================= */
 
-function normalizeInstagramUsername(
+function normalizeUsername(
   username
 ) {
 
-  if (
-    !username
-  ) {
+  return String(
+    username || ""
+  )
+    .trim()
+    .replace(
+      /^@+/,
+      ""
+    )
+    .toLowerCase();
 
-    return null;
+}
 
-  }
 
+function formatUsername(
+  username
+) {
 
   const value =
-    String(
+    normalizeUsername(
       username
-    )
-      .trim()
-      .replace(
-        /^@+/,
-        ""
-      );
+    );
 
 
   if (
     !value
   ) {
 
-    return null;
+    return "";
 
   }
 
@@ -1380,11 +1740,7 @@ function normalizeInstagramUsername(
 }
 
 
-/* =========================================================
-   EXTRACT USERNAME
-========================================================= */
-
-function extractInstagramUsername(
+function extractUsername(
   text
 ) {
 
@@ -1392,7 +1748,7 @@ function extractInstagramUsername(
     String(
       text || ""
     ).match(
-      /(?:^|\s)@([a-zA-Z0-9._]{1,30})\b/
+      /@([a-zA-Z0-9._]{2,30})/
     );
 
 
@@ -1400,12 +1756,12 @@ function extractInstagramUsername(
     !match
   ) {
 
-    return null;
+    return "";
 
   }
 
 
-  return normalizeInstagramUsername(
+  return formatUsername(
     match[1]
   );
 
@@ -1413,239 +1769,26 @@ function extractInstagramUsername(
 
 
 /* =========================================================
-   SAVE USERNAME
-========================================================= */
-
-async function setConversationUsername(
-  senderId,
-  username
-) {
-
-  const normalized =
-    normalizeInstagramUsername(
-      username
-    );
-
-
-  if (
-    !normalized
-  ) {
-
-    return false;
-
-  }
-
-
-  const conversation =
-    await getConversation(
-      senderId
-    );
-
-
-  if (
-    !conversation
-  ) {
-
-    return false;
-
-  }
-
-
-  if (
-    conversation.clientUsername ===
-    normalized
-  ) {
-
-    conversation.promotionUsernameReceived =
-      true;
-
-
-    await saveConversation(
-      senderId,
-      conversation
-    );
-
-
-    return true;
-
-  }
-
-
-  conversation.clientUsername =
-    normalized;
-
-
-  conversation.promotionUsernameReceived =
-    true;
-
-
-  await saveConversation(
-    senderId,
-    conversation
-  );
-
-
-  console.log(
-    "CLIENT USERNAME SAVED:",
-    normalized,
-    senderId
-  );
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   META USERNAME LOOKUP
-========================================================= */
-
-async function getInstagramUsername(
-  page,
-  senderId
-) {
-
-  if (
-    !page?.token ||
-    !senderId
-  ) {
-
-    return null;
-
-  }
-
-
-  try {
-
-    const response =
-      await fetch(
-
-        `https://graph.instagram.com/${INSTAGRAM_API_VERSION}` +
-
-        `/${encodeURIComponent(
-          senderId
-        )}` +
-
-        `?fields=username`,
-
-        {
-
-          method:
-            "GET",
-
-          headers: {
-
-            Authorization:
-              `Bearer ${page.token}`
-
-          }
-
-        }
-
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok
-    ) {
-
-      console.error(
-        "META USERNAME ERROR:",
-        data
-      );
-
-      return null;
-
-    }
-
-
-    return normalizeInstagramUsername(
-      data?.username
-    );
-
-  }
-
-  catch (
-    error
-  ) {
-
-    console.error(
-      "META USERNAME EXCEPTION:",
-      error.message
-    );
-
-    return null;
-
-  }
-
-}
-
-
-/* =========================================================
-   CUSTOMER MESSAGE USERNAME
-========================================================= */
-
-async function processUsernameFromMessage(
-  senderId,
-  conversation,
-  text
-) {
-
-  const username =
-    extractInstagramUsername(
-      text
-    );
-
-
-  if (
-    !username
-  ) {
-
-    return false;
-
-  }
-
-
-  conversation.clientUsername =
-    username;
-
-
-  conversation.promotionUsernameReceived =
-    true;
-
-
-  await saveConversation(
-    senderId,
-    conversation
-  );
-
-
-  return true;
-
-}
-/* =========================================================
-   CONTINUED — DETECTION HELPERS
+   PACKAGE DETECTION
 ========================================================= */
 
 function detectPackage(
   text
 ) {
 
-  const t =
+  const value =
     normalize(
       text
     );
 
 
   if (
-    /\bbronze\b/.test(t) ||
-    /\bpackage\s*1\b/.test(t) ||
-    /^1$/.test(t)
+    /\bbronze\b/.test(
+      value
+    ) ||
+    /^1$/.test(
+      value
+    )
   ) {
 
     return "bronze";
@@ -1654,9 +1797,12 @@ function detectPackage(
 
 
   if (
-    /\bsilver\b/.test(t) ||
-    /\bpackage\s*2\b/.test(t) ||
-    /^2$/.test(t)
+    /\bsilver\b/.test(
+      value
+    ) ||
+    /^2$/.test(
+      value
+    )
   ) {
 
     return "silver";
@@ -1665,9 +1811,12 @@ function detectPackage(
 
 
   if (
-    /\bgold\b/.test(t) ||
-    /\bpackage\s*3\b/.test(t) ||
-    /^3$/.test(t)
+    /\bgold\b/.test(
+      value
+    ) ||
+    /^3$/.test(
+      value
+    )
   ) {
 
     return "gold";
@@ -1676,9 +1825,12 @@ function detectPackage(
 
 
   if (
-    /\bdiamond\b/.test(t) ||
-    /\bpackage\s*4\b/.test(t) ||
-    /^4$/.test(t)
+    /\bdiamond\b/.test(
+      value
+    ) ||
+    /^4$/.test(
+      value
+    )
   ) {
 
     return "diamond";
@@ -1699,14 +1851,16 @@ function detectPaymentMethod(
   text
 ) {
 
-  const t =
+  const value =
     normalize(
       text
     );
 
 
   if (
-    /\bpaypal\b/.test(t)
+    /\bpaypal\b/.test(
+      value
+    )
   ) {
 
     return "paypal";
@@ -1715,7 +1869,9 @@ function detectPaymentMethod(
 
 
   if (
-    /\bvenmo\b/.test(t)
+    /\bvenmo\b/.test(
+      value
+    )
   ) {
 
     return "venmo";
@@ -1724,26 +1880,9 @@ function detectPaymentMethod(
 
 
   if (
-    /\be[\s-]?transfer\b/.test(t)
-  ) {
-
-    return "etransfer";
-
-  }
-
-
-  if (
-    /\biban\b/.test(t) ||
-    /\bwise\b/.test(t)
-  ) {
-
-    return "iban";
-
-  }
-
-
-  if (
-    /\brevolut\b/.test(t)
+    /\brevolut\b/.test(
+      value
+    )
   ) {
 
     return "revolut";
@@ -1752,7 +1891,12 @@ function detectPaymentMethod(
 
 
   if (
-    /\bmb[\s-]?way\b/.test(t)
+    /\bmb\s*way\b/.test(
+      value
+    ) ||
+    /\bmbway\b/.test(
+      value
+    )
   ) {
 
     return "mbway";
@@ -1761,24 +1905,63 @@ function detectPaymentMethod(
 
 
   if (
-    /\bcredit\s*\/?\s*debit\b/.test(t) ||
-    /\bcredit card\b/.test(t) ||
-    /\bdebit card\b/.test(t)
+    /\be[\s-]?transfer\b/.test(
+      value
+    ) ||
+    /\binterac\b/.test(
+      value
+    )
   ) {
 
-    return "card";
+    return "etransfer";
 
   }
 
 
   if (
-    /\bach\b/.test(t) ||
-    /\bwire\b/.test(t) ||
-    /\bbank transfer\b/.test(t) ||
-    /\bbank\b/.test(t)
+    /\bwise\b/.test(
+      value
+    ) ||
+    /\biban\b/.test(
+      value
+    )
+  ) {
+
+    return "iban";
+
+  }
+
+
+  if (
+    /\bach\b/.test(
+      value
+    ) ||
+    /\bwire\b/.test(
+      value
+    ) ||
+    /\bbank transfer\b/.test(
+      value
+    )
   ) {
 
     return "achWire";
+
+  }
+
+
+  if (
+    /\bcredit\b/.test(
+      value
+    ) ||
+    /\bdebit\b/.test(
+      value
+    ) ||
+    /\bcard\b/.test(
+      value
+    )
+  ) {
+
+    return "card";
 
   }
 
@@ -1789,110 +1972,115 @@ function detectPaymentMethod(
 
 
 /* =========================================================
-   PAYMENT METHOD ALIASES
+   INTEREST / QUESTION DETECTION
 ========================================================= */
 
-const PAYMENT_METHOD_ALIASES = {
-
-  paypal: [
-    "paypal"
-  ],
-
-  venmo: [
-    "venmo"
-  ],
-
-  etransfer: [
-    "e-transfer",
-    "etransfer"
-  ],
-
-  iban: [
-    "iban",
-    "wise",
-    "iban / wise"
-  ],
-
-  revolut: [
-    "revolut"
-  ],
-
-  mbway: [
-    "mb way",
-    "mbway"
-  ],
-
-  card: [
-    "credit/debit card",
-    "credit card",
-    "debit card"
-  ],
-
-  achWire: [
-    "bank transfer",
-    "bank transfer (ach / wire transfer)",
-    "ach",
-    "wire transfer"
-  ]
-
-};
-
-
-/* =========================================================
-   CHECK PAYMENT METHOD FOR PAGE
-========================================================= */
-
-function paymentMethodAvailable(
-  page,
-  method
+function isPositiveInterest(
+  text
 ) {
 
-  if (
-    !page ||
-    !method
-  ) {
-
-    return false;
-
-  }
+  const value =
+    normalize(
+      text
+    );
 
 
-  const aliases =
-    PAYMENT_METHOD_ALIASES[
-      method
-    ] || [];
+  return (
+    /\byes\b/.test(value) ||
+    /\byep\b/.test(value) ||
+    /\bsure\b/.test(value) ||
+    /\binterested\b/.test(value) ||
+    /\bshow me\b/.test(value) ||
+    /\bsend me\b/.test(value) ||
+    /\bplease send\b/.test(value) ||
+    /\bsounds good\b/.test(value) ||
+    /\bokay\b/.test(value) ||
+    /\bok\b/.test(value)
+  );
+
+}
 
 
-  return page.paymentMethods.some(
-    paymentMethod => {
+function isGuaranteeQuestion(
+  text
+) {
 
-      const normalized =
-        normalize(
-          paymentMethod
-        );
+  const value =
+    normalize(
+      text
+    );
 
 
-      return aliases.some(
-        alias =>
-          normalized ===
-          normalize(
-            alias
-          )
-      );
+  return (
+    /\bguarantee\b/.test(value) ||
+    /\bguaranteed\b/.test(value) ||
+    /\brefund\b/.test(value) ||
+    /\brefund policy\b/.test(value)
+  );
 
-    }
+}
+
+
+function isLocationQuestion(
+  text
+) {
+
+  const value =
+    normalize(
+      text
+    );
+
+
+  return (
+    /\bwhere\b/.test(value) ||
+    /\blocation\b/.test(value) ||
+    /\bcountry\b/.test(value) ||
+    /\barea\b/.test(value) ||
+    /\bcity\b/.test(value)
+  );
+
+}
+
+
+function isNegative(
+  text
+) {
+
+  const value =
+    normalize(
+      text
+    );
+
+
+  return (
+    /\bno thanks\b/.test(value) ||
+    /\bnot interested\b/.test(value) ||
+    /\bno thank you\b/.test(value) ||
+    /^no$/.test(value)
   );
 
 }
 
 
 /* =========================================================
-   PACKAGE MESSAGE
+   END PART 2
+========================================================= */
+/* =========================================================
+   PACKAGE MESSAGE BUILDER
 ========================================================= */
 
 function buildPackagesMessage(
   page
 ) {
+
+  if (
+    !page
+  ) {
+
+    return "";
+
+  }
+
 
   if (
     page.key ===
@@ -1911,7 +2099,7 @@ function buildPackagesMessage(
 🎉(4k followers guaranteed)
 
 3️⃣ GOLD PACKAGE 📦
-👉 only 99€ = 3 post and 4 stroy +3 highlights 🎊
+👉 only 99€ = 3 post and 4stroy +3 highlights 🎊
 🎉(7k followers guaranteed)
 Mostly client choose this package!!
 
@@ -2050,18 +2238,59 @@ function buildPackageConfirmation(
   }
 
 
+  const timeframe =
+    packageKey ===
+    "gold"
+      ? "3 days"
+      : "48 hours";
+
+
   return `
 Perfect ❤️
 
 You've selected the ${selected.name} package.
 
 ${page.currency}${selected.price} = ${selected.details}
+
 🎯 ${selected.followers}
 
-How would you like to pay?
+⏱️ Delivery timeframe:
+${timeframe}
+
+How will you pay?
+
 ${page.paymentMethods.join(
   "\n"
 )}`;
+
+}
+
+
+/* =========================================================
+   PAYMENT DETAILS
+========================================================= */
+
+function getPaymentDetails(
+  page,
+  method
+) {
+
+  if (
+    !page ||
+    !method
+  ) {
+
+    return null;
+
+  }
+
+
+  return (
+    page.paymentDetails?.[
+      method
+    ] ||
+    null
+  );
 
 }
 
@@ -2073,7 +2302,7 @@ ${page.paymentMethods.join(
 function buildPaymentMessage(
   page,
   packageKey,
-  paymentMethod
+  method
 ) {
 
   const selected =
@@ -2084,7 +2313,8 @@ function buildPaymentMessage(
 
   const details =
     getPaymentDetails(
-      paymentMethod
+      page,
+      method
     );
 
 
@@ -2104,11 +2334,11 @@ Perfect ❤️
 Package:
 ${selected.name}
 
-Package price:
+Price:
 ${page.currency}${selected.price}
 
 Payment method:
-${paymentMethod}
+${method}
 
 Payment details:
 
@@ -2120,129 +2350,1990 @@ After successful payment, please send us your payment screenshot ❤️`;
 
 
 /* =========================================================
-   BASIC DETECTION
+   PAGE-SPECIFIC PAYMENT DETAILS
 ========================================================= */
 
-function isPositiveInterest(
+PAGE_CONFIGS.europe.paymentDetails = {
+
+  paypal:
+    PAYMENT_DETAILS.paypal,
+
+  iban:
+    PAYMENT_DETAILS.iban,
+
+  revolut:
+    PAYMENT_DETAILS.revolut,
+
+  mbway:
+    PAYMENT_DETAILS.mbway,
+
+  card:
+    PAYMENT_DETAILS.card
+
+};
+
+
+PAGE_CONFIGS.miami.paymentDetails = {
+
+  paypal:
+    PAYMENT_DETAILS.paypal,
+
+  venmo:
+    PAYMENT_DETAILS.venmo,
+
+  card:
+    PAYMENT_DETAILS.card,
+
+  achWire:
+    PAYMENT_DETAILS.achWire
+
+};
+
+
+PAGE_CONFIGS.canada.paymentDetails = {
+
+  etransfer:
+    PAYMENT_DETAILS.etransfer,
+
+  achWire:
+    PAYMENT_DETAILS.achWire,
+
+  card:
+    PAYMENT_DETAILS.card
+
+};
+
+
+PAGE_CONFIGS.mentalxheal.paymentDetails = {
+
+  paypal:
+    PAYMENT_DETAILS.paypal,
+
+  venmo:
+    PAYMENT_DETAILS.venmo,
+
+  iban:
+    PAYMENT_DETAILS.iban,
+
+  etransfer:
+    PAYMENT_DETAILS.etransfer,
+
+  card:
+    PAYMENT_DETAILS.card,
+
+  revolut:
+    PAYMENT_DETAILS.revolut
+
+};
+
+
+/* =========================================================
+   LOCKED MESSAGE CLASSIFICATION
+========================================================= */
+
+function classifyLockedMessage(
+  page,
   text
 ) {
 
-  const t =
-    normalize(
-      text
-    );
-
-
-  return (
-    /\byes\b/.test(t) ||
-    /\byep\b/.test(t) ||
-    /\byup\b/.test(t) ||
-    /\bsure\b/.test(t) ||
-    /\binterested\b/.test(t) ||
-    /\bsounds good\b/.test(t) ||
-    /\bokay\b/.test(t) ||
-    /\bok\b/.test(t) ||
-    /\bshow me\b/.test(t) ||
-    /\bsend me\b/.test(t)
-  );
-
-}
-
-
-function isNegative(
-  text
-) {
-
-  const t =
-    normalize(
-      text
-    );
-
-
-  return (
-    /not interested/.test(t) ||
-    /no thanks/.test(t) ||
-    /^no$/.test(t) ||
-    /\bstop\b/.test(t) ||
-    /don't message/.test(t)
-  );
-
-}
-
-
-function isGuaranteeQuestion(
-  text
-) {
-
-  const t =
-    normalize(
-      text
-    );
-
-
-  return (
-    /\bguarantee\b/.test(t) ||
-    /\bguaranteed\b/.test(t) ||
-    /\brefund\b/.test(t) ||
-    /\brefunded\b/.test(t)
-  );
-
-}
-
-
-function isPaymentConfirmation(
-  text
-) {
-
-  const t =
-    normalize(
-      text
-    );
-
-
-  return (
-    /\bpaid\b/.test(t) ||
-    /payment done/.test(t) ||
-    /payment completed/.test(t) ||
-    /payment sent/.test(t) ||
-    /i paid/.test(t) ||
-    /paid already/.test(t) ||
-    /successfully paid/.test(t)
-  );
-
-}
-
-
-function hasMedia(
-  attachmentInfo
-) {
-
-  return Boolean(
-    attachmentInfo &&
+  const value =
     String(
-      attachmentInfo
-    ).trim()
+      text || ""
+    ).trim();
+
+
+  if (
+    value ===
+    MESSAGE_ONE
+  ) {
+
+    return "MESSAGE_ONE";
+
+  }
+
+
+  if (
+    value ===
+    MESSAGE_TWO
+  ) {
+
+    return "MESSAGE_TWO";
+
+  }
+
+
+  if (
+    value.includes(
+      "BRONZE PACKAGE"
+    ) &&
+    value.includes(
+      "SILVER PACKAGE"
+    ) &&
+    value.includes(
+      "GOLD PACKAGE"
+    ) &&
+    value.includes(
+      "DIAMOND PACKAGE"
+    )
+  ) {
+
+    return "PACKAGES";
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   LOCKED MESSAGE FLAGS
+========================================================= */
+
+function restoreLockedFlags(
+  conversation
+) {
+
+  if (
+    !conversation
+  ) {
+
+    return conversation;
+
+  }
+
+
+  syncLockedFlagsFromHistory(
+    conversation
+  );
+
+
+  return conversation;
+
+}
+
+
+/* =========================================================
+   MANUAL MESSAGE RECOGNITION
+========================================================= */
+
+function recognizeManualLockedMessage(
+  conversation,
+  text,
+  page
+) {
+
+  const type =
+    classifyLockedMessage(
+      page,
+      text
+    );
+
+
+  if (
+    type ===
+    "MESSAGE_ONE"
+  ) {
+
+    conversation.messageOneSent =
+      true;
+
+    conversation.stage =
+      "MESSAGE_ONE_SENT";
+
+    return type;
+
+  }
+
+
+  if (
+    type ===
+    "MESSAGE_TWO"
+  ) {
+
+    conversation.messageOneSent =
+      true;
+
+    conversation.messageTwoSent =
+      true;
+
+    conversation.stage =
+      "MESSAGE_TWO_SENT";
+
+    return type;
+
+  }
+
+
+  if (
+    type ===
+    "PACKAGES"
+  ) {
+
+    conversation.messageOneSent =
+      true;
+
+    conversation.messageTwoSent =
+      true;
+
+    conversation.packagesSent =
+      true;
+
+    conversation.stage =
+      "PACKAGES_SHOWN";
+
+    return type;
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   NEXT LOCKED MESSAGE
+========================================================= */
+
+function getNextLockedMessage(
+  conversation,
+  page
+) {
+
+  if (
+    !conversation.messageOneSent
+  ) {
+
+    return {
+
+      type:
+        "MESSAGE_ONE",
+
+      text:
+        MESSAGE_ONE
+
+    };
+
+  }
+
+
+  if (
+    !conversation.messageTwoSent
+  ) {
+
+    return {
+
+      type:
+        "MESSAGE_TWO",
+
+      text:
+        MESSAGE_TWO
+
+    };
+
+  }
+
+
+  if (
+    !conversation.packagesSent
+  ) {
+
+    return {
+
+      type:
+        "PACKAGES",
+
+      text:
+        buildPackagesMessage(
+          page
+        )
+
+    };
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   SEND LOCKED MESSAGE
+========================================================= */
+
+async function sendLockedMessage(
+  senderId,
+  conversation,
+  page,
+  locked
+) {
+
+  if (
+    !locked?.text
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    locked.type ===
+    "MESSAGE_ONE" &&
+    conversation.messageOneSent
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    locked.type ===
+    "MESSAGE_TWO" &&
+    conversation.messageTwoSent
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    locked.type ===
+    "PACKAGES" &&
+    conversation.packagesSent
+  ) {
+
+    return false;
+
+  }
+
+
+  const result =
+    await sendInstagramMessage(
+      page,
+      senderId,
+      locked.text
+    );
+
+
+  if (
+    !result?.success
+  ) {
+
+    return false;
+
+  }
+
+
+  saveMessage(
+    conversation,
+    "assistant",
+    locked.text
+  );
+
+
+  if (
+    locked.type ===
+    "MESSAGE_ONE"
+  ) {
+
+    conversation.messageOneSent =
+      true;
+
+    conversation.stage =
+      "MESSAGE_ONE_SENT";
+
+  }
+
+
+  if (
+    locked.type ===
+    "MESSAGE_TWO"
+  ) {
+
+    conversation.messageOneSent =
+      true;
+
+    conversation.messageTwoSent =
+      true;
+
+    conversation.stage =
+      "MESSAGE_TWO_SENT";
+
+  }
+
+
+  if (
+    locked.type ===
+    "PACKAGES"
+  ) {
+
+    conversation.messageOneSent =
+      true;
+
+    conversation.messageTwoSent =
+      true;
+
+    conversation.packagesSent =
+      true;
+
+    conversation.stage =
+      "PACKAGES_SHOWN";
+
+  }
+
+
+  conversation.lastOutgoingText =
+    locked.text;
+
+  conversation.lastOutgoingStage =
+    locked.type;
+
+  conversation.lastOutgoingAt =
+    nowISO();
+
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   END PART 3
+========================================================= */
+/* =========================================================
+   GUARANTEE / LOCATION / QUESTION HELPERS
+========================================================= */
+
+function buildLocationAnswer(
+  page
+) {
+
+  if (
+    !page
+  ) {
+
+    return "";
+
+  }
+
+
+  if (
+    page.key ===
+    "europe"
+  ) {
+
+    return `We mainly promote your content to audiences across Europe through our Europe page network ❤️`;
+
+  }
+
+
+  if (
+    page.key ===
+    "miami"
+  ) {
+
+    return `This promotion is focused on the Miami audience through our @expl.miami page ❤️`;
+
+  }
+
+
+  if (
+    page.key ===
+    "canada"
+  ) {
+
+    return `This promotion is focused on Canada through our @expl.canada page. The Gold package is for Canadian audiences, while the Diamond package is specifically for Toronto ❤️`;
+
+  }
+
+
+  if (
+    page.key ===
+    "mentalxheal"
+  ) {
+
+    return `This promotion is focused on mental-health related audiences through @mentalxheal ❤️`;
+
+  }
+
+
+  return "";
+
+}
+
+
+/* =========================================================
+   PACKAGE TIMEFRAME
+========================================================= */
+
+function getPackageTimeframe(
+  packageKey
+) {
+
+  if (
+    packageKey ===
+    "gold"
+  ) {
+
+    return "3 days";
+
+  }
+
+
+  return "48 hours";
+
+}
+
+
+/* =========================================================
+   GUARANTEE ANSWER
+========================================================= */
+
+function buildGuaranteeAnswer(
+  page,
+  conversation
+) {
+
+  const packageKey =
+    conversation?.selectedPackage;
+
+
+  if (
+    packageKey &&
+    page?.packages?.[
+      packageKey
+    ]
+  ) {
+
+    const selected =
+      page.packages[
+        packageKey
+      ];
+
+
+    return `
+Yes ❤️ Your ${selected.name} package is guaranteed.
+
+${selected.followers}
+
+We continue the promotion until the guaranteed followers included in your package are reached.
+
+If the guaranteed result is not reached according to the package terms, the refund policy applies. ❤️`;
+
+  }
+
+
+  return GUARANTEE_MESSAGE;
+
+}
+
+
+/* =========================================================
+   SIMPLE QUESTION DETECTION
+========================================================= */
+
+function isQuestion(
+  text
+) {
+
+  const value =
+    String(
+      text || ""
+    ).trim();
+
+
+  return (
+    value.includes(
+      "?"
+    ) ||
+    /^(what|how|where|when|why|which|can|do|does|is|are|will|who)\b/i
+      .test(
+        value
+      )
   );
 
 }
 
 
 /* =========================================================
-   AI FALLBACK
+   PAYMENT QUESTION
 ========================================================= */
 
-async function getAIReply(
-  page,
-  conversation,
-  clientMessage,
+function isPaymentQuestion(
+  text
+) {
+
+  const value =
+    normalize(
+      text
+    );
+
+
+  return (
+    /\bpay\b/.test(
+      value
+    ) ||
+    /\bpayment\b/.test(
+      value
+    ) ||
+    /\bpaying\b/.test(
+      value
+    ) ||
+    /\bhow do i pay\b/.test(
+      value
+    )
+  );
+
+}
+
+
+/* =========================================================
+   PAYMENT PROOF DETECTION
+========================================================= */
+
+function isPaymentProofMessage(
+  text,
   attachmentInfo
+) {
+
+  const value =
+    normalize(
+      text
+    );
+
+
+  if (
+    attachmentInfo
+  ) {
+
+    return true;
+
+  }
+
+
+  return (
+    /\bpayment screenshot\b/.test(
+      value
+    ) ||
+    /\bproof of payment\b/.test(
+      value
+    ) ||
+    /\bpayment proof\b/.test(
+      value
+    ) ||
+    /\bhere is the payment\b/.test(
+      value
+    ) ||
+    /\bpaid\b/.test(
+      value
+    )
+  );
+
+}
+
+
+/* =========================================================
+   PAYMENT METHOD LIST
+========================================================= */
+
+function buildPaymentMethodsMessage(
+  page
+) {
+
+  if (
+    !page
+  ) {
+
+    return "";
+
+  }
+
+
+  return `
+How will you pay? ❤️
+
+${page.paymentMethods.join(
+  "\n"
+)}`;
+
+}
+
+
+/* =========================================================
+   INVALID PAYMENT METHOD
+========================================================= */
+
+function buildInvalidPaymentMethodMessage(
+  page
+) {
+
+  return `
+Please choose one of the payment methods available for ${page.username}:
+
+${page.paymentMethods.join(
+  "\n"
+)}
+
+Once you choose the method, I'll send you the correct payment details ❤️`;
+
+}
+
+
+/* =========================================================
+   SELECTED PACKAGE PAYMENT FLOW
+========================================================= */
+
+async function handlePackageSelection(
+  senderId,
+  conversation,
+  page,
+  packageKey
+) {
+
+  if (
+    !page?.packages?.[
+      packageKey
+    ]
+  ) {
+
+    return false;
+
+  }
+
+
+  conversation.selectedPackage =
+    packageKey;
+
+  conversation.stage =
+    "PACKAGE_SELECTED";
+
+  conversation.paymentMethod =
+    null;
+
+  conversation.paymentDetailsSent =
+    false;
+
+  conversation.paymentConfirmed =
+    false;
+
+  conversation.awaitingPaymentConfirmation =
+    false;
+
+
+  const message =
+    buildPackageConfirmation(
+      page,
+      packageKey
+    );
+
+
+  if (
+    !message
+  ) {
+
+    return false;
+
+  }
+
+
+  const result =
+    await sendInstagramMessage(
+      page,
+      senderId,
+      message
+    );
+
+
+  if (
+    !result?.success
+  ) {
+
+    return false;
+
+  }
+
+
+  saveMessage(
+    conversation,
+    "assistant",
+    message
+  );
+
+
+  conversation.lastOutgoingText =
+    message;
+
+  conversation.lastOutgoingStage =
+    "PACKAGE_SELECTED";
+
+  conversation.lastOutgoingAt =
+    nowISO();
+
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  scheduleTwoMinuteReminder(
+    senderId,
+    conversation,
+    "PAYMENT_METHOD"
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   PAYMENT METHOD FLOW
+========================================================= */
+
+async function handlePaymentMethod(
+  senderId,
+  conversation,
+  page,
+  method
+) {
+
+  if (
+    !paymentMethodAvailable(
+      page,
+      method
+    )
+  ) {
+
+    const invalid =
+      buildInvalidPaymentMethodMessage(
+        page
+      );
+
+
+    await sendInstagramMessage(
+      page,
+      senderId,
+      invalid
+    );
+
+
+    saveMessage(
+      conversation,
+      "assistant",
+      invalid
+    );
+
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+
+    return false;
+
+  }
+
+
+  if (
+    !conversation.selectedPackage
+  ) {
+
+    const message =
+      buildPaymentMethodsMessage(
+        page
+      );
+
+
+    await sendInstagramMessage(
+      page,
+      senderId,
+      message
+    );
+
+
+    saveMessage(
+      conversation,
+      "assistant",
+      message
+    );
+
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+
+    return false;
+
+  }
+
+
+  const message =
+    buildPaymentMessage(
+      page,
+      conversation.selectedPackage,
+      method
+    );
+
+
+  if (
+    !message
+  ) {
+
+    return false;
+
+  }
+
+
+  const result =
+    await sendInstagramMessage(
+      page,
+      senderId,
+      message
+    );
+
+
+  if (
+    !result?.success
+  ) {
+
+    return false;
+
+  }
+
+
+  conversation.paymentMethod =
+    method;
+
+  conversation.paymentDetailsSent =
+    true;
+
+  conversation.awaitingPaymentConfirmation =
+    true;
+
+  conversation.stage =
+    "PAYMENT_PENDING";
+
+
+  saveMessage(
+    conversation,
+    "assistant",
+    message
+  );
+
+
+  conversation.lastOutgoingText =
+    message;
+
+  conversation.lastOutgoingStage =
+    "PAYMENT_PENDING";
+
+  conversation.lastOutgoingAt =
+    nowISO();
+
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  scheduleTwoMinuteReminder(
+    senderId,
+    conversation,
+    "PAYMENT_PENDING"
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   SEND INSTAGRAM MESSAGE
+========================================================= */
+
+async function sendInstagramMessage(
+  page,
+  recipientId,
+  text
+) {
+
+  if (
+    !page?.token
+  ) {
+
+    console.error(
+      "Missing page access token for:",
+      page?.username
+    );
+
+    return {
+
+      success:
+        false,
+
+      error:
+        "Missing page token"
+
+    };
+
+  }
+
+
+  if (
+    !recipientId ||
+    !text
+  ) {
+
+    return {
+
+      success:
+        false,
+
+      error:
+        "Missing recipient or text"
+
+    };
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+
+        `https://graph.facebook.com/${INSTAGRAM_API_VERSION}/me/messages`,
+
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              recipient: {
+
+                id:
+                  recipientId
+
+              },
+
+              message: {
+
+                text:
+                  String(
+                    text
+                  )
+
+              },
+
+              access_token:
+                page.token
+
+            })
+
+        }
+
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      console.error(
+        "Instagram send error:",
+        data
+      );
+
+
+      return {
+
+        success:
+          false,
+
+        error:
+          data?.error?.message ||
+          "Instagram API error",
+
+        data
+
+      };
+
+    }
+
+
+    const messageId =
+      data?.message_id ||
+      data?.id ||
+      null;
+
+
+    if (
+      messageId
+    ) {
+
+      outgoingMessages.add(
+        String(
+          messageId
+        )
+      );
+
+    }
+
+
+    return {
+
+      success:
+        true,
+
+      messageId,
+
+      data
+
+    };
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "Instagram send exception:",
+      error.message
+    );
+
+
+    return {
+
+      success:
+        false,
+
+      error:
+        error.message
+
+    };
+
+  }
+
+}
+
+
+/* =========================================================
+   REMINDER CONSTANT
+========================================================= */
+
+const REMINDER_DELAY_MS =
+  2 * 60 * 1000;
+
+
+/* =========================================================
+   CANCEL REMINDER
+========================================================= */
+
+function cancelReminder(
+  senderId
+) {
+
+  const key =
+    String(
+      senderId
+    );
+
+
+  const timer =
+    reminderTimers.get(
+      key
+    );
+
+
+  if (
+    timer
+  ) {
+
+    clearTimeout(
+      timer
+    );
+
+  }
+
+
+  reminderTimers.delete(
+    key
+  );
+
+}
+
+
+/* =========================================================
+   SCHEDULE 2-MINUTE REMINDER
+========================================================= */
+
+function scheduleTwoMinuteReminder(
+  senderId,
+  conversation,
+  reminderType
+) {
+
+  cancelReminder(
+    senderId
+  );
+
+
+  const key =
+    String(
+      senderId
+    );
+
+
+  const version =
+    Number(
+      conversation.customerMessageVersion ||
+      0
+    );
+
+
+  const timer =
+    setTimeout(
+      async function() {
+
+        try {
+
+          const current =
+            conversations.get(
+              key
+            );
+
+
+          if (
+            !current
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            Number(
+              current.customerMessageVersion ||
+              0
+            ) !==
+            version
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            reminderType ===
+            "MESSAGE_ONE" &&
+            current.messageOneSent
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            reminderType ===
+            "MESSAGE_TWO" &&
+            current.messageTwoSent
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            reminderType ===
+            "PACKAGES" &&
+            current.packagesSent
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            reminderType ===
+            "PAYMENT_METHOD" &&
+            current.paymentMethod
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            reminderType ===
+            "PAYMENT_PENDING" &&
+            current.paymentConfirmed
+          ) {
+
+            return;
+
+          }
+
+
+          const page =
+            PAGE_CONFIGS[
+              current.pageKey
+            ];
+
+
+          if (
+            !page
+          ) {
+
+            return;
+
+          }
+
+
+          let reminderText =
+            "";
+
+
+          if (
+            reminderType ===
+            "PAYMENT_METHOD"
+          ) {
+
+            reminderText =
+              `Hey ❤️ Which payment method do you have?
+
+${page.paymentMethods.join(
+  "\n"
+)}`;
+
+          }
+
+
+          else if (
+            reminderType ===
+            "PAYMENT_PENDING"
+          ) {
+
+            reminderText =
+              `Hey ❤️ Just checking in. Please send your payment screenshot once the payment is completed.`;
+
+          }
+
+
+          else {
+
+            const locked =
+              getNextLockedMessage(
+                current,
+                page
+              );
+
+
+            if (
+              !locked
+            ) {
+
+              return;
+
+            }
+
+
+            reminderText =
+              locked.text;
+
+          }
+
+
+          if (
+            !reminderText
+          ) {
+
+            return;
+
+          }
+
+
+          const result =
+            await sendInstagramMessage(
+              page,
+              key,
+              reminderText
+            );
+
+
+          if (
+            !result?.success
+          ) {
+
+            return;
+
+          }
+
+
+          saveMessage(
+            current,
+            "assistant",
+            reminderText
+          );
+
+
+          current.lastOutgoingText =
+            reminderText;
+
+          current.lastOutgoingAt =
+            nowISO();
+
+
+          await saveConversation(
+            key,
+            current
+          );
+
+        }
+
+        catch (
+          error
+        ) {
+
+          console.error(
+            "REMINDER ERROR:",
+            error.message
+          );
+
+        }
+
+        finally {
+
+          reminderTimers.delete(
+            key
+          );
+
+        }
+
+      },
+      REMINDER_DELAY_MS
+    );
+
+
+  reminderTimers.set(
+    key,
+    timer
+  );
+
+
+  conversation.reminder = {
+
+    type:
+      reminderType,
+
+    scheduledAt:
+      nowISO(),
+
+    delay:
+      REMINDER_DELAY_MS
+
+  };
+
+}
+
+
+/* =========================================================
+   END PART 4
+========================================================= */
+/* =========================================================
+   REMINDER RESTORATION
+========================================================= */
+
+async function restorePendingReminders() {
+
+  for (
+    const conversation
+    of conversations.values()
+  ) {
+
+    if (
+      !conversation?.reminder?.type
+    ) {
+
+      continue;
+
+    }
+
+
+    const senderId =
+      String(
+        conversation.senderId ||
+        ""
+      );
+
+
+    if (
+      !senderId
+    ) {
+
+      continue;
+
+    }
+
+
+    const reminderType =
+      conversation.reminder.type;
+
+
+    const scheduledAt =
+      Date.parse(
+        conversation.reminder.scheduledAt ||
+        ""
+      );
+
+
+    if (
+      !Number.isFinite(
+        scheduledAt
+      )
+    ) {
+
+      continue;
+
+    }
+
+
+    const elapsed =
+      Date.now() -
+      scheduledAt;
+
+
+    const remaining =
+      Math.max(
+        1000,
+        REMINDER_DELAY_MS -
+        elapsed
+      );
+
+
+    cancelReminder(
+      senderId
+    );
+
+
+    const version =
+      Number(
+        conversation.customerMessageVersion ||
+        0
+      );
+
+
+    const timer =
+      setTimeout(
+        async function() {
+
+          try {
+
+            const current =
+              conversations.get(
+                senderId
+              );
+
+
+            if (
+              !current
+            ) {
+
+              return;
+
+            }
+
+
+            if (
+              Number(
+                current.customerMessageVersion ||
+                0
+              ) !==
+              version
+            ) {
+
+              return;
+
+            }
+
+
+            const page =
+              PAGE_CONFIGS[
+                current.pageKey
+              ];
+
+
+            if (
+              !page
+            ) {
+
+              return;
+
+            }
+
+
+            let reminderText =
+              "";
+
+
+            if (
+              reminderType ===
+              "PAYMENT_METHOD"
+            ) {
+
+              if (
+                current.paymentMethod
+              ) {
+
+                return;
+
+              }
+
+
+              reminderText =
+                `Hey ❤️ Which payment method do you have?
+
+${page.paymentMethods.join(
+  "\n"
+)}`;
+
+            }
+
+
+            else if (
+              reminderType ===
+              "PAYMENT_PENDING"
+            ) {
+
+              if (
+                current.paymentConfirmed
+              ) {
+
+                return;
+
+              }
+
+
+              reminderText =
+                `Hey ❤️ Just checking in. Please send your payment screenshot once the payment is completed.`;
+
+            }
+
+
+            else {
+
+              const locked =
+                getNextLockedMessage(
+                  current,
+                  page
+                );
+
+
+              if (
+                !locked
+              ) {
+
+                return;
+
+              }
+
+
+              reminderText =
+                locked.text;
+
+            }
+
+
+            const result =
+              await sendInstagramMessage(
+                page,
+                senderId,
+                reminderText
+              );
+
+
+            if (
+              !result?.success
+            ) {
+
+              return;
+
+            }
+
+
+            saveMessage(
+              current,
+              "assistant",
+              reminderText
+            );
+
+
+            current.lastOutgoingText =
+              reminderText;
+
+            current.lastOutgoingAt =
+              nowISO();
+
+
+            await saveConversation(
+              senderId,
+              current
+            );
+
+          }
+
+          catch (
+            error
+          ) {
+
+            console.error(
+              "RESTORED REMINDER ERROR:",
+              error.message
+            );
+
+          }
+
+          finally {
+
+            reminderTimers.delete(
+              senderId
+            );
+
+          }
+
+        },
+        remaining
+      );
+
+
+    reminderTimers.set(
+      senderId,
+      timer
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   CANCEL ALL REMINDERS FOR CONVERSATION
+========================================================= */
+
+function cancelConversationReminder(
+  conversation
+) {
+
+  if (
+    !conversation
+  ) {
+
+    return;
+
+  }
+
+
+  cancelReminder(
+    conversation.senderId
+  );
+
+
+  conversation.reminder =
+    null;
+
+}
+
+
+/* =========================================================
+   MESSAGE VERSION
+========================================================= */
+
+function registerCustomerMessage(
+  conversation
+) {
+
+  conversation.customerMessageVersion =
+    Number(
+      conversation.customerMessageVersion ||
+      0
+    ) + 1;
+
+
+  cancelReminder(
+    conversation.senderId
+  );
+
+
+  conversation.reminder =
+    null;
+
+}
+
+
+/* =========================================================
+   ADMIN MANUAL MESSAGE DETECTION
+========================================================= */
+
+function processManualMessageForWorkflow(
+  conversation,
+  page,
+  message
+) {
+
+  const text =
+    String(
+      message || ""
+    ).trim();
+
+
+  const type =
+    classifyLockedMessage(
+      page,
+      text
+    );
+
+
+  if (
+    type ===
+    "MESSAGE_ONE"
+  ) {
+
+    conversation.messageOneSent =
+      true;
+
+    conversation.stage =
+      "MESSAGE_ONE_SENT";
+
+
+    return type;
+
+  }
+
+
+  if (
+    type ===
+    "MESSAGE_TWO"
+  ) {
+
+    conversation.messageOneSent =
+      true;
+
+    conversation.messageTwoSent =
+      true;
+
+    conversation.stage =
+      "MESSAGE_TWO_SENT";
+
+
+    return type;
+
+  }
+
+
+  if (
+    type ===
+    "PACKAGES"
+  ) {
+
+    conversation.messageOneSent =
+      true;
+
+    conversation.messageTwoSent =
+      true;
+
+    conversation.packagesSent =
+      true;
+
+    conversation.stage =
+      "PACKAGES_SHOWN";
+
+
+    return type;
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   OUTGOING MESSAGE REGISTRATION
+========================================================= */
+
+function registerOutgoingMessage(
+  conversation,
+  text,
+  stage
+) {
+
+  conversation.lastOutgoingText =
+    text;
+
+  conversation.lastOutgoingStage =
+    stage;
+
+  conversation.lastOutgoingAt =
+    nowISO();
+
+}
+
+
+/* =========================================================
+   SEND AI REQUEST
+========================================================= */
+
+async function askOpenAI(
+  conversation,
+  page,
+  customerMessage
 ) {
 
   if (
     !OPEN_AI
   ) {
 
-    return null;
+    return "";
 
   }
 
@@ -2252,53 +4343,64 @@ async function getAIReply(
       conversation.history
     )
       ? conversation.history
-          .slice(-40)
-          .map(
-            item => ({
-
-              role:
-                item.role ===
-                "client"
-                  ? "user"
-                  : "assistant",
-
-              content:
-                String(
-                  item.text ||
-                  ""
-                )
-
-            })
-          )
       : [];
 
 
-  const systemPrompt = `
-You are the AI sales assistant for ${BUSINESS_NAME}.
+  const recentHistory =
+    history
+      .slice(
+        -20
+      )
+      .map(
+        item =>
+          `${item.role}: ${item.text}`
+      )
+      .join(
+        "\n"
+      );
 
-You are continuing an EXISTING Instagram conversation.
 
-IMPORTANT RULES:
+  const systemPrompt =
+`You are the sales assistant for Global Promote.
 
-- Never restart the conversation.
-- Never send the opening message again if it has already been sent.
-- Never send MESSAGE_TWO again if it has already been sent.
-- Never resend the package list if packages were already shown.
-- Never ask for information that is already saved.
-- Never invent package prices.
-- Never invent payment details.
-- Follow the fixed sales flow.
-- Keep replies short, natural and friendly.
-- Use ❤️ or 😊 naturally.
-- If the customer's message is unclear, answer based on the previous conversation.
-- Do not pretend that a payment is confirmed unless the system has confirmed it.
-- Do not say that promotion is complete unless the system says it is complete.
-
-Current page:
+You are currently handling the page:
 ${page.username}
+
+Location/audience:
+${page.locationFocus}
+
+IMPORTANT WORKFLOW RULES:
+
+1. Message 1, Message 2 and Packages are LOCKED messages.
+2. Never invent or repeat a locked message if it has already been sent.
+3. Never skip a required locked message.
+4. If the customer asks a question, answer the question naturally.
+5. Answering a question NEVER cancels the next locked workflow message.
+6. Never restart Message 1 simply because the customer replied after hours.
+7. Use the existing conversation history and stage.
+8. Do not give another generic sales fallback when the customer has asked a specific question.
+9. After Message 2, words such as yes, sure, show me, send me, interested, okay or sounds good mean the customer wants the packages.
+10. Guarantee/refund questions should receive the guarantee answer.
+11. Location questions must be answered according to this specific page.
+12. Gold delivery timeframe is 3 days.
+13. All other package delivery timeframes are 48 hours.
+14. Never mix packages or payment methods between pages.
+15. If a package has already been selected, do not send the package list again.
+16. If a payment method has been selected, do not ask the customer to select a package again.
+17. Never claim that payment was received unless the conversation explicitly confirms it.
+18. Keep responses concise and relevant.
 
 Current stage:
 ${conversation.stage}
+
+Message 1 sent:
+${conversation.messageOneSent}
+
+Message 2 sent:
+${conversation.messageTwoSent}
+
+Packages sent:
+${conversation.packagesSent}
 
 Selected package:
 ${conversation.selectedPackage || "none"}
@@ -2306,22 +4408,8 @@ ${conversation.selectedPackage || "none"}
 Payment method:
 ${conversation.paymentMethod || "none"}
 
-Payment confirmed:
-${Boolean(
-    conversation.paymentConfirmed
-  )}
-
-Promotion media received:
-${Boolean(
-    conversation.promotionMediaReceived
-  )}
-
-Promotion username received:
-${Boolean(
-    conversation.promotionUsernameReceived ||
-    conversation.clientUsername
-  )}
-`;
+Recent conversation:
+${recentHistory}`;
 
 
   try {
@@ -2351,12 +4439,11 @@ ${Boolean(
                 OPENAI_MODEL,
 
               temperature:
-                0.7,
+                0.25,
 
               messages: [
 
                 {
-
                   role:
                     "system",
 
@@ -2365,22 +4452,12 @@ ${Boolean(
 
                 },
 
-                ...history,
-
                 {
-
                   role:
                     "user",
 
                   content:
-                    String(
-                      clientMessage ||
-                      (
-                        attachmentInfo
-                          ? `[${attachmentInfo}]`
-                          : ""
-                      )
-                    )
+                    customerMessage
 
                 }
 
@@ -2405,20 +4482,15 @@ ${Boolean(
         data
       );
 
-      return null;
+      return "";
 
     }
 
 
-    const reply =
-      data?.choices?.[0]?.message?.content
-        ?.trim();
-
-
-    return (
-      reply ||
-      null
-    );
+    return String(
+      data?.choices?.[0]?.message?.content ||
+      ""
+    ).trim();
 
   }
 
@@ -2427,84 +4499,809 @@ ${Boolean(
   ) {
 
     console.error(
-      "OPENAI EXCEPTION:",
+      "OPENAI REQUEST ERROR:",
       error.message
     );
 
-    return null;
+    return "";
 
   }
 
 }
+
+
 /* =========================================================
-   CONTINUED — PROCESS USERNAME + MEDIA
+   GENERIC FALLBACK PROTECTION
 ========================================================= */
 
-async function processUsernameAndMedia(
-  senderId,
-  conversation,
-  text,
-  attachmentInfo
+const GENERIC_FALLBACKS = [
+
+  "Thanks for your message! Let me know if you are interested.",
+
+  "Sure! Let me know if you would like to continue.",
+
+  "Thanks for reaching out! How can I help you?",
+
+  "Please let me know if you are interested."
+
+];
+
+
+function isGenericFallback(
+  text
 ) {
 
-  let changed =
-    false;
+  const normalizedText =
+    normalize(
+      text
+    );
+
+
+  return GENERIC_FALLBACKS
+    .some(
+      fallback =>
+        normalize(
+          fallback
+        ) ===
+        normalizedText
+    );
+
+}
+
+
+/* =========================================================
+   REPEATED REPLY PROTECTION
+========================================================= */
+
+function wasAlreadySent(
+  conversation,
+  text
+) {
+
+  const value =
+    normalize(
+      text
+    );
 
 
   if (
-    text
+    !value
   ) {
 
-    const username =
-      extractInstagramUsername(
-        text
-      );
+    return true;
+
+  }
 
 
-    if (
-      username
-    ) {
+  const history =
+    Array.isArray(
+      conversation.history
+    )
+      ? conversation.history
+      : [];
 
-      conversation.clientUsername =
-        username;
 
-      conversation.promotionUsernameReceived =
-        true;
+  return history
+    .some(
+      item =>
+        item.role ===
+          "assistant" &&
+        normalize(
+          item.text
+        ) ===
+          value
+    );
 
-      conversation.promotionUsernameRequested =
-        false;
+}
 
-      changed =
-        true;
 
-    }
+/* =========================================================
+   GET SAFE AI REPLY
+========================================================= */
+
+async function getSafeAIReply(
+  conversation,
+  page,
+  customerMessage
+) {
+
+  const reply =
+    await askOpenAI(
+      conversation,
+      page,
+      customerMessage
+    );
+
+
+  if (
+    !reply
+  ) {
+
+    return "";
 
   }
 
 
   if (
-    hasMedia(
-      attachmentInfo
+    isGenericFallback(
+      reply
     )
   ) {
 
-    conversation.promotionMediaReceived =
-      true;
-
-    changed =
-      true;
+    return "";
 
   }
 
 
-  updatePromotionComplete(
+  if (
+    wasAlreadySent(
+      conversation,
+      reply
+    )
+  ) {
+
+    return "";
+
+  }
+
+
+  return reply;
+
+}
+
+
+/* =========================================================
+   END PART 5
+========================================================= */
+/* =========================================================
+   WORKFLOW RESPONSE ENGINE
+========================================================= */
+
+async function handleCustomerMessage(
+  senderId,
+  page,
+  conversation,
+  customerMessage,
+  attachmentInfo = null
+) {
+
+  const text =
+    String(
+      customerMessage || ""
+    ).trim();
+
+
+  if (
+    !text &&
+    !attachmentInfo
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     SAVE CUSTOMER MESSAGE FIRST
+  ------------------------------------------------------- */
+
+  saveMessage(
+    conversation,
+    "client",
+    text ||
+      "[Attachment]"
+  );
+
+
+  registerCustomerMessage(
     conversation
   );
 
 
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  /* -------------------------------------------------------
+     PACKAGE SELECTION
+     Must be checked before AI fallback.
+  ------------------------------------------------------- */
+
+  const packageKey =
+    detectPackage(
+      text
+    );
+
+
   if (
-    changed
+    packageKey &&
+    conversation.packagesSent
   ) {
+
+    await handlePackageSelection(
+      senderId,
+      conversation,
+      page,
+      packageKey
+    );
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     PAYMENT METHOD
+     Must be checked after package selection.
+  ------------------------------------------------------- */
+
+  const paymentMethod =
+    detectPaymentMethod(
+      text
+    );
+
+
+  if (
+    paymentMethod &&
+    conversation.selectedPackage
+  ) {
+
+    await handlePaymentMethod(
+      senderId,
+      conversation,
+      page,
+      paymentMethod
+    );
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     PAYMENT PROOF
+  ------------------------------------------------------- */
+
+  if (
+    conversation.paymentDetailsSent &&
+    isPaymentProofMessage(
+      text,
+      attachmentInfo
+    )
+  ) {
+
+    conversation.paymentProofReceived =
+      true;
+
+    conversation.awaitingPaymentConfirmation =
+      false;
+
+    conversation.stage =
+      "PAYMENT_PROOF_RECEIVED";
+
+
+    const proofReply =
+      `Thank you ❤️ We received your payment proof. Our team will verify it and continue your promotion.`;
+
+
+    const result =
+      await sendInstagramMessage(
+        page,
+        senderId,
+        proofReply
+      );
+
+
+    if (
+      result?.success
+    ) {
+
+      saveMessage(
+        conversation,
+        "assistant",
+        proofReply
+      );
+
+    }
+
+
+    cancelConversationReminder(
+      conversation
+    );
+
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     PAYMENT CONFIRMATION
+  ------------------------------------------------------- */
+
+  if (
+    conversation.paymentDetailsSent &&
+    isSimplePaymentConfirmation(
+      text
+    )
+  ) {
+
+    conversation.paymentConfirmed =
+      true;
+
+    conversation.awaitingPaymentConfirmation =
+      false;
+
+    conversation.stage =
+      "PAYMENT_CONFIRMED";
+
+
+    const confirmation =
+      `Perfect ❤️ Thank you. Please send your payment screenshot so our team can verify the payment.`;
+
+
+    const result =
+      await sendInstagramMessage(
+        page,
+        senderId,
+        confirmation
+      );
+
+
+    if (
+      result?.success
+    ) {
+
+      saveMessage(
+        conversation,
+        "assistant",
+        confirmation
+      );
+
+    }
+
+
+    cancelConversationReminder(
+      conversation
+    );
+
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     GUARANTEE / REFUND
+     This must be answered without skipping workflow.
+  ------------------------------------------------------- */
+
+  if (
+    isGuaranteeQuestion(
+      text
+    )
+  ) {
+
+    const guarantee =
+      buildGuaranteeAnswer(
+        page,
+        conversation
+      );
+
+
+    const result =
+      await sendInstagramMessage(
+        page,
+        senderId,
+        guarantee
+      );
+
+
+    if (
+      result?.success
+    ) {
+
+      saveMessage(
+        conversation,
+        "assistant",
+        guarantee
+      );
+
+    }
+
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+
+    /*
+       Important:
+       Guarantee answer does NOT cancel
+       the locked workflow.
+    */
+
+    if (
+      !conversation.messageOneSent
+    ) {
+
+      scheduleTwoMinuteReminder(
+        senderId,
+        conversation,
+        "MESSAGE_ONE"
+      );
+
+    }
+
+    else if (
+      !conversation.messageTwoSent
+    ) {
+
+      scheduleTwoMinuteReminder(
+        senderId,
+        conversation,
+        "MESSAGE_TWO"
+      );
+
+    }
+
+    else if (
+      !conversation.packagesSent
+    ) {
+
+      scheduleTwoMinuteReminder(
+        senderId,
+        conversation,
+        "PACKAGES"
+      );
+
+    }
+
+    else if (
+      conversation.selectedPackage &&
+      !conversation.paymentMethod
+    ) {
+
+      scheduleTwoMinuteReminder(
+        senderId,
+        conversation,
+        "PAYMENT_METHOD"
+      );
+
+    }
+
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     LOCATION QUESTION
+  ------------------------------------------------------- */
+
+  if (
+    isLocationQuestion(
+      text
+    )
+  ) {
+
+    const locationReply =
+      buildLocationAnswer(
+        page
+      );
+
+
+    if (
+      locationReply
+    ) {
+
+      const result =
+        await sendInstagramMessage(
+          page,
+          senderId,
+          locationReply
+        );
+
+
+      if (
+        result?.success
+      ) {
+
+        saveMessage(
+          conversation,
+          "assistant",
+          locationReply
+        );
+
+      }
+
+
+      await saveConversation(
+        senderId,
+        conversation
+      );
+
+    }
+
+
+    /*
+       Location answer does not cancel
+       the locked workflow.
+    */
+
+    if (
+      !conversation.messageOneSent
+    ) {
+
+      scheduleTwoMinuteReminder(
+        senderId,
+        conversation,
+        "MESSAGE_ONE"
+      );
+
+    }
+
+    else if (
+      !conversation.messageTwoSent
+    ) {
+
+      scheduleTwoMinuteReminder(
+        senderId,
+        conversation,
+        "MESSAGE_TWO"
+      );
+
+    }
+
+    else if (
+      !conversation.packagesSent
+    ) {
+
+      scheduleTwoMinuteReminder(
+        senderId,
+        conversation,
+        "PACKAGES"
+      );
+
+    }
+
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     POSITIVE RESPONSE AFTER MESSAGE 2
+     MUST OPEN PACKAGES.
+  ------------------------------------------------------- */
+
+  if (
+    conversation.messageTwoSent &&
+    !conversation.packagesSent &&
+    isPositiveInterest(
+      text
+    )
+  ) {
+
+    await sendLockedMessage(
+      senderId,
+      conversation,
+      page,
+      {
+        type:
+          "PACKAGES",
+
+        text:
+          buildPackagesMessage(
+            page
+          )
+
+      }
+    );
+
+
+    cancelConversationReminder(
+      conversation
+    );
+
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     POSITIVE RESPONSE BEFORE MESSAGE 2
+     MUST NOT SKIP MESSAGE 2.
+  ------------------------------------------------------- */
+
+  if (
+    conversation.messageOneSent &&
+    !conversation.messageTwoSent &&
+    isPositiveInterest(
+      text
+    )
+  ) {
+
+    await sendLockedMessage(
+      senderId,
+      conversation,
+      page,
+      {
+        type:
+          "MESSAGE_TWO",
+
+        text:
+          MESSAGE_TWO
+
+      }
+    );
+
+
+    scheduleTwoMinuteReminder(
+      senderId,
+      conversation,
+      "PACKAGES"
+    );
+
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     FIRST CLIENT MESSAGE
+  ------------------------------------------------------- */
+
+  if (
+    !conversation.messageOneSent
+  ) {
+
+    await sendLockedMessage(
+      senderId,
+      conversation,
+      page,
+      {
+        type:
+          "MESSAGE_ONE",
+
+        text:
+          MESSAGE_ONE
+
+      }
+    );
+
+
+    scheduleTwoMinuteReminder(
+      senderId,
+      conversation,
+      "MESSAGE_TWO"
+    );
+
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     NEGATIVE RESPONSE
+  ------------------------------------------------------- */
+
+  if (
+    isNegative(
+      text
+    )
+  ) {
+
+    const reply =
+      `No problem ❤️ If you ever want to promote your profile, feel free to message us anytime.`;
+
+
+    if (
+      !wasAlreadySent(
+        conversation,
+        reply
+      )
+    ) {
+
+      const result =
+        await sendInstagramMessage(
+          page,
+          senderId,
+          reply
+        );
+
+
+      if (
+        result?.success
+      ) {
+
+        saveMessage(
+          conversation,
+          "assistant",
+          reply
+        );
+
+      }
+
+    }
+
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     AI ANSWER
+     Questions are answered here.
+     The locked workflow remains active.
+  ------------------------------------------------------- */
+
+  const aiReply =
+    await getSafeAIReply(
+      conversation,
+      page,
+      text
+    );
+
+
+  if (
+    aiReply
+  ) {
+
+    const result =
+      await sendInstagramMessage(
+        page,
+        senderId,
+        aiReply
+      );
+
+
+    if (
+      result?.success
+    ) {
+
+      saveMessage(
+        conversation,
+        "assistant",
+        aiReply
+      );
+
+
+      registerOutgoingMessage(
+        conversation,
+        aiReply,
+        "AI"
+      );
+
+    }
+
 
     await saveConversation(
       senderId,
@@ -2514,671 +5311,292 @@ async function processUsernameAndMedia(
   }
 
 
-  return changed;
-
-}
-
-
-/* =========================================================
-   PAYMENT DETAILS
-========================================================= */
-
-function getPaymentDetails(
-  paymentMethod
-) {
+  /* -------------------------------------------------------
+     AFTER AI ANSWER:
+     schedule the required locked message.
+  ------------------------------------------------------- */
 
   if (
-    !paymentMethod
+    !conversation.messageOneSent
   ) {
 
-    return null;
-
-  }
-
-
-  const details = {
-
-    paypal:
-`PayPal:
-pay@globalpromote.in
-https://paypal.me/RamanKumar4257`,
-
-    venmo:
-`Venmo:
-Risa-Ramos-2
-https://venmo.com/u/Risa-Ramos-2`,
-
-    etransfer:
-`E-transfer:
-pay@globalpromote.in`,
-
-    iban:
-`Bank / Wise:
-
-Account name: Rahul Kumar
-IBAN: BE36967747881581
-SWIFT/BIC: TRWIBEB1XXX
-Bank: Wise
-
-Bank address:
-Rue du Trône 100, 3rd floor
-Brussels, 1050
-Belgium`,
-
-    achWire:
-`Bank Transfer / ACH / Wire:
-
-Name: Rahul
-Account type: Checking
-Routing number: 026073150
-Account number: 8313696908
-
-Bank:
-Community Federal Savings Bank
-
-Bank address:
-89-16 Jamaica Ave
-Woodhaven, NY 11421
-United States
-
-SWIFT/BIC:
-CMFGUS33`,
-
-    revolut:
-`Revolut:
-Tag: @clavis02pk
-Payment link:
-https://revolut.me/clavis02pk`,
-
-    mbway:
-`MB WAY:
-Number: +351 968 188 499
-Name: Andre Santana`,
-
-    card:
-`Credit/Debit Card:
-Our team will provide the secure card payment instructions.`
-
-  };
-
-
-  return (
-    details[
-      paymentMethod
-    ] ||
-    null
-  );
-
-}
-
-
-/* =========================================================
-   PAGE-SPECIFIC PAYMENT DETAILS
-========================================================= */
-
-function getPagePaymentDetails(
-  page,
-  method
-) {
-
-  if (
-    !page ||
-    !method
-  ) {
-
-    return null;
-
-  }
-
-
-  const available =
-    paymentMethodAvailable(
-      page,
-      method
+    scheduleTwoMinuteReminder(
+      senderId,
+      conversation,
+      "MESSAGE_ONE"
     );
 
-
-  if (
-    !available
-  ) {
-
-    return null;
-
   }
 
-
-  return getPaymentDetails(
-    method
-  );
-
-}
-
-
-/* =========================================================
-   PACKAGE TIMEFRAME
-========================================================= */
-
-function getPackageTimeframe(
-  packageKey
-) {
-
-  if (
-    packageKey ===
-    "gold"
+  else if (
+    !conversation.messageTwoSent
   ) {
 
-    return "3 days";
-
-  }
-
-
-  return "48 hours";
-
-}
-
-
-/* =========================================================
-   GUARANTEE MESSAGE
-========================================================= */
-
-function buildGuaranteeMessage(
-  page,
-  packageKey
-) {
-
-  const selected =
-    page?.packages?.[
-      packageKey
-    ];
-
-
-  const timeframe =
-    getPackageTimeframe(
-      packageKey
+    scheduleTwoMinuteReminder(
+      senderId,
+      conversation,
+      "MESSAGE_TWO"
     );
 
-
-  if (
-    selected
-  ) {
-
-    return `
-Yes ❤️ The ${selected.name} package is guaranteed.
-
-We will continue promoting your content until you receive the guaranteed followers included in your package.
-
-Expected timeframe:
-${timeframe}
-
-If the guaranteed followers are not reached according to the guarantee policy, the eligible amount can be refunded. ❤️`;
-
   }
 
-
-  return `
-Yes ❤️ Our followers are guaranteed.
-
-We continue the promotion until the guaranteed followers included in your selected package are reached.
-
-Gold package timeframe: 3 days.
-Other packages: 48 hours.
-
-If the guaranteed followers are not reached according to the guarantee policy, the eligible amount can be refunded. ❤️`;
-
-}
-
-
-/* =========================================================
-   LOCATION RESPONSE
-========================================================= */
-
-function buildLocationResponse(
-  page
-) {
-
-  if (
-    !page
+  else if (
+    !conversation.packagesSent
   ) {
 
-    return null;
-
-  }
-
-
-  if (
-    page.key ===
-    "europe"
-  ) {
-
-    return `
-Yes dear ❤️ Our @expl.europe promotion is focused on Europe and European audiences.`;
-
-  }
-
-
-  if (
-    page.key ===
-    "canada"
-  ) {
-
-    return `
-Yes dear ❤️ @expl.canada is focused on Canadian audiences.`;
-
-  }
-
-
-  if (
-    page.key ===
-    "miami"
-  ) {
-
-    return `
-Yes dear ❤️ @expl.miami is focused on Miami and the Miami audience.`;
-
-  }
-
-
-  if (
-    page.key ===
-    "mentalxheal"
-  ) {
-
-    return `
-Yes dear ❤️ @mentalxheal is focused on mental-health related audiences and content.`;
-
-  }
-
-
-  return null;
-
-}
-
-
-/* =========================================================
-   LOCATION QUESTION DETECTION
-========================================================= */
-
-function isLocationQuestion(
-  text
-) {
-
-  const t =
-    normalize(
-      text
+    scheduleTwoMinuteReminder(
+      senderId,
+      conversation,
+      "PACKAGES"
     );
 
-
-  return (
-    /\bwhere\b/.test(t) ||
-    /\blocation\b/.test(t) ||
-    /\bwhich country\b/.test(t) ||
-    /\bwhat country\b/.test(t) ||
-    /\bwhat city\b/.test(t) ||
-    /\bwhich city\b/.test(t) ||
-    /\bfrom portugal\b/.test(t) ||
-    /\bin portugal\b/.test(t) ||
-    /\bin canada\b/.test(t) ||
-    /\bin miami\b/.test(t) ||
-    /\bin europe\b/.test(t)
-  );
-
-}
-
-
-/* =========================================================
-   PAYMENT QUESTION DETECTION
-========================================================= */
-
-function isPaymentQuestion(
-  text
-) {
-
-  const t =
-    normalize(
-      text
-    );
-
-
-  return (
-    /\bhow can i pay\b/.test(t) ||
-    /\bhow do i pay\b/.test(t) ||
-    /\bpayment\b/.test(t) ||
-    /\bpay\b/.test(t) ||
-    /\bpaying\b/.test(t) ||
-    /\bpayment method\b/.test(t) ||
-    /\bpayment methods\b/.test(t)
-  );
-
-}
-
-
-/* =========================================================
-   PACKAGE QUESTION DETECTION
-========================================================= */
-
-function isPackageQuestion(
-  text
-) {
-
-  const t =
-    normalize(
-      text
-    );
-
-
-  return (
-    /\bpackage\b/.test(t) ||
-    /\bpackages\b/.test(t) ||
-    /\bprice\b/.test(t) ||
-    /\bprices\b/.test(t) ||
-    /\bhow much\b/.test(t) ||
-    /\bcost\b/.test(t) ||
-    /\brate\b/.test(t)
-  );
-
-}
-
-
-/* =========================================================
-   PAYMENT METHOD FOLLOW-UP
-   This is used after the 2-minute payment follow-up.
-========================================================= */
-
-function buildPaymentMethodQuestion(
-  page
-) {
-
-  if (
-    !page
-  ) {
-
-    return null;
-
   }
 
-
-  return `
-Sure ❤️ Which payment method do you have?
-
-${page.paymentMethods.join(
-  "\n"
-)}`;
-
-}
-
-
-/* =========================================================
-   PAYMENT DETAILS MESSAGE
-========================================================= */
-
-function buildPagePaymentMessage(
-  page,
-  conversation
-) {
-
-  if (
-    !page ||
-    !conversation.selectedPackage ||
+  else if (
+    conversation.selectedPackage &&
     !conversation.paymentMethod
   ) {
 
-    return null;
+    scheduleTwoMinuteReminder(
+      senderId,
+      conversation,
+      "PAYMENT_METHOD"
+    );
+
+  }
+
+  else if (
+    conversation.paymentDetailsSent &&
+    !conversation.paymentConfirmed
+  ) {
+
+    scheduleTwoMinuteReminder(
+      senderId,
+      conversation,
+      "PAYMENT_PENDING"
+    );
 
   }
 
 
-  const selected =
-    page.packages[
-      conversation.selectedPackage
-    ];
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+}
 
 
-  const details =
-    getPagePaymentDetails(
-      page,
-      conversation.paymentMethod
+/* =========================================================
+   QUEUE CUSTOMER MESSAGES
+========================================================= */
+
+function queueCustomerMessage(
+  senderId,
+  page,
+  conversation,
+  customerMessage,
+  attachmentInfo
+) {
+
+  const key =
+    String(
+      senderId
+    );
+
+
+  const previous =
+    clientQueues.get(
+      key
+    ) ||
+    Promise.resolve();
+
+
+  const next =
+    previous
+      .catch(
+        () => {}
+      )
+      .then(
+        async function() {
+
+          await handleCustomerMessage(
+            key,
+            page,
+            conversation,
+            customerMessage,
+            attachmentInfo
+          );
+
+        }
+      );
+
+
+  clientQueues.set(
+    key,
+    next
+  );
+
+
+  next.finally(
+    function() {
+
+      if (
+        clientQueues.get(
+          key
+        ) ===
+        next
+      ) {
+
+        clientQueues.delete(
+          key
+        );
+
+      }
+
+    }
+  );
+
+
+  return next;
+
+}
+
+
+/* =========================================================
+   PROCESS WEBHOOK MESSAGE
+========================================================= */
+
+async function processWebhookMessage(
+  event,
+  page
+) {
+
+  if (
+    !event
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    event.message?.is_echo ===
+    true
+  ) {
+
+    return;
+
+  }
+
+
+  const senderId =
+    String(
+      event.sender?.id ||
+      ""
+    ).trim();
+
+
+  if (
+    !senderId
+  ) {
+
+    return;
+
+  }
+
+
+  const message =
+    event.message ||
+    {};
+
+
+  const messageId =
+    String(
+      message.mid ||
+      ""
+    ).trim();
+
+
+  if (
+    messageId
+  ) {
+
+    if (
+      processedMessageIds.has(
+        messageId
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    processedMessageIds.set(
+      messageId,
+      Date.now()
+    );
+
+  }
+
+
+  const conversation =
+    await getConversation(
+      senderId
+    );
+
+
+  conversation.pageKey =
+    page.key;
+
+
+  const text =
+    String(
+      message.text ||
+      ""
+    ).trim();
+
+
+  let attachmentInfo =
+    null;
+
+
+  if (
+    Array.isArray(
+      message.attachments
+    ) &&
+    message.attachments.length
+  ) {
+
+    attachmentInfo =
+      message.attachments;
+
+    conversation.promotionMediaReceived =
+      true;
+
+  }
+
+
+  const username =
+    extractUsername(
+      text
     );
 
 
   if (
-    !selected ||
-    !details
+    username
   ) {
 
-    return null;
+    conversation.clientUsername =
+      username;
 
-  }
+    conversation.promotionUsernameReceived =
+      true;
 
-
-  return `
-Perfect ❤️
-
-Package:
-${selected.name}
-
-Price:
-${page.currency}${selected.price}
-
-Payment method:
-${conversation.paymentMethod}
-
-Payment details:
-
-${details}
-
-After successful payment, please send us the payment screenshot ❤️`;
-
-}
-
-
-/* =========================================================
-   PAYMENT METHOD SAVING
-========================================================= */
-
-async function savePaymentMethod(
-  senderId,
-  conversation,
-  page,
-  method
-) {
-
-  if (
-    !page ||
-    !method
-  ) {
-
-    return false;
-
-  }
-
-
-  if (
-    !paymentMethodAvailable(
-      page,
-      method
-    )
-  ) {
-
-    return false;
-
-  }
-
-
-  conversation.paymentMethod =
-    method;
-
-
-  conversation.paymentDetailsSent =
-    false;
-
-
-  conversation.awaitingPaymentConfirmation =
-    true;
-
-
-  conversation.stage =
-    "PAYMENT_PENDING";
-
-
-  await saveConversation(
-    senderId,
-    conversation
-  );
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   PACKAGE SELECTION
-========================================================= */
-
-async function savePackageSelection(
-  senderId,
-  conversation,
-  page,
-  packageKey
-) {
-
-  if (
-    !page ||
-    !packageKey ||
-    !page.packages?.[
-      packageKey
-    ]
-  ) {
-
-    return false;
-
-  }
-
-
-  conversation.selectedPackage =
-    packageKey;
-
-
-  conversation.paymentMethod =
-    null;
-
-
-  conversation.paymentDetailsSent =
-    false;
-
-
-  conversation.paymentConfirmed =
-    false;
-
-
-  conversation.paymentProofReceived =
-    false;
-
-
-  conversation.awaitingPaymentConfirmation =
-    true;
-
-
-  conversation.stage =
-    "PACKAGE_SELECTED";
-
-
-  await saveConversation(
-    senderId,
-    conversation
-  );
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   PAYMENT PROOF
-========================================================= */
-
-async function processPaymentProof(
-  senderId,
-  conversation,
-  attachmentInfo
-) {
-
-  if (
-    !hasMedia(
-      attachmentInfo
-    )
-  ) {
-
-    return false;
-
-  }
-
-
-  if (
-    !conversation.selectedPackage
-  ) {
-
-    return false;
-
-  }
-
-
-  conversation.paymentProofReceived =
-    true;
-
-
-  conversation.paymentConfirmed =
-    false;
-
-
-  conversation.awaitingPaymentConfirmation =
-    true;
-
-
-  conversation.stage =
-    "PAYMENT_PROOF_RECEIVED";
-
-
-  await saveConversation(
-    senderId,
-    conversation
-  );
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   PAYMENT CONFIRMATION
-========================================================= */
-
-async function markPaymentConfirmed(
-  senderId,
-  conversation
-) {
-
-  conversation.paymentConfirmed =
-    true;
-
-
-  conversation.awaitingPaymentConfirmation =
-    false;
-
-
-  updatePromotionComplete(
-    conversation
-  );
-
-
-  if (
-    !conversation.promotionComplete
-  ) {
-
-    conversation.stage =
-      "PAYMENT_CONFIRMED";
+    conversation.promotionUsernameRequested =
+      false;
 
   }
 
@@ -3189,35 +5607,314 @@ async function markPaymentConfirmed(
   );
 
 
-  return true;
+  queueCustomerMessage(
+    senderId,
+    page,
+    conversation,
+    text,
+    attachmentInfo
+  );
 
 }
 
 
 /* =========================================================
-   LOCKED MESSAGE STATE
+   WEBHOOK VERIFICATION
 ========================================================= */
 
-function getLockedState(
+app.get(
+  "/webhook",
+  (
+    req,
+    res
+  ) => {
+
+    const mode =
+      req.query["hub.mode"];
+
+    const token =
+      req.query["hub.verify_token"];
+
+    const challenge =
+      req.query["hub.challenge"];
+
+
+    if (
+      mode ===
+      "subscribe" &&
+      token ===
+      VERIFY_TOKEN
+    ) {
+
+      return res
+        .status(200)
+        .send(
+          challenge
+        );
+
+    }
+
+
+    return res
+      .sendStatus(
+        403
+      );
+
+  }
+);
+
+
+/* =========================================================
+   WEBHOOK RECEIVE
+========================================================= */
+
+app.post(
+  "/webhook",
+  async (
+    req,
+    res
+  ) => {
+
+    res.sendStatus(
+      200
+    );
+
+
+    try {
+
+      const body =
+        req.body ||
+        {};
+
+
+      if (
+        body.object !==
+        "instagram"
+      ) {
+
+        return;
+
+      }
+
+
+      for (
+        const entry
+        of (
+          body.entry ||
+          []
+        )
+      ) {
+
+        const page =
+          getPageById(
+            entry.id
+          );
+
+
+        if (
+          !page
+        ) {
+
+          continue;
+
+        }
+
+
+        for (
+          const event
+          of (
+            entry.messaging ||
+            []
+          )
+        ) {
+
+          if (
+            !event.message
+          ) {
+
+            continue;
+
+          }
+
+
+          await processWebhookMessage(
+            event,
+            page
+          );
+
+        }
+
+      }
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "WEBHOOK PROCESS ERROR:",
+        error.message
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   HEALTH CHECK
+========================================================= */
+
+app.get(
+  "/health",
+  (
+    req,
+    res
+  ) => {
+
+    res.json({
+
+      ok:
+        true,
+
+      service:
+        "Global Promote",
+
+      supabase:
+        supabaseConfigured(),
+
+      openai:
+        Boolean(
+          OPEN_AI
+        ),
+
+      pages:
+        Object.values(
+          PAGE_CONFIGS
+        ).map(
+          page =>
+            page.username
+        )
+
+    });
+
+  }
+);
+
+
+/* =========================================================
+   END PART 6
+========================================================= */
+/* =========================================================
+   ADMIN AUTHENTICATION
+========================================================= */
+
+function requireAdmin(
+  req,
+  res,
+  next
+) {
+
+  const secret =
+    String(
+      req.headers["x-admin-secret"] ||
+      req.query?.secret ||
+      req.body?.secret ||
+      ""
+    ).trim();
+
+
+  if (
+    !ADMIN_SECRET ||
+    secret !== ADMIN_SECRET
+  ) {
+
+    return res
+      .status(401)
+      .json({
+
+        success:
+          false,
+
+        error:
+          "Unauthorized"
+
+      });
+
+  }
+
+
+  next();
+
+}
+
+
+/* =========================================================
+   ADMIN CLIENT LIST
+========================================================= */
+
+function conversationToClient(
   conversation
 ) {
 
   return {
 
-    messageOneSent:
-      Boolean(
-        conversation.messageOneSent
-      ),
+    senderId:
+      conversation.senderId,
 
-    messageTwoSent:
-      Boolean(
-        conversation.messageTwoSent
-      ),
+    username:
+      conversation.clientUsername ||
+      conversation.username ||
+      conversation.senderId,
 
-    messageThreeSent:
-      Boolean(
-        conversation.packagesSent
-      )
+    pageKey:
+      conversation.pageKey,
+
+    page:
+      PAGE_CONFIGS[
+        conversation.pageKey
+      ]?.username ||
+      conversation.pageKey ||
+      "",
+
+    stage:
+      conversation.stage ||
+      "NEW",
+
+    lastCustomerMessage:
+      [...(
+        conversation.history ||
+        []
+      )]
+        .reverse()
+        .find(
+          item =>
+            item.role ===
+            "client"
+        )?.text ||
+      "",
+
+    lastOutgoingText:
+      conversation.lastOutgoingText ||
+      "",
+
+    lastSeenAt:
+      conversation.lastSeenAt ||
+      null,
+
+    selectedPackage:
+      conversation.selectedPackage ||
+      null,
+
+    paymentMethod:
+      conversation.paymentMethod ||
+      null,
+
+    history:
+      conversation.history ||
+      []
 
   };
 
@@ -3225,113 +5922,7 @@ function getLockedState(
 
 
 /* =========================================================
-   LOCKED MESSAGE 3 CHECK
-========================================================= */
-
-function messageThreeAlreadySent(
-  conversation
-) {
-
-  return Boolean(
-    conversation.packagesSent
-  );
-
-}
-
-
-/* =========================================================
-   LOCKED MESSAGE 2 CHECK
-========================================================= */
-
-function messageTwoAlreadySent(
-  conversation
-) {
-
-  return Boolean(
-    conversation.messageTwoSent
-  );
-
-}
-
-
-/* =========================================================
-   LOCKED MESSAGE 1 CHECK
-========================================================= */
-
-function messageOneAlreadySent(
-  conversation
-) {
-
-  return Boolean(
-    conversation.messageOneSent
-  );
-
-}
-/* =========================================================
-   ADMIN CLIENT LIST — CONTINUED
-========================================================= */
-
-async function getAdminClients() {
-
-  const rows =
-    await supabaseGetAllConversations();
-
-  const clients =
-    [];
-
-  for (
-    const row
-    of rows
-  ) {
-
-    const senderId =
-      String(
-        row?.id ||
-        ""
-      ).trim();
-
-
-    if (
-      !senderId
-    ) {
-
-      continue;
-
-    }
-
-
-    const conversation =
-      row?.messages;
-
-
-    if (
-      !conversation ||
-      typeof conversation !==
-        "object"
-    ) {
-
-      continue;
-
-    }
-
-
-    clients.push(
-      buildAdminClient(
-        senderId,
-        conversation
-      )
-    );
-
-  }
-
-
-  return clients;
-
-}
-
-
-/* =========================================================
-   ADMIN — GET CLIENTS
+   ADMIN — ALL CLIENTS
 ========================================================= */
 
 app.get(
@@ -3344,8 +5935,19 @@ app.get(
 
     try {
 
+      await hydrateAdminConversations();
+
+
       const clients =
-        await getAdminClients();
+        Array.from(
+          conversations.values()
+        )
+          .map(
+            conversation =>
+              conversationToClient(
+                conversation
+              )
+          );
 
 
       return res.json({
@@ -3370,16 +5972,14 @@ app.get(
 
 
       return res
-        .status(
-          500
-        )
+        .status(500)
         .json({
 
           success:
             false,
 
           error:
-            error.message
+            "Unable to load clients"
 
         });
 
@@ -3390,7 +5990,7 @@ app.get(
 
 
 /* =========================================================
-   ADMIN — GET SINGLE CLIENT
+   ADMIN — ONE CLIENT
 ========================================================= */
 
 app.get(
@@ -3415,16 +6015,14 @@ app.get(
       ) {
 
         return res
-          .status(
-            400
-          )
+          .status(400)
           .json({
 
             success:
               false,
 
             error:
-              "Missing senderId"
+              "Missing sender ID"
 
           });
 
@@ -3437,35 +6035,13 @@ app.get(
         );
 
 
-      if (
-        !conversation
-      ) {
-
-        return res
-          .status(
-            404
-          )
-          .json({
-
-            success:
-              false,
-
-            error:
-              "Conversation not found"
-
-          });
-
-      }
-
-
       return res.json({
 
         success:
           true,
 
         client:
-          buildAdminClient(
-            senderId,
+          conversationToClient(
             conversation
           )
 
@@ -3478,22 +6054,20 @@ app.get(
     ) {
 
       console.error(
-        "ADMIN SINGLE CLIENT ERROR:",
+        "ADMIN CLIENT ERROR:",
         error.message
       );
 
 
       return res
-        .status(
-          500
-        )
+        .status(500)
         .json({
 
           success:
             false,
 
           error:
-            error.message
+            "Unable to load client"
 
         });
 
@@ -3504,7 +6078,7 @@ app.get(
 
 
 /* =========================================================
-   ADMIN — SEND MANUAL REPLY
+   ADMIN MANUAL REPLY
 ========================================================= */
 
 app.post(
@@ -3524,37 +6098,52 @@ app.post(
         ).trim();
 
 
-      const text =
+      const pageKey =
         String(
-          req.body?.text ||
+          req.body?.pageKey ||
           ""
         ).trim();
 
 
-      const requestedPageKey =
+      const message =
         String(
-          req.body?.pageKey ||
+          req.body?.message ||
           ""
-        ).trim()
-        .toLowerCase();
+        ).trim();
 
 
       if (
-        !senderId ||
-        !text
+        !senderId
       ) {
 
         return res
-          .status(
-            400
-          )
+          .status(400)
           .json({
 
             success:
               false,
 
             error:
-              "senderId and text are required"
+              "Missing senderId"
+
+          });
+
+      }
+
+
+      if (
+        !message
+      ) {
+
+        return res
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            error:
+              "Message cannot be empty"
 
           });
 
@@ -3567,31 +6156,14 @@ app.post(
         );
 
 
-      if (
-        !conversation
-      ) {
-
-        return res
-          .status(
-            404
-          )
-          .json({
-
-            success:
-              false,
-
-            error:
-              "Conversation not found"
-
-          });
-
-      }
+      const resolvedPageKey =
+        pageKey ||
+        conversation.pageKey;
 
 
       const page =
         PAGE_CONFIGS[
-          requestedPageKey ||
-          conversation.pageKey
+          resolvedPageKey
         ];
 
 
@@ -3600,16 +6172,14 @@ app.post(
       ) {
 
         return res
-          .status(
-            400
-          )
+          .status(400)
           .json({
 
             success:
               false,
 
             error:
-              "Page not found"
+              "Invalid page"
 
           });
 
@@ -3617,317 +6187,54 @@ app.post(
 
 
       conversation.pageKey =
-        page.key;
+        resolvedPageKey;
 
 
       /*
          IMPORTANT:
-
-         A manual reply invalidates any AI reply that
-         was waiting to be sent.
-
-         This prevents the AI from sending an old/
-         irrelevant response after the admin has replied.
+         If admin manually sends Message 1,
+         Message 2 or Packages, update the
+         workflow flags immediately.
       */
 
-      invalidatePendingAI(
-        senderId
-      );
+      const lockedType =
+        processManualMessageForWorkflow(
+          conversation,
+          page,
+          message
+        );
 
 
       /*
-         =====================================================
-         RECOGNIZE MANUALLY SENT LOCKED MESSAGES
-         =====================================================
-
-         Message 1:
-         If admin manually sends the exact Message 1,
-         mark it as sent.
-
-         Message 2:
-         If admin manually sends Message 2, mark it as sent.
-
-         Message 3:
-         If admin manually sends the package list,
-         mark packagesSent = true.
-
-         Therefore the automatic bot will NOT send the
-         same locked message again.
+         A manual reply is an intentional
+         outgoing action. It must not be
+         treated as a customer message.
       */
 
-
-      const normalizedManual =
-        normalize(
-          text
-        );
-
-
-      const normalizedMessageOne =
-        normalize(
-          MESSAGE_ONE
-        );
-
-
-      const normalizedMessageTwo =
-        normalize(
-          MESSAGE_TWO
+      const result =
+        await sendInstagramMessage(
+          page,
+          senderId,
+          message
         );
 
 
       if (
-        normalizedManual ===
-        normalizedMessageOne
+        !result?.success
       ) {
 
-        conversation.messageOneSent =
-          true;
+        return res
+          .status(502)
+          .json({
 
+            success:
+              false,
 
-        if (
-          conversation.stage ===
-          "NEW"
-        ) {
+            error:
+              result.error ||
+              "Instagram message failed"
 
-          conversation.stage =
-            "MESSAGE_ONE_SENT";
-
-        }
-
-      }
-
-
-      if (
-        normalizedManual ===
-        normalizedMessageTwo
-      ) {
-
-        conversation.messageOneSent =
-          true;
-
-        conversation.messageTwoSent =
-          true;
-
-
-        conversation.stage =
-          "MESSAGE_TWO_SENT";
-
-      }
-
-
-      /*
-         PAGE-SPECIFIC PACKAGE MESSAGE
-
-         This is the important Message 3 lock.
-      */
-
-      const packagesMessage =
-        buildPackagesMessage(
-          page
-        );
-
-
-      const normalizedPackages =
-        normalize(
-          packagesMessage
-        );
-
-
-      if (
-        normalizedManual ===
-        normalizedPackages
-      ) {
-
-        conversation.messageOneSent =
-          true;
-
-        conversation.messageTwoSent =
-          true;
-
-        conversation.packagesSent =
-          true;
-
-
-        conversation.stage =
-          "PACKAGES_SHOWN";
-
-      }
-
-
-      /*
-         Also recognize a manually sent package message
-         even if spacing/line breaks differ.
-      */
-
-      if (
-        normalizedPackages &&
-        normalizedManual.length >
-        40
-      ) {
-
-        const packageIndicators = [
-
-          "bronze package",
-
-          "silver package",
-
-          "gold package",
-
-          "diamond package"
-
-        ];
-
-
-        const indicatorCount =
-          packageIndicators.filter(
-            indicator =>
-              normalizedManual.includes(
-                indicator
-              )
-          ).length;
-
-
-        if (
-          indicatorCount >=
-          3
-        ) {
-
-          conversation.messageOneSent =
-            true;
-
-          conversation.messageTwoSent =
-            true;
-
-          conversation.packagesSent =
-            true;
-
-
-          conversation.stage =
-            "PACKAGES_SHOWN";
-
-        }
-
-      }
-
-
-      /*
-         =====================================================
-         MANUAL PACKAGE SELECTION
-         =====================================================
-      */
-
-      const manualPackage =
-        detectPackage(
-          text
-        );
-
-
-      if (
-        manualPackage &&
-        conversation.packagesSent
-      ) {
-
-        conversation.selectedPackage =
-          manualPackage;
-
-
-        conversation.stage =
-          "PACKAGE_SELECTED";
-
-
-        conversation.paymentMethod =
-          null;
-
-
-        conversation.paymentDetailsSent =
-          false;
-
-
-        conversation.paymentConfirmed =
-          false;
-
-
-        conversation.paymentProofReceived =
-          false;
-
-
-        conversation.awaitingPaymentConfirmation =
-          false;
-
-      }
-
-
-      /*
-         =====================================================
-         MANUAL PAYMENT METHOD
-         =====================================================
-      */
-
-      const manualPaymentMethod =
-        detectPaymentMethod(
-          text
-        );
-
-
-      if (
-        manualPaymentMethod &&
-        conversation.selectedPackage
-      ) {
-
-        if (
-          paymentMethodAvailable(
-            page,
-            manualPaymentMethod
-          )
-        ) {
-
-          conversation.paymentMethod =
-            manualPaymentMethod;
-
-
-          conversation.stage =
-            "PAYMENT_PENDING";
-
-
-          conversation.paymentDetailsSent =
-            false;
-
-
-          conversation.awaitingPaymentConfirmation =
-            true;
-
-        }
-
-      }
-
-
-      /*
-         =====================================================
-         MANUAL PAYMENT CONFIRMATION
-         =====================================================
-      */
-
-      if (
-        isSimplePaymentConfirmation(
-          text
-        ) &&
-        conversation.paymentDetailsSent
-      ) {
-
-        conversation.paymentConfirmed =
-          true;
-
-
-        conversation.awaitingPaymentConfirmation =
-          false;
-
-
-        conversation.stage =
-          "PAYMENT_CONFIRMED";
-
-
-        cancelReminder(
-          senderId
-        );
+          });
 
       }
 
@@ -3935,88 +6242,92 @@ app.post(
       saveMessage(
         conversation,
         "assistant",
-        text
+        message
       );
 
 
-      conversation.lastOutgoingText =
-        text;
-
-
-      conversation.lastOutgoingAt =
-        nowISO();
-
-
-      conversation.lastOutgoingStage =
-        conversation.stage;
-
-
-      await saveConversation(
-        senderId,
-        conversation
+      registerOutgoingMessage(
+        conversation,
+        message,
+        lockedType ||
+        "ADMIN"
       );
 
 
       /*
-         Try to send the manual message through
-         the selected page.
-      */
-
-      const data =
-        await sendInstagramMessage(
-          page,
-          senderId,
-          text
-        );
-
-
-      const messageId =
-        data?.message_id ||
-        data?.id ||
-        null;
-
-
-      if (
-        messageId
-      ) {
-
-        conversation.lastOutgoingMessageId =
-          String(
-            messageId
-          );
-
-
-        outgoingMessages.add(
-          `${page.key}:${String(
-            messageId
-          )}`
-        );
-
-      }
-
-
-      await saveConversation(
-        senderId,
-        conversation
-      );
-
-
-      /*
-         If payment has already been confirmed,
-         continue the promotion flow.
+         A manually sent locked message
+         cancels its pending reminder.
       */
 
       if (
-        conversation.paymentConfirmed
+        lockedType
       ) {
 
-        await sendPromotionNextStep(
-          page,
-          senderId,
+        cancelConversationReminder(
           conversation
         );
 
       }
+
+
+      /*
+         If admin manually sent Message 1,
+         next required locked message is Message 2.
+      */
+
+      if (
+        lockedType ===
+        "MESSAGE_ONE"
+      ) {
+
+        scheduleTwoMinuteReminder(
+          senderId,
+          conversation,
+          "MESSAGE_TWO"
+        );
+
+      }
+
+
+      /*
+         If admin manually sent Message 2,
+         next required locked message is Packages.
+      */
+
+      else if (
+        lockedType ===
+        "MESSAGE_TWO"
+      ) {
+
+        scheduleTwoMinuteReminder(
+          senderId,
+          conversation,
+          "PACKAGES"
+        );
+
+      }
+
+
+      /*
+         If admin manually sent Packages,
+         workflow continues from package selection.
+      */
+
+      else if (
+        lockedType ===
+        "PACKAGES"
+      ) {
+
+        conversation.stage =
+          "PACKAGES_SHOWN";
+
+      }
+
+
+      await saveConversation(
+        senderId,
+        conversation
+      );
 
 
       return res.json({
@@ -4024,30 +6335,13 @@ app.post(
         success:
           true,
 
-        messageId:
-          messageId
-            ? String(
-                messageId
-              )
-            : null,
+        lockedType:
+          lockedType,
 
-        stage:
-          conversation.stage,
-
-        messageOneSent:
-          conversation.messageOneSent,
-
-        messageTwoSent:
-          conversation.messageTwoSent,
-
-        packagesSent:
-          conversation.packagesSent,
-
-        selectedPackage:
-          conversation.selectedPackage,
-
-        paymentMethod:
-          conversation.paymentMethod
+        client:
+          conversationToClient(
+            conversation
+          )
 
       });
 
@@ -4064,16 +6358,15 @@ app.post(
 
 
       return res
-        .status(
-          500
-        )
+        .status(500)
         .json({
 
           success:
             false,
 
           error:
-            error.message
+            error.message ||
+            "Unable to send reply"
 
         });
 
@@ -4084,119 +6377,7 @@ app.post(
 
 
 /* =========================================================
-   ADMIN — RESET CLIENT
-========================================================= */
-
-app.post(
-  "/admin/reset",
-  requireAdmin,
-  async (
-    req,
-    res
-  ) => {
-
-    try {
-
-      const senderId =
-        String(
-          req.body?.senderId ||
-          ""
-        ).trim();
-
-
-      if (
-        !senderId
-      ) {
-
-        return res
-          .status(
-            400
-          )
-          .json({
-
-            success:
-              false,
-
-            error:
-              "senderId is required"
-
-          });
-
-      }
-
-
-      cancelReminder(
-        senderId
-      );
-
-
-      invalidatePendingAI(
-        senderId
-      );
-
-
-      const conversation =
-        createConversation(
-          senderId
-        );
-
-
-      conversations.set(
-        senderId,
-        conversation
-      );
-
-
-      await saveConversation(
-        senderId,
-        conversation
-      );
-
-
-      return res.json({
-
-        success:
-          true,
-
-        message:
-          "Conversation reset"
-
-      });
-
-    }
-
-    catch (
-      error
-    ) {
-
-      console.error(
-        "ADMIN RESET ERROR:",
-        error.message
-      );
-
-
-      return res
-        .status(
-          500
-        )
-        .json({
-
-          success:
-            false,
-
-          error:
-            error.message
-
-        });
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   ADMIN — PAGE CONFIG
+   ADMIN — PAGE INFORMATION
 ========================================================= */
 
 app.get(
@@ -4210,29 +6391,30 @@ app.get(
     const pages =
       Object.values(
         PAGE_CONFIGS
-      ).map(
-        page => ({
+      )
+        .map(
+          page => ({
 
-          key:
-            page.key,
+            key:
+              page.key,
 
-          username:
-            page.username,
+            username:
+              page.username,
 
-          id:
-            page.id,
+            id:
+              page.id,
 
-          currency:
-            page.currency,
+            currency:
+              page.currency,
 
-          packages:
-            page.packages,
+            packages:
+              page.packages,
 
-          paymentMethods:
-            page.paymentMethods
+            paymentMethods:
+              page.paymentMethods
 
-        })
-      );
+          })
+        );
 
 
     return res.json({
@@ -4249,421 +6431,723 @@ app.get(
 
 
 /* =========================================================
-   JAVASCRIPT
+   ADMIN STATUS
 ========================================================= */
 
-const adminState = {
+app.get(
+  "/admin/status",
+  requireAdmin,
+  (
+    req,
+    res
+  ) => {
 
-  secret:
-    "",
+    return res.json({
 
-  page:
-    "all",
+      success:
+        true,
 
-  search:
-    "",
+      conversations:
+        conversations.size,
 
-  clients:
-    [],
+      queues:
+        clientQueues.size,
 
-  currentClient:
-    null,
+      reminders:
+        reminderTimers.size,
 
-  currentScroll:
-    0
+      supabase:
+        supabaseConfigured(),
 
-};
+      openai:
+        Boolean(
+          OPEN_AI
+        )
 
-
-/* =========================================================
-   ADMIN ELEMENTS
-========================================================= */
-
-const loginSection =
-  document.getElementById(
-    "loginSection"
-  );
-
-const adminSection =
-  document.getElementById(
-    "adminSection"
-  );
-
-const secretInput =
-  document.getElementById(
-    "secretInput"
-  );
-
-const loginButton =
-  document.getElementById(
-    "loginButton"
-  );
-
-const loginStatus =
-  document.getElementById(
-    "loginStatus"
-  );
-
-const pageButtons =
-  document.getElementById(
-    "pageButtons"
-  );
-
-const searchInput =
-  document.getElementById(
-    "searchInput"
-  );
-
-const refreshButton =
-  document.getElementById(
-    "refreshButton"
-  );
-
-const clientsList =
-  document.getElementById(
-    "clientsList"
-  );
-
-const clientCount =
-  document.getElementById(
-    "clientCount"
-  );
-
-const chatOverlay =
-  document.getElementById(
-    "chatOverlay"
-  );
-
-const chatName =
-  document.getElementById(
-    "chatName"
-  );
-
-const chatInfo =
-  document.getElementById(
-    "chatInfo"
-  );
-
-const chatMessages =
-  document.getElementById(
-    "chatMessages"
-  );
-
-const chatInput =
-  document.getElementById(
-    "chatInput"
-  );
-
-const chatSend =
-  document.getElementById(
-    "chatSend"
-  );
-
-const closeChatButton =
-  document.getElementById(
-    "closeChat"
-  );
-
-
-/* =========================================================
-   ADMIN REQUEST
-========================================================= */
-
-async function adminFetch(
-  url,
-  options = {}
-) {
-
-  const headers = {
-
-    ...(options.headers || {}),
-
-    "x-admin-secret":
-      adminState.secret
-
-  };
-
-
-  const response =
-    await fetch(
-      url,
-      {
-
-        ...options,
-
-        headers
-
-      }
-    );
-
-
-  let data =
-    null;
-
-
-  try {
-
-    data =
-      await response.json();
-
-  }
-
-  catch (
-    error
-  ) {
-
-    data =
-      {};
-
-  }
-
-
-  if (
-    !response.ok
-  ) {
-
-    throw new Error(
-      data?.error ||
-      `Request failed: ${response.status}`
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-loginButton.onclick =
-  async function () {
-
-    const secret =
-      secretInput.value.trim();
-
-
-    if (
-      !secret
-    ) {
-
-      loginStatus.textContent =
-        "Enter admin secret.";
-
-      return;
-
-    }
-
-
-    adminState.secret =
-      secret;
-
-
-    try {
-
-      const data =
-        await adminFetch(
-          "/admin/clients"
-        );
-
-
-      if (
-        !data.success
-      ) {
-
-        throw new Error(
-          "Authentication failed"
-        );
-
-      }
-
-
-      loginSection.style.display =
-        "none";
-
-      adminSection.style.display =
-        "block";
-
-
-      loginStatus.textContent =
-        "";
-
-
-      await loadClients();
-
-    }
-
-    catch (
-      error
-    ) {
-
-      adminState.secret =
-        "";
-
-      loginStatus.textContent =
-        error.message;
-
-    }
-
-  };
-
-
-/* =========================================================
-   PAGE FILTER
-========================================================= */
-
-function setPageFilter(
-  page
-) {
-
-  adminState.page =
-    page;
-
-
-  document
-    .querySelectorAll(
-      ".page-button"
-    )
-    .forEach(
-      button => {
-
-        button.classList.toggle(
-          "active",
-          button.dataset.page ===
-            page
-        );
-
-      }
-    );
-
-
-  renderClients();
-
-}
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-searchInput.addEventListener(
-  "input",
-  function () {
-
-    adminState.search =
-      this.value
-        .trim()
-        .toLowerCase();
-
-
-    renderClients();
+    });
 
   }
 );
 
 
 /* =========================================================
-   LOAD CLIENTS
+   ADMIN UI HTML
 ========================================================= */
 
-async function loadClients() {
+function adminHtml() {
 
-  try {
+  return `
+<!DOCTYPE html>
 
-    const data =
-      await adminFetch(
-        "/admin/clients"
-      );
+<html>
 
+<head>
 
-    adminState.clients =
-      Array.isArray(
-        data.clients
-      )
-        ? data.clients
-        : [];
+<meta charset="UTF-8">
 
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+/>
 
-    renderClients();
+<title>
+Global Promote Admin
+</title>
 
-  }
+<style>
 
-  catch (
-    error
-  ) {
-
-    clientsList.innerHTML =
-      `<div class="empty">${escapeHtml(
-        error.message
-      )}</div>`;
-
-  }
-
+* {
+  box-sizing:
+    border-box;
 }
+
+body {
+  margin:
+    0;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  background:
+    #f5f5f5;
+
+  color:
+    #111;
+}
+
+.header {
+  position:
+    sticky;
+
+  top:
+    0;
+
+  z-index:
+    10;
+
+  padding:
+    18px;
+
+  background:
+    #fff;
+
+  border-bottom:
+    1px solid #ddd;
+}
+
+.header h1 {
+  margin:
+    0 0 12px;
+}
+
+.toolbar {
+  display:
+    flex;
+
+  gap:
+    10px;
+
+  flex-wrap:
+    wrap;
+}
+
+.toolbar input,
+.toolbar select,
+.toolbar button {
+  padding:
+    10px;
+
+  border:
+    1px solid #ccc;
+
+  border-radius:
+    8px;
+}
+
+.toolbar input {
+  flex:
+    1;
+
+  min-width:
+    180px;
+}
+
+.toolbar button {
+  cursor:
+    pointer;
+
+  background:
+    #111;
+
+  color:
+    #fff;
+}
+
+.clients {
+  padding:
+    16px;
+}
+
+.client-card {
+  background:
+    #fff;
+
+  padding:
+    15px;
+
+  margin-bottom:
+    10px;
+
+  border-radius:
+    12px;
+
+  border:
+    1px solid #ddd;
+
+  cursor:
+    pointer;
+}
+
+.client-card:hover {
+  background:
+    #fafafa;
+}
+
+.client-name {
+  font-weight:
+    bold;
+
+  margin-bottom:
+    7px;
+}
+
+.client-details {
+  color:
+    #666;
+
+  font-size:
+    13px;
+
+  line-height:
+    1.6;
+}
+
+.empty {
+  padding:
+    40px;
+
+  text-align:
+    center;
+
+  color:
+    #777;
+}
+
+#chatOverlay {
+  display:
+    none;
+
+  position:
+    fixed;
+
+  inset:
+    0;
+
+  z-index:
+    100;
+
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      .55
+    );
+}
+
+#chatOverlay.show {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+}
+
+.chat-box {
+  width:
+    min(
+      95vw,
+      650px
+    );
+
+  height:
+    min(
+      90vh,
+      800px
+    );
+
+  background:
+    #fff;
+
+  border-radius:
+    15px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  overflow:
+    hidden;
+}
+
+.chat-header {
+  padding:
+    15px;
+
+  border-bottom:
+    1px solid #ddd;
+
+  display:
+    flex;
+
+  justify-content:
+    space-between;
+}
+
+.chat-title span {
+  display:
+    block;
+
+  color:
+    #777;
+
+  font-size:
+    12px;
+
+  margin-top:
+    4px;
+}
+
+.chat-messages {
+  flex:
+    1;
+
+  overflow-y:
+    auto;
+
+  padding:
+    15px;
+
+  background:
+    #f5f5f5;
+}
+
+.chat-message {
+  max-width:
+    80%;
+
+  padding:
+    10px 12px;
+
+  margin-bottom:
+    9px;
+
+  border-radius:
+    12px;
+
+  white-space:
+    pre-wrap;
+}
+
+.chat-message.client {
+  background:
+    #fff;
+
+  margin-right:
+    auto;
+
+  border:
+    1px solid #ddd;
+}
+
+.chat-message.assistant {
+  background:
+    #111;
+
+  color:
+    #fff;
+
+  margin-left:
+    auto;
+}
+
+.chat-time {
+  display:
+    block;
+
+  font-size:
+    10px;
+
+  opacity:
+    .65;
+
+  margin-top:
+    5px;
+}
+
+.chat-input {
+  padding:
+    10px;
+
+  border-top:
+    1px solid #ddd;
+
+  display:
+    flex;
+
+  gap:
+    8px;
+}
+
+.chat-input textarea {
+  flex:
+    1;
+
+  resize:
+    none;
+
+  min-height:
+    45px;
+
+  padding:
+    10px;
+
+  border:
+    1px solid #ccc;
+
+  border-radius:
+    8px;
+}
+
+.chat-input button {
+  padding:
+    10px 15px;
+
+  border:
+    0;
+
+  border-radius:
+    8px;
+
+  background:
+    #111;
+
+  color:
+    #fff;
+
+  cursor:
+    pointer;
+}
+
+.close-chat {
+  border:
+    0;
+
+  background:
+    transparent;
+
+  font-size:
+    24px;
+
+  cursor:
+    pointer;
+}
+
+.admin-form {
+  display:
+    none;
+
+  padding:
+    15px;
+
+  background:
+    #fff;
+
+  border-bottom:
+    1px solid #ddd;
+}
+
+.admin-form.show {
+  display:
+    block;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  width:
+    100%;
+
+  margin-bottom:
+    8px;
+
+  padding:
+    10px;
+
+  border:
+    1px solid #ccc;
+
+  border-radius:
+    8px;
+}
+
+.admin-form button {
+  padding:
+    10px 15px;
+
+  background:
+    #111;
+
+  color:
+    #fff;
+
+  border:
+    0;
+
+  border-radius:
+    8px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+  <h1>
+    Global Promote Admin
+  </h1>
+
+  <div class="toolbar">
+
+    <input
+      id="search"
+      type="text"
+      placeholder="Search clients..."
+    >
+
+    <select
+      id="pageFilter"
+    >
+
+      <option value="all">
+        All Pages
+      </option>
+
+      <option value="europe">
+        @expl.europe
+      </option>
+
+      <option value="canada">
+        @expl.canada
+      </option>
+
+      <option value="mentalxheal">
+        @mentalxheal
+      </option>
+
+      <option value="miami">
+        @expl.miami
+      </option>
+
+    </select>
+
+    <button
+      onclick="loadClients()"
+    >
+      Refresh
+    </button>
+
+    <button
+      onclick="toggleAdminReply()"
+    >
+      Manual Reply
+    </button>
+
+  </div>
+
+  <div
+    id="clientCount"
+  >
+    0
+  </div>
+
+</div>
+
+
+<div
+  id="adminForm"
+  class="admin-form"
+>
+
+  <input
+    id="adminClientId"
+    placeholder="Client ID"
+  >
+
+  <select
+    id="adminPage"
+  >
+
+    <option value="europe">
+      @expl.europe
+    </option>
+
+    <option value="canada">
+      @expl.canada
+    </option>
+
+    <option value="mentalxheal">
+      @mentalxheal
+    </option>
+
+    <option value="miami">
+      @expl.miami
+    </option>
+
+  </select>
+
+  <textarea
+    id="adminMessage"
+    placeholder="Write message..."
+  ></textarea>
+
+  <button
+    onclick="sendAdminReply()"
+  >
+    Send
+  </button>
+
+</div>
+
+
+<div
+  id="clients"
+  class="clients"
+>
+
+  <div class="empty">
+    Loading clients...
+  </div>
+
+</div>
+
+
+<div
+  id="chatOverlay"
+  onclick="overlayClick(event)"
+>
+
+  <div
+    class="chat-box"
+  >
+
+    <div
+      class="chat-header"
+    >
+
+      <div
+        id="chatTitle"
+        class="chat-title"
+      ></div>
+
+      <button
+        class="close-chat"
+        onclick="closeChat()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div
+      id="chatMessages"
+      class="chat-messages"
+    ></div>
+
+    <div
+      class="chat-input"
+    >
+
+      <textarea
+        id="chatReply"
+        placeholder="Reply..."
+      ></textarea>
+
+      <button
+        onclick="sendChatReply()"
+      >
+        Send
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let adminSecret =
+  localStorage.getItem(
+    "adminSecret"
+  ) || "";
+
+
+let allClients = [];
+
+let selectedPage =
+  "all";
+
+let selectedClient =
+  null;
+
+let savedScrollPosition =
+  0;
 
 
 /* =========================================================
-   FILTER CLIENTS
+   ADMIN SECRET
 ========================================================= */
 
-function filteredClients() {
+if (
+  !adminSecret
+) {
 
-  const page =
-    adminState.page;
+  adminSecret =
+    prompt(
+      "Enter Admin Secret"
+    ) || "";
 
+  if (
+    adminSecret
+  ) {
 
-  const search =
-    adminState.search;
-
-
-  return adminState.clients
-    .filter(
-      client => {
-
-        if (
-          page !==
-          "all" &&
-          client.page !==
-          page
-        ) {
-
-          return false;
-
-        }
-
-
-        if (
-          !search
-        ) {
-
-          return true;
-
-        }
-
-
-        const text =
-          [
-            client.username,
-            client.senderId,
-            client.page,
-            client.stage,
-            client.selectedPackage,
-            client.paymentMethod
-          ]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
-
-
-        return text.includes(
-          search
-        );
-
-      }
+    localStorage.setItem(
+      "adminSecret",
+      adminSecret
     );
+
+  }
 
 }
 
@@ -4677,8 +7161,7 @@ function escapeHtml(
 ) {
 
   return String(
-    value ??
-    ""
+    value || ""
   )
     .replace(
       /&/g,
@@ -4705,176 +7188,116 @@ function escapeHtml(
 
 
 /* =========================================================
-   RENDER CLIENTS
+   FORMAT TIME
 ========================================================= */
 
-function renderClients() {
-
-  const clients =
-    filteredClients();
-
-
-  clientCount.textContent =
-    `${clients.length} client${
-      clients.length === 1
-        ? ""
-        : "s"
-    }`;
-
+function formatTime(
+  value
+) {
 
   if (
-    !clients.length
+    !value
   ) {
 
-    clientsList.innerHTML =
-      `<div class="empty">No clients found.</div>`;
-
-    return;
+    return "";
 
   }
 
 
-  clientsList.innerHTML =
-    clients
-      .map(
-        client => {
-
-          const name =
-            client.username ||
-            client.senderId ||
-            "Unknown";
+  const date =
+    new Date(
+      value
+    );
 
 
-          const page =
-            client.page ||
-            "unknown";
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
+    return "";
+
+  }
 
 
-          const stage =
-            client.stage ||
-            "NEW";
-
-
-          const packageName =
-            client.selectedPackage ||
-            "—";
-
-
-          const payment =
-            client.paymentMethod ||
-            "—";
-
-
-          return `
-<div class="client-card">
-
-  <div class="client-name">
-    ${escapeHtml(name)}
-  </div>
-
-  <div class="client-details">
-
-    Page:
-    ${escapeHtml(page)}
-
-    <br>
-
-    Stage:
-    ${escapeHtml(stage)}
-
-    <br>
-
-    Package:
-    ${escapeHtml(packageName)}
-
-    <br>
-
-    Payment:
-    ${escapeHtml(payment)}
-
-  </div>
-
-  <button
-    class="open-chat"
-    onclick="openChat('${escapeHtml(
-      client.senderId
-    )}')"
-  >
-    Open Chat
-  </button>
-
-</div>`;
-
-        }
-      )
-      .join("");
+  return date.toLocaleString();
 
 }
 
 
 /* =========================================================
-   OPEN CHAT
+   STATUS
 ========================================================= */
 
-async function openChat(
-  senderId
+function setStatus(
+  message
 ) {
+
+  console.log(
+    message
+  );
+
+}
+
+
+/* =========================================================
+   LOAD CLIENTS
+========================================================= */
+
+async function loadClients() {
 
   try {
 
-    const data =
-      await adminFetch(
-        `/admin/client/${encodeURIComponent(
-          senderId
-        )}`
+    const response =
+      await fetch(
+        "/admin/clients?secret=" +
+        encodeURIComponent(
+          adminSecret
+        ),
+        {
+          cache:
+            "no-store"
+        }
       );
 
 
-    adminState.currentClient =
-      data.client;
+    const data =
+      await response.json();
 
 
-    chatName.textContent =
-      data.client.username ||
-      senderId;
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Unable to load clients"
+      );
+
+    }
 
 
-    chatInfo.textContent =
-      `${data.client.page || "unknown"} • ${
-        data.client.stage || "NEW"
-      }`;
+    allClients =
+      Array.isArray(
+        data.clients
+      )
+        ? data.clients
+        : [];
 
 
-    renderChat(
-      data.client.history ||
-      []
-    );
-
-
-    chatOverlay.classList.add(
-      "show"
-    );
-
-
-    document.body.style.overflow =
-      "hidden";
-
-
-    setTimeout(
-      () => {
-
-        chatMessages.scrollTop =
-          chatMessages.scrollHeight;
-
-      },
-      50
-    );
+    renderClients();
 
   }
 
   catch (
     error
   ) {
+
+    console.error(
+      error
+    );
+
 
     alert(
       error.message
@@ -4886,158 +7309,46 @@ async function openChat(
 
 
 /* =========================================================
-   CLOSE CHAT
+   PAGE FILTER
 ========================================================= */
 
-function closeChat() {
+document
+  .getElementById(
+    "pageFilter"
+  )
+  .addEventListener(
+    "change",
+    function() {
 
-  chatOverlay.classList.remove(
-    "show"
-  );
+      selectedPage =
+        this.value;
 
-
-  document.body.style.overflow =
-    "";
-
-
-  loadClients();
-
-}
-
-
-/* =========================================================
-   RENDER CHAT
-========================================================= */
-
-function renderChat(
-  history
-) {
-
-  chatMessages.innerHTML =
-    "";
-
-
-  if (
-    !Array.isArray(
-      history
-    ) ||
-    !history.length
-  ) {
-
-    chatMessages.innerHTML =
-      `<div class="empty">No messages yet.</div>`;
-
-    return;
-
-  }
-
-
-  history.forEach(
-    item => {
-
-      const wrapper =
-        document.createElement(
-          "div"
-        );
-
-
-      wrapper.className =
-        `chat-message ${
-          item.role ===
-          "client"
-            ? "client"
-            : "assistant"
-        }`;
-
-
-      const bubble =
-        document.createElement(
-          "div"
-        );
-
-
-      bubble.className =
-        "chat-bubble";
-
-
-      bubble.textContent =
-        item.text ||
-        "";
-
-
-      if (
-        item.timestamp
-      ) {
-
-        const time =
-          document.createElement(
-            "span"
-          );
-
-
-        time.className =
-          "chat-time";
-
-
-        time.textContent =
-          formatTime(
-            item.timestamp
-          );
-
-
-        bubble.appendChild(
-          time
-        );
-
-      }
-
-
-      wrapper.appendChild(
-        bubble
-      );
-
-
-      chatMessages.appendChild(
-        wrapper
-      );
+      renderClients();
 
     }
   );
 
 
-  chatMessages.scrollTop =
-    chatMessages.scrollHeight;
-
-}
-
-
 /* =========================================================
-   FORMAT TIME
+   SEARCH
 ========================================================= */
 
-function formatTime(
-  timestamp
-) {
+document
+  .getElementById(
+    "search"
+  )
+  .addEventListener(
+    "input",
+    function() {
 
-  try {
+      renderClients();
 
-    return new Date(
-      timestamp
-    ).toLocaleString();
+    }
+  );
 
-  }
 
-  catch (
-    error
-  ) {
-
-    return "";
-
-  }
-
-}
 /* =========================================================
-   FILTER CLIENTS — CONTINUED
+   RENDER CLIENTS
 ========================================================= */
 
 function getFilteredClients() {
@@ -5119,10 +7430,6 @@ function getFilteredClients() {
 }
 
 
-/* =========================================================
-   RENDER CLIENTS
-========================================================= */
-
 function renderClients() {
 
   const container =
@@ -5166,28 +7473,6 @@ function renderClients() {
       .map(
         function(client) {
 
-          const username =
-            client.username ||
-            "Unknown";
-
-
-          const page =
-            client.page ||
-            client.pageKey ||
-            "Unknown";
-
-
-          const stage =
-            client.stage ||
-            "NEW";
-
-
-          const lastMessage =
-            client.lastCustomerMessage ||
-            client.lastOutgoingText ||
-            "";
-
-
           return `
           <div
             class="client-card"
@@ -5198,7 +7483,8 @@ function renderClients() {
 
             <div class="client-name">
               ${escapeHtml(
-                username
+                client.username ||
+                "Unknown"
               )}
             </div>
 
@@ -5206,20 +7492,25 @@ function renderClients() {
 
               Page:
               ${escapeHtml(
-                page
+                client.page ||
+                client.pageKey ||
+                "Unknown"
               )}
 
               <br>
 
               Stage:
               ${escapeHtml(
-                stage
+                client.stage ||
+                "NEW"
               )}
 
               <br>
 
               ${escapeHtml(
-                lastMessage
+                client.lastCustomerMessage ||
+                client.lastOutgoingText ||
+                ""
               )}
 
             </div>
@@ -5235,659 +7526,736 @@ function renderClients() {
 
 
 /* =========================================================
-   OPEN CLIENT
+   END PART 7
+========================================================= */
+/* =========================================================
+   WEBHOOK
 ========================================================= */
 
-async function openClient(
-  senderId
-) {
+app.post(
+  "/webhook",
+  async (
+    req,
+    res
+  ) => {
 
-  try {
-
-    const response =
-      await fetch(
-        "/admin/client/" +
-        encodeURIComponent(
-          senderId
-        ) +
-        "?secret=" +
-        encodeURIComponent(
-          adminSecret
-        ),
-        {
-          cache:
-            "no-store"
-        }
-      );
+    res.sendStatus(
+      200
+    );
 
 
-    const data =
-      await response.json();
+    try {
+
+      const body =
+        req.body;
 
 
-    if (
-      !response.ok
-    ) {
+      if (
+        !body ||
+        body.object !==
+        "instagram"
+      ) {
 
-      throw new Error(
-        data.error ||
-        "Unable to load client"
-      );
+        return;
 
-    }
-
-
-    selectedClient =
-      data.client;
+      }
 
 
-    savedScrollPosition =
-      window.scrollY;
+      const entries =
+        Array.isArray(
+          body.entry
+        )
+          ? body.entry
+          : [];
 
 
-    renderChat();
+      for (
+        const entry
+        of entries
+      ) {
 
-
-    document
-      .getElementById(
-        "chatOverlay"
-      )
-      .classList.add(
-        "show"
-      );
-
-
-    document.body.style.overflow =
-      "hidden";
-
-
-    setTimeout(
-      function() {
-
-        const messages =
-          document.getElementById(
-            "chatMessages"
+        const page =
+          getPageById(
+            entry.id
           );
 
 
-        messages.scrollTop =
-          messages.scrollHeight;
+        if (
+          !page
+        ) {
 
-      },
-      50
-    );
+          continue;
 
-  }
+        }
 
-  catch (
-    error
-  ) {
 
-    console.error(
+        const messaging =
+          Array.isArray(
+            entry.messaging
+          )
+            ? entry.messaging
+            : [];
+
+
+        for (
+          const event
+          of messaging
+        ) {
+
+          if (
+            isManagedPageEvent(
+              event
+            )
+          ) {
+
+            continue;
+
+          }
+
+
+          if (
+            event.read ||
+            event.delivery
+          ) {
+
+            continue;
+
+          }
+
+
+          const senderId =
+            String(
+              event?.sender?.id ||
+              ""
+            ).trim();
+
+
+          if (
+            !senderId
+          ) {
+
+            continue;
+
+          }
+
+
+          const message =
+            event?.message;
+
+
+          if (
+            !message
+          ) {
+
+            continue;
+
+          }
+
+
+          if (
+            message.reaction
+          ) {
+
+            continue;
+
+          }
+
+
+          if (
+            message.is_echo ===
+            true
+          ) {
+
+            continue;
+
+          }
+
+
+          const messageId =
+            String(
+              message.mid ||
+              message.id ||
+              ""
+            ).trim();
+
+
+          if (
+            messageId
+          ) {
+
+            const outgoingKey =
+              `${page.key}:${messageId}`;
+
+
+            if (
+              outgoingMessages.has(
+                outgoingKey
+              )
+            ) {
+
+              continue;
+
+            }
+
+
+            if (
+              processedMessageIds.has(
+                outgoingKey
+              )
+            ) {
+
+              continue;
+
+            }
+
+
+            processedMessageIds.set(
+              outgoingKey,
+              Date.now()
+            );
+
+
+            if (
+              processedMessageIds.size >
+              10000
+            ) {
+
+              const oldest =
+                processedMessageIds
+                  .entries()
+                  .next()
+                  .value;
+
+
+              if (
+                oldest
+              ) {
+
+                processedMessageIds.delete(
+                  oldest[0]
+                );
+
+              }
+
+            }
+
+          }
+
+
+          const clientMessage =
+            String(
+              message.text ||
+              ""
+            ).trim();
+
+
+          const attachments =
+            Array.isArray(
+              message.attachments
+            )
+              ? message.attachments
+              : [];
+
+
+          const attachmentInfo =
+            attachments.length
+              ? attachments
+                  .map(
+                    attachment => {
+
+                      const type =
+                        attachment?.type ||
+                        "unknown";
+
+
+                      const url =
+                        attachment?.payload?.url ||
+                        "";
+
+
+                      return `${type}:${url}`;
+
+                    }
+                  )
+                  .join(
+                    " | "
+                  )
+              : null;
+
+
+          if (
+            !clientMessage &&
+            !attachmentInfo
+          ) {
+
+            continue;
+
+          }
+
+
+          const conversation =
+            await getConversation(
+              senderId
+            );
+
+
+          conversation.pageKey =
+            page.key;
+
+
+          if (
+            !conversation.clientUsername
+          ) {
+
+            const username =
+              await getInstagramUsername(
+                page,
+                senderId
+              );
+
+
+            if (
+              username
+            ) {
+
+              conversation.clientUsername =
+                username;
+
+
+              conversation.promotionUsernameReceived =
+                true;
+
+
+              await saveConversation(
+                senderId,
+                conversation
+              );
+
+            }
+
+          }
+
+
+          enqueueClientMessage(
+            page,
+            senderId,
+            clientMessage,
+            attachmentInfo
+          );
+
+        }
+
+      }
+
+    }
+
+    catch (
       error
-    );
+    ) {
 
-
-    alert(
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   CLOSE CHAT
-========================================================= */
-
-function closeChat() {
-
-  const overlay =
-    document.getElementById(
-      "chatOverlay"
-    );
-
-
-  overlay.classList.remove(
-    "show"
-  );
-
-
-  document.body.style.overflow =
-    "";
-
-
-  selectedClient =
-    null;
-
-
-  setTimeout(
-    function() {
-
-      window.scrollTo(
-        0,
-        savedScrollPosition
+      console.error(
+        "WEBHOOK ERROR:",
+        error.message
       );
 
-    },
-    50
-  );
+    }
 
-}
+  }
+);
 
 
 /* =========================================================
-   OVERLAY CLICK
+   ADMIN AUTHENTICATION
 ========================================================= */
 
-function overlayClick(
-  event
+function isAdminAuthorized(
+  req
 ) {
 
   if (
-    event.target &&
-    event.target.id ===
-      "chatOverlay"
+    !ADMIN_SECRET
   ) {
 
-    closeChat();
-
-  }
-
-}
-
-
-/* =========================================================
-   RENDER CHAT
-========================================================= */
-
-function renderChat() {
-
-  if (
-    !selectedClient
-  ) {
-
-    return;
+    return false;
 
   }
 
 
-  const title =
-    document.getElementById(
-      "chatTitle"
-    );
+  const provided =
+    req.headers[
+      "x-admin-secret"
+    ] ||
+    req.query.secret ||
+    req.body?.secret;
 
 
-  const messages =
-    document.getElementById(
-      "chatMessages"
-    );
-
-
-  title.innerHTML =
-    `
-    <strong>
-      ${escapeHtml(
-        selectedClient.username ||
-        selectedClient.senderId
-      )}
-    </strong>
-
-    <span>
-      ${escapeHtml(
-        selectedClient.page ||
-        selectedClient.pageKey ||
-        ""
-      )}
-    </span>
-    `;
-
-
-  const history =
-    Array.isArray(
-      selectedClient.history
+  return (
+    String(
+      provided ||
+      ""
+    ) ===
+    String(
+      ADMIN_SECRET
     )
-      ? selectedClient.history
-      : [];
-
-
-  if (
-    !history.length
-  ) {
-
-    messages.innerHTML =
-      `
-      <div class="empty">
-        No messages yet.
-      </div>
-      `;
-
-    return;
-
-  }
-
-
-  messages.innerHTML =
-    history
-      .map(
-        function(item) {
-
-          const role =
-            item.role ===
-            "client"
-              ? "client"
-              : "assistant";
-
-
-          return `
-          <div
-            class="chat-message ${role}"
-          >
-
-            ${escapeHtml(
-              item.text ||
-              ""
-            )}
-
-            ${
-              item.timestamp
-                ? `
-                  <span class="chat-time">
-                    ${escapeHtml(
-                      formatTime(
-                        item.timestamp
-                      )
-                    )}
-                  </span>
-                `
-                : ""
-            }
-
-          </div>
-          `;
-
-        }
-      )
-      .join("");
-
-
-  messages.scrollTop =
-    messages.scrollHeight;
-
-}
-
-
-/* =========================================================
-   SEND ADMIN REPLY
-========================================================= */
-
-async function sendAdminReply() {
-
-  const clientId =
-    document
-      .getElementById(
-        "adminClientId"
-      )
-      .value
-      .trim();
-
-
-  const pageKey =
-    document
-      .getElementById(
-        "adminPage"
-      )
-      .value;
-
-
-  const message =
-    document
-      .getElementById(
-        "adminMessage"
-      )
-      .value
-      .trim();
-
-
-  if (
-    !clientId
-  ) {
-
-    alert(
-      "Enter Client ID."
-    );
-
-    return;
-
-  }
-
-
-  if (
-    !message
-  ) {
-
-    alert(
-      "Write a message."
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    const response =
-      await fetch(
-        "/admin/reply",
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify({
-
-              secret:
-                adminSecret,
-
-              senderId:
-                clientId,
-
-              pageKey:
-                pageKey,
-
-              message:
-                message
-
-            })
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        data.error ||
-        "Unable to send reply"
-      );
-
-    }
-
-
-    document
-      .getElementById(
-        "adminMessage"
-      )
-      .value =
-      "";
-
-
-    setStatus(
-      "Reply sent."
-    );
-
-
-    await loadClients();
-
-  }
-
-  catch (
-    error
-  ) {
-
-    alert(
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   SEND CHAT REPLY
-========================================================= */
-
-async function sendChatReply() {
-
-  if (
-    !selectedClient
-  ) {
-
-    return;
-
-  }
-
-
-  const textarea =
-    document.getElementById(
-      "chatReply"
-    );
-
-
-  const message =
-    textarea.value.trim();
-
-
-  if (
-    !message
-  ) {
-
-    return;
-
-  }
-
-
-  const senderId =
-    selectedClient.senderId;
-
-
-  const pageKey =
-    selectedClient.pageKey ||
-    selectedClient.page;
-
-
-  try {
-
-    const response =
-      await fetch(
-        "/admin/reply",
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify({
-
-              secret:
-                adminSecret,
-
-              senderId:
-                senderId,
-
-              pageKey:
-                pageKey,
-
-              message:
-                message
-
-            })
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        data.error ||
-        "Unable to send reply"
-      );
-
-    }
-
-
-    textarea.value =
-      "";
-
-
-    await refreshSelectedClient();
-
-  }
-
-  catch (
-    error
-  ) {
-
-    alert(
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   REFRESH SELECTED CLIENT
-========================================================= */
-
-async function refreshSelectedClient() {
-
-  if (
-    !selectedClient
-  ) {
-
-    return;
-
-  }
-
-
-  try {
-
-    const response =
-      await fetch(
-        "/admin/client/" +
-        encodeURIComponent(
-          selectedClient.senderId
-        ) +
-        "?secret=" +
-        encodeURIComponent(
-          adminSecret
-        ),
-        {
-          cache:
-            "no-store"
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        data.error ||
-        "Unable to refresh client"
-      );
-
-    }
-
-
-    selectedClient =
-      data.client;
-
-
-    renderChat();
-
-  }
-
-  catch (
-    error
-  ) {
-
-    console.error(
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   TOGGLE ADMIN REPLY
-========================================================= */
-
-function toggleAdminReply() {
-
-  const form =
-    document.getElementById(
-      "adminForm"
-    );
-
-
-  form.classList.toggle(
-    "show"
   );
 
 }
 
 
+function requireAdmin(
+  req,
+  res,
+  next
+) {
+
+  if (
+    !isAdminAuthorized(
+      req
+    )
+  ) {
+
+    return res
+      .status(
+        401
+      )
+      .json({
+
+        success:
+          false,
+
+        error:
+          "Unauthorized"
+
+      });
+
+  }
+
+
+  next();
+
+}
+
+
 /* =========================================================
-   INITIAL LOAD
+   ADMIN CLIENT DATA
 ========================================================= */
 
-window.addEventListener(
-  "load",
-  function() {
+function normalizeAdminHistory(
+  history
+) {
 
-    adminSecret =
-      localStorage.getItem(
-        "adminSecret"
-      ) ||
-      "";
+  if (
+    !Array.isArray(
+      history
+    )
+  ) {
+
+    return [];
+
+  }
+
+
+  return history.map(
+    item => ({
+
+      role:
+        item?.role ===
+        "client"
+          ? "client"
+          : "assistant",
+
+      text:
+        String(
+          item?.text ||
+          "[media]"
+        ),
+
+      timestamp:
+        item?.timestamp ||
+        null
+
+    })
+  );
+
+}
+
+
+function buildAdminClient(
+  senderId,
+  conversation
+) {
+
+  return {
+
+    senderId:
+      String(
+        senderId
+      ),
+
+    username:
+      conversation.clientUsername ||
+      null,
+
+    page:
+      conversation.pageKey ||
+      null,
+
+    stage:
+      conversation.stage ||
+      "NEW",
+
+    messageOneSent:
+      Boolean(
+        conversation.messageOneSent
+      ),
+
+    messageTwoSent:
+      Boolean(
+        conversation.messageTwoSent
+      ),
+
+    packagesSent:
+      Boolean(
+        conversation.packagesSent
+      ),
+
+    selectedPackage:
+      conversation.selectedPackage ||
+      null,
+
+    paymentMethod:
+      conversation.paymentMethod ||
+      null,
+
+    paymentConfirmed:
+      Boolean(
+        conversation.paymentConfirmed
+      ),
+
+    paymentProofReceived:
+      Boolean(
+        conversation.paymentProofReceived
+      ),
+
+    promotionMediaReceived:
+      Boolean(
+        conversation.promotionMediaReceived
+      ),
+
+    promotionUsernameReceived:
+      Boolean(
+        conversation.promotionUsernameReceived ||
+        conversation.clientUsername
+      ),
+
+    promotionComplete:
+      Boolean(
+        conversation.promotionComplete
+      ),
+
+    reminder:
+      conversation.reminder ||
+      null,
+
+    messages:
+      Array.isArray(
+        conversation.history
+      )
+        ? conversation.history.length
+        : 0,
+
+    history:
+      normalizeAdminHistory(
+        conversation.history
+      ),
+
+    lastOutgoingText:
+      conversation.lastOutgoingText ||
+      null,
+
+    lastOutgoingMessageId:
+      conversation.lastOutgoingMessageId ||
+      null,
+
+    lastOutgoingAt:
+      conversation.lastOutgoingAt ||
+      null,
+
+    lastCustomerMessageAt:
+      conversation.lastCustomerMessageAt ||
+      null
+
+  };
+
+}
+
+
+/* =========================================================
+   ADMIN CLIENT LIST
+========================================================= */
+
+async function getAdminClients() {
+
+  const rows =
+    await supabaseGetAllConversations();
+
+
+  const clients =
+    [];
+
+
+  for (
+    const row
+    of rows
+  ) {
+
+    const senderId =
+      String(
+        row?.id ||
+        ""
+      ).trim();
 
 
     if (
-      adminSecret
+      !senderId
     ) {
 
-      loadClients();
+      continue;
+
+    }
+
+
+    const stored =
+      row?.messages;
+
+
+    if (
+      !stored ||
+      typeof stored !==
+        "object" ||
+      Array.isArray(
+        stored
+      )
+    ) {
+
+      continue;
+
+    }
+
+
+    stored.senderId =
+      senderId;
+
+
+    stored.history =
+      normalizeAdminHistory(
+        stored.history
+      );
+
+
+    conversations.set(
+      senderId,
+      stored
+    );
+
+
+    clients.push(
+      buildAdminClient(
+        senderId,
+        stored
+      )
+    );
+
+  }
+
+
+  clients.sort(
+    (
+      a,
+      b
+    ) => {
+
+      const aTime =
+        new Date(
+          a.lastCustomerMessageAt ||
+          a.lastOutgoingAt ||
+          0
+        ).getTime();
+
+
+      const bTime =
+        new Date(
+          b.lastCustomerMessageAt ||
+          b.lastOutgoingAt ||
+          0
+        ).getTime();
+
+
+      return (
+        bTime -
+        aTime
+      );
+
+    }
+  );
+
+
+  return clients;
+
+}
+
+
+/* =========================================================
+   ADMIN CLIENTS API
+========================================================= */
+
+app.get(
+  "/admin/clients",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
+      try {
+
+      const clients =
+        await getAdminClients();
+
+
+      return res.json({
+
+        success:
+          true,
+
+        clients
+
+      });
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "ADMIN CLIENTS ERROR:",
+        error.message
+      );
+
+
+      return res
+        .status(
+          500
+        )
+        .json({
+
+          success:
+            false,
+
+          error:
+            error.message
+
+        });
 
     }
 
@@ -5896,33 +8264,91 @@ window.addEventListener(
 
 
 /* =========================================================
-   CHAT ESCAPE KEY
+   ADMIN SINGLE CLIENT
 ========================================================= */
 
-document.addEventListener(
-  "keydown",
-  function(event) {
+app.get(
+  "/admin/client/:senderId",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
 
-    if (
-      event.key ===
-      "Escape"
-    ) {
+    try {
 
-      const overlay =
-        document.getElementById(
-          "chatOverlay"
+      const senderId =
+        String(
+          req.params.senderId ||
+          ""
+        ).trim();
+
+
+      if (
+        !senderId
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "Missing senderId"
+
+          });
+
+      }
+
+
+      const conversation =
+        await getConversation(
+          senderId
         );
 
 
-      if (
-        overlay.classList.contains(
-          "show"
+      return res.json({
+
+        success:
+          true,
+
+        client:
+          buildAdminClient(
+            senderId,
+            conversation
+          )
+
+      });
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "ADMIN CLIENT ERROR:",
+        error.message
+      );
+
+
+      return res
+        .status(
+          500
         )
-      ) {
+        .json({
 
-        closeChat();
+          success:
+            false,
 
-      }
+          error:
+            error.message
+
+        });
 
     }
 
@@ -5931,61 +8357,251 @@ document.addEventListener(
 
 
 /* =========================================================
-   CHAT SEND — ENTER
+   ADMIN REPLY
 ========================================================= */
 
-document
-  .getElementById(
-    "chatReply"
-  )
-  .addEventListener(
-    "keydown",
-    function(event) {
+app.post(
+  "/admin/reply",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
+
+    try {
+
+      const senderId =
+        String(
+          req.body?.senderId ||
+          ""
+        ).trim();
+
+
+      const message =
+        String(
+          req.body?.message ||
+          ""
+        ).trim();
+
+
+      const requestedPage =
+        req.body?.pageKey ||
+        null;
+
 
       if (
-        event.key ===
-          "Enter" &&
-        !event.shiftKey
+        !senderId
       ) {
 
-        event.preventDefault();
+        return res
+          .status(
+            400
+          )
+          .json({
 
-        sendChatReply();
+            success:
+              false,
+
+            error:
+              "senderId is required"
+
+          });
 
       }
 
-    }
-  );
-
-
-/* =========================================================
-   SEARCH ENTER
-========================================================= */
-
-document
-  .getElementById(
-    "search"
-  )
-  .addEventListener(
-    "keydown",
-    function(event) {
 
       if (
-        event.key ===
-        "Enter"
+        !message
       ) {
 
-        renderClients();
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "message is required"
+
+          });
 
       }
 
+
+      const conversation =
+        await getConversation(
+          senderId
+        );
+
+
+      const pageKey =
+        requestedPage ||
+        conversation.pageKey;
+
+
+      const page =
+        PAGE_CONFIGS[
+          pageKey
+        ];
+
+
+      if (
+        !page
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "Client page is missing or invalid."
+
+          });
+
+      }
+
+
+      /*
+         ADMIN REPLY HAS PRIORITY.
+
+         Cancel:
+         - pending reminder
+         - pending automatic AI reply
+      */
+
+      invalidatePendingAI(
+        senderId
+      );
+
+
+      const data =
+        await sendInstagramMessage(
+          page,
+          senderId,
+          message
+        );
+
+
+      const messageId =
+        data?.message_id ||
+        data?.id ||
+        null;
+
+
+      if (
+        messageId
+      ) {
+
+        outgoingMessages.add(
+          `${page.key}:${String(
+            messageId
+          )}`
+        );
+
+      }
+
+
+      conversation.pageKey =
+        page.key;
+
+
+      saveMessage(
+        conversation,
+        "assistant",
+        message
+      );
+
+
+      conversation.lastOutgoingMessageId =
+        messageId
+          ? String(
+              messageId
+            )
+          : null;
+
+
+      conversation.lastOutgoingText =
+        message;
+
+
+      conversation.lastOutgoingStage =
+        conversation.stage;
+
+
+      conversation.lastOutgoingAt =
+        nowISO();
+
+
+      conversation.reminder =
+        null;
+
+
+      await saveConversation(
+        senderId,
+        conversation
+      );
+
+
+      return res.json({
+
+        success:
+          true,
+
+        messageId:
+          messageId,
+
+        senderId:
+          senderId,
+
+        username:
+          conversation.clientUsername ||
+          null,
+
+        page:
+          page.username
+
+      });
+
     }
-  );
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "ADMIN REPLY ERROR:",
+        error.message
+      );
 
 
-/* =========================================================
-   END ADMIN UI
-========================================================= */
+      return res
+        .status(
+          500
+        )
+        .json({
+
+          success:
+            false,
+
+          error:
+            error.message
+
+        });
+
+    }
+
+  }
+);
+
+
 /* =========================================================
    ADMIN RESET CLIENT
 ========================================================= */
@@ -6089,7 +8705,6 @@ app.post(
 
 /* =========================================================
    ADMIN PAGE — SIMPLE VERSION 2
-
    - Page filters
    - Search
    - Client list
@@ -6100,15 +8715,10 @@ app.post(
 
 app.get(
   "/admin",
-  (
-    req,
-    res
-  ) => {
+  (req, res) => {
 
     res.send(`
-
 <!DOCTYPE html>
-
 <html>
 
 <head>
@@ -6130,43 +8740,26 @@ app.get(
 
 html,
 body {
-
   margin: 0;
-
   padding: 0;
-
   background: #f5f5f7;
-
   color: #111;
-
-  font-family:
-    Arial,
-    sans-serif;
-
+  font-family: Arial, sans-serif;
 }
 
 body {
-
-  min-height:
-    100vh;
-
+  min-height: 100vh;
 }
 
 button,
 input,
 textarea,
 select {
-
-  font-family:
-    inherit;
-
+  font-family: inherit;
 }
 
 button {
-
-  cursor:
-    pointer;
-
+  cursor: pointer;
 }
 
 
@@ -6175,56 +8768,25 @@ button {
 ========================================================= */
 
 .container {
-
-  width:
-    100%;
-
-  max-width:
-    850px;
-
-  margin:
-    auto;
-
-  padding:
-    10px;
-
+  width: 100%;
+  max-width: 850px;
+  margin: auto;
+  padding: 10px;
 }
 
 .title {
-
-  font-size:
-    25px;
-
-  font-weight:
-    700;
-
-  margin:
-    5px 0 14px;
-
+  font-size: 25px;
+  font-weight: 700;
+  margin: 5px 0 14px;
 }
 
 .section {
-
-  background:
-    #fff;
-
-  border-radius:
-    16px;
-
-  padding:
-    14px;
-
-  margin-bottom:
-    12px;
-
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
   box-shadow:
-    0 2px 8px rgba(
-      0,
-      0,
-      0,
-      .06
-    );
-
+    0 2px 8px rgba(0,0,0,.06);
 }
 
 
@@ -6233,94 +8795,46 @@ button {
 ========================================================= */
 
 .login-row {
-
-  display:
-    flex;
-
-  gap:
-    8px;
-
+  display: flex;
+  gap: 8px;
 }
 
 .login-row input {
-
-  flex:
-    1;
-
-  min-width:
-    0;
-
+  flex: 1;
+  min-width: 0;
 }
 
 .login-row button {
-
-  background:
-    #1683ff;
-
-  color:
-    #fff;
-
-  border:
-    0;
-
-  border-radius:
-    10px;
-
-  padding:
-    0 18px;
-
-  font-weight:
-    600;
-
+  background: #1683ff;
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  padding: 0 18px;
+  font-weight: 600;
 }
 
 input,
 textarea,
 select {
-
-  width:
-    100%;
-
-  border:
-    1px solid #d1d1d1;
-
-  border-radius:
-    10px;
-
-  padding:
-    12px;
-
-  font-size:
-    15px;
-
-  outline:
-    none;
-
-  background:
-    #fff;
-
+  width: 100%;
+  border: 1px solid #d1d1d1;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px;
+  outline: none;
+  background: #fff;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-
-  border-color:
-    #1683ff;
-
+  border-color: #1683ff;
 }
 
 .status {
-
-  margin-top:
-    8px;
-
-  font-size:
-    12px;
-
-  color:
-    #777;
-
+  margin-top: 8px;
+  font-size: 12px;
+  color: #777;
 }
 
 
@@ -6329,70 +8843,32 @@ select:focus {
 ========================================================= */
 
 .page-title {
-
-  font-size:
-    17px;
-
-  font-weight:
-    700;
-
-  margin-bottom:
-    10px;
-
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
 .page-buttons {
-
-  display:
-    flex;
-
-  gap:
-    7px;
-
-  overflow-x:
-    auto;
-
-  padding-bottom:
-    2px;
-
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
 
 .page-button {
-
-  flex:
-    0 0 auto;
-
-  border:
-    0;
-
-  border-radius:
-    9px;
-
-  background:
-    #eee;
-
-  color:
-    #1683ff;
-
-  padding:
-    10px 14px;
-
-  font-size:
-    13px;
-
-  font-weight:
-    600;
-
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 9px;
+  background: #eee;
+  color: #1683ff;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .page-button.active {
-
-  background:
-    #1683ff;
-
-  color:
-    #fff;
-
+  background: #1683ff;
+  color: #fff;
 }
 
 
@@ -6401,85 +8877,40 @@ select:focus {
 ========================================================= */
 
 .reply-toggle {
-
-  width:
-    100%;
-
-  border:
-    0;
-
-  border-radius:
-    10px;
-
-  padding:
-    12px;
-
-  background:
-    #eee;
-
-  color:
-    #1683ff;
-
-  font-size:
-    15px;
-
-  font-weight:
-    600;
-
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #eee;
+  color: #1683ff;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .admin-form {
-
-  display:
-    none;
-
-  margin-top:
-    10px;
-
+  display: none;
+  margin-top: 10px;
 }
 
 .admin-form.show {
-
-  display:
-    block;
-
+  display: block;
 }
 
 .admin-form input,
 .admin-form select,
 .admin-form textarea {
-
-  margin-bottom:
-    8px;
-
+  margin-bottom: 8px;
 }
 
 .send-button {
-
-  width:
-    100%;
-
-  border:
-    0;
-
-  border-radius:
-    10px;
-
-  padding:
-    13px;
-
-  background:
-    #1683ff;
-
-  color:
-    #fff;
-
-  font-size:
-    15px;
-
-  font-weight:
-    600;
-
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 13px;
+  background: #1683ff;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 
@@ -6488,48 +8919,23 @@ select:focus {
 ========================================================= */
 
 .search-row {
-
-  display:
-    flex;
-
-  gap:
-    8px;
-
-  align-items:
-    center;
-
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .search-row input {
-
-  flex:
-    1;
-
+  flex: 1;
 }
 
 .refresh-button {
-
-  flex:
-    0 0 auto;
-
-  border:
-    0;
-
-  border-radius:
-    10px;
-
-  background:
-    #eee;
-
-  color:
-    #1683ff;
-
-  padding:
-    12px 14px;
-
-  font-size:
-    14px;
-
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 10px;
+  background: #eee;
+  color: #1683ff;
+  padding: 12px 14px;
+  font-size: 14px;
 }
 
 
@@ -6538,134 +8944,60 @@ select:focus {
 ========================================================= */
 
 .clients-header {
-
-  display:
-    flex;
-
-  justify-content:
-    space-between;
-
-  align-items:
-    center;
-
-  margin-bottom:
-    10px;
-
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .clients-title {
-
-  font-size:
-    18px;
-
-  font-weight:
-    700;
-
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .client-count {
-
-  font-size:
-    12px;
-
-  color:
-    #777;
-
+  font-size: 12px;
+  color: #777;
 }
 
 .client-card {
-
-  border:
-    1px solid #e0e0e0;
-
-  border-radius:
-    14px;
-
-  padding:
-    13px;
-
-  margin-bottom:
-    9px;
-
-  background:
-    #fff;
-
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 13px;
+  margin-bottom: 9px;
+  background: #fff;
 }
 
 .client-name {
-
-  font-size:
-    17px;
-
-  font-weight:
-    700;
-
-  word-break:
-    break-word;
-
+  font-size: 17px;
+  font-weight: 700;
+  word-break: break-word;
 }
 
 .client-details {
-
-  color:
-    #666;
-
-  font-size:
-    12px;
-
-  line-height:
-    1.7;
-
-  margin-top:
-    5px;
-
+  color: #666;
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 5px;
 }
 
 .open-chat {
-
-  width:
-    100%;
-
-  margin-top:
-    9px;
-
-  border:
-    0;
-
-  border-radius:
-    9px;
-
-  background:
-    #eee;
-
-  color:
-    #1683ff;
-
-  padding:
-    10px;
-
-  font-size:
-    14px;
-
-  font-weight:
-    600;
-
+  width: 100%;
+  margin-top: 9px;
+  border: 0;
+  border-radius: 9px;
+  background: #eee;
+  color: #1683ff;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .empty {
-
-  text-align:
-    center;
-
-  color:
-    #777;
-
-  padding:
-    25px 10px;
-
-  font-size:
-    14px;
-
+  text-align: center;
+  color: #777;
+  padding: 25px 10px;
+  font-size: 14px;
 }
 
 
@@ -6674,77 +9006,43 @@ select:focus {
 ========================================================= */
 
 .chat-overlay {
-
-  position:
-    fixed;
-
-  inset:
-    0;
-
-  z-index:
-    1000;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
 
   background:
-    rgba(
-      0,
-      0,
-      0,
-      .42
-    );
+    rgba(0,0,0,.42);
 
-  display:
-    flex;
+  display: flex;
+  align-items: flex-end;
 
-  align-items:
-    flex-end;
-
-  visibility:
-    hidden;
-
-  opacity:
-    0;
+  visibility: hidden;
+  opacity: 0;
 
   transition:
     opacity .2s ease,
     visibility .2s ease;
-
 }
 
 .chat-overlay.show {
-
-  visibility:
-    visible;
-
-  opacity:
-    1;
-
+  visibility: visible;
+  opacity: 1;
 }
 
 .chat-panel {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
 
-  width:
-    100%;
+  height: 88vh;
 
-  max-width:
-    850px;
-
-  margin:
-    0 auto;
-
-  height:
-    88vh;
-
-  background:
-    #fff;
+  background: #fff;
 
   border-radius:
     18px 18px 0 0;
 
-  display:
-    flex;
-
-  flex-direction:
-    column;
+  display: flex;
+  flex-direction: column;
 
   transform:
     translateY(100%);
@@ -6752,17 +9050,13 @@ select:focus {
   transition:
     transform .25s ease;
 
-  overflow:
-    hidden;
-
+  overflow: hidden;
 }
 
 .chat-overlay.show
 .chat-panel {
-
   transform:
     translateY(0);
-
 }
 
 
@@ -6771,329 +9065,564 @@ select:focus {
 ========================================================= */
 
 .chat-top {
+  flex: 0 0 auto;
 
-  flex:
-    0 0 auto;
-
-  padding:
-    12px 14px;
+  padding: 12px 14px;
 
   border-bottom:
     1px solid #e5e5e5;
 
-  background:
-    #fff;
-
+  background: #fff;
 }
 
 .drag-line {
+  width: 38px;
+  height: 4px;
 
-  width:
-    38px;
+  border-radius: 10px;
 
-  height:
-    4px;
-
-  border-radius:
-    10px;
-
-  background:
-    #ccc;
+  background: #ccc;
 
   margin:
     0 auto 10px;
-
 }
 
 .chat-header-row {
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  gap:
-    8px;
-
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .chat-title {
-
-  flex:
-    1;
-
-  min-width:
-    0;
-
+  flex: 1;
+  min-width: 0;
 }
 
 .chat-title strong {
-
-  display:
-    block;
-
-  font-size:
-    17px;
-
-  word-break:
-    break-word;
-
+  display: block;
+  font-size: 17px;
+  word-break: break-word;
 }
 
 .chat-title span {
-
-  display:
-    block;
-
-  color:
-    #777;
-
-  font-size:
-    11px;
-
-  margin-top:
-    3px;
-
+  display: block;
+  color: #777;
+  font-size: 11px;
+  margin-top: 3px;
 }
 
 .close-chat {
+  border: 0;
+  background: #eee;
+  color: #333;
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-size: 14px;
+}
 
-  border:
-    0;
 
-  background:
-    #eee;
+/* =========================================================
+   END PART 9
+========================================================= */
+`);
+  }
+);
+    " clients";
 
-  color:
-    #333;
 
-  border-radius:
-    9px;
+  if (
+    !clients.length
+  ) {
 
-  padding:
-    9px 12px;
+    container.innerHTML =
+      '<div class="empty">' +
+      'No clients found.' +
+      '</div>';
 
-  font-size:
-    14px;
+    return;
+
+  }
+
+
+  container.innerHTML =
+    clients.map(
+      function(client) {
+
+        const username =
+          client.username ||
+          "Username not available";
+
+
+        const packageName =
+          client.selectedPackage ||
+          "none";
+
+
+        const payment =
+          client.paymentMethod ||
+          "none";
+
+
+        const stage =
+          client.stage ||
+          "NEW";
+
+
+        const reminder =
+          client.reminder
+            ? "Active"
+            : "No reminder";
+
+
+        const id =
+          escapeHtml(
+            client.senderId ||
+            ""
+          );
+
+
+        return (
+          '<div class="client-card">' +
+
+            '<div class="client-name">' +
+              escapeHtml(
+                username
+              ) +
+            '</div>' +
+
+            '<div class="client-details">' +
+
+              'Page: ' +
+              escapeHtml(
+                client.page ||
+                "unknown"
+              ) +
+
+              '<br>' +
+
+              'Stage: ' +
+              escapeHtml(
+                stage
+              ) +
+
+              '<br>' +
+
+              'Package: ' +
+              escapeHtml(
+                packageName
+              ) +
+
+              '<br>' +
+
+              'Payment: ' +
+              escapeHtml(
+                payment
+              ) +
+
+              '<br>' +
+
+              'Reminder: ' +
+              escapeHtml(
+                reminder
+              ) +
+
+              '<br>' +
+
+              'ID: ' +
+              id +
+
+            '</div>' +
+
+            '<button ' +
+              'class="open-chat" ' +
+              'onclick="openChat(\\'' +
+                id +
+              '\\')">' +
+
+              '💬 Open Chat' +
+
+            '</button>' +
+
+          '</div>'
+        );
+
+      }
+    )
+    .join("");
 
 }
 
 
 /* =========================================================
-   CHAT MESSAGES
+   OPEN CHAT
 ========================================================= */
 
-.chat-messages {
-
-  flex:
-    1;
-
-  overflow-y:
-    auto;
-
-  padding:
-    14px;
-
-  background:
-    #f7f7f8;
-
-}
-
-.chat-message {
-
-  max-width:
-    85%;
-
-  padding:
-    10px 12px;
-
-  border-radius:
-    13px;
-
-  margin-bottom:
-    9px;
-
-  white-space:
-    pre-wrap;
-
-  word-break:
-    break-word;
-
-  font-size:
-    14px;
-
-  line-height:
-    1.4;
-
-}
-
-.chat-message.client {
-
-  margin-right:
-    auto;
-
-  background:
-    #e8e8ea;
-
-}
-
-.chat-message.assistant {
-
-  margin-left:
-    auto;
-
-  background:
-    #d9f7ef;
-
-}
-
-.chat-time {
-
-  display:
-    block;
-
-  margin-top:
-    5px;
-
-  font-size:
-    10px;
-
-  color:
-    #777;
-
-}
-
-
-/* =========================================================
-   CHAT REPLY
-========================================================= */
-
-.chat-reply {
-
-  flex:
-    0 0 auto;
-
-  padding:
-    10px;
-
-  border-top:
-    1px solid #ddd;
-
-  background:
-    #fff;
-
-}
-
-.chat-reply textarea {
-
-  min-height:
-    65px;
-
-  max-height:
-    130px;
-
-  resize:
-    vertical;
-
-  margin-bottom:
-    7px;
-
-}
-
-.chat-actions {
-
-  display:
-    flex;
-
-  gap:
-    7px;
-
-}
-
-.chat-send {
-
-  flex:
-    1;
-
-  border:
-    0;
-
-  border-radius:
-    9px;
-
-  background:
-    #1683ff;
-
-  color:
-    white;
-
-  padding:
-    11px;
-
-  font-weight:
-    600;
-
-}
-
-.chat-refresh {
-
-  border:
-    0;
-
-  border-radius:
-    9px;
-
-  background:
-    #eee;
-
-  color:
-    #1683ff;
-
-  padding:
-    11px 13px;
-
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (
-  max-width: 500px
+function openChat(
+  senderId
 ) {
 
-  .container {
+  selectedClient =
+    allClients.find(
+      function(client) {
 
-    padding:
-      9px;
+        return (
+          String(
+            client.senderId
+          ) ===
+          String(
+            senderId
+          )
+        );
+
+      }
+    ) ||
+    null;
+
+
+  if (
+    !selectedClient
+  ) {
+
+    return;
 
   }
 
-  .chat-panel {
 
-    height:
-      92vh;
+  /*
+   * Save exact page position.
+   */
+
+  savedScrollPosition =
+    window.scrollY;
+
+
+  renderChat();
+
+
+  document
+    .getElementById(
+      "chatOverlay"
+    )
+    .classList.add(
+      "show"
+    );
+
+
+  document.body.style.overflow =
+    "hidden";
+
+}
+
+
+/* =========================================================
+   RENDER CHAT
+========================================================= */
+
+function renderChat() {
+
+  if (
+    !selectedClient
+  ) {
+
+    return;
 
   }
 
-  .chat-message {
 
-    max-width:
-      90%;
+  const username =
+    selectedClient.username ||
+    "Username not available";
+
+
+  const page =
+    selectedClient.page ||
+    "unknown";
+
+
+  const stage =
+    selectedClient.stage ||
+    "NEW";
+
+
+  document.getElementById(
+    "chatTitle"
+  ).innerHTML =
+
+    '<strong>' +
+      escapeHtml(
+        username
+      ) +
+    '</strong>' +
+
+    '<span>' +
+
+      'Page: ' +
+
+      escapeHtml(
+        page
+      ) +
+
+      ' &nbsp; | &nbsp; ' +
+
+      'Stage: ' +
+
+      escapeHtml(
+        stage
+      ) +
+
+    '</span>';
+
+
+  const messages =
+    document.getElementById(
+      "chatMessages"
+    );
+
+
+  const history =
+    Array.isArray(
+      selectedClient.history
+    )
+      ? selectedClient.history
+      : [];
+
+
+  if (
+    !history.length
+  ) {
+
+    messages.innerHTML =
+      '<div class="empty">' +
+      'No messages found.' +
+      '</div>';
+
+    return;
+
+  }
+
+
+  messages.innerHTML =
+    history.map(
+      function(item) {
+
+        const role =
+          item.role ===
+          "client"
+            ? "client"
+            : "assistant";
+
+
+        let html =
+          '<div class="chat-message ' +
+          role +
+          '">' +
+
+          escapeHtml(
+            item.text ||
+            ""
+          );
+
+
+        if (
+          item.timestamp
+        ) {
+
+          html +=
+
+            '<span class="chat-time">' +
+
+              escapeHtml(
+                formatTime(
+                  item.timestamp
+                )
+              ) +
+
+            '</span>';
+
+        }
+
+
+        html +=
+          '</div>';
+
+
+        return html;
+
+      }
+    )
+    .join("");
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+}
+
+
+/* =========================================================
+   CLOSE CHAT
+========================================================= */
+
+function closeChat() {
+
+  document
+    .getElementById(
+      "chatOverlay"
+    )
+    .classList.remove(
+      "show"
+    );
+
+
+  document.body.style.overflow =
+    "";
+
+
+  selectedClient =
+    null;
+
+
+  setTimeout(
+    function() {
+
+      window.scrollTo(
+        0,
+        savedScrollPosition
+      );
+
+    },
+    30
+  );
+
+}
+
+
+/* =========================================================
+   CLOSE BY CLICKING OUTSIDE
+========================================================= */
+
+function overlayClick(
+  event
+) {
+
+  if (
+    event.target.id ===
+    "chatOverlay"
+  ) {
+
+    closeChat();
 
   }
 
 }
 
-</style>
 
-</head>
-
-<body>
 /* =========================================================
-   ADMIN REPLY — CONTINUED
+   REFRESH SELECTED CLIENT
+========================================================= */
+
+async function refreshSelectedClient() {
+
+  const senderId =
+    selectedClient
+      ? selectedClient.senderId
+      : null;
+
+
+  await loadClients();
+
+
+  if (
+    !senderId
+  ) {
+
+    return;
+
+  }
+
+
+  const updated =
+    allClients.find(
+      function(client) {
+
+        return (
+          String(
+            client.senderId
+          ) ===
+          String(
+            senderId
+          )
+        );
+
+      }
+    );
+
+
+  if (
+    updated
+  ) {
+
+    selectedClient =
+      updated;
+
+    renderChat();
+
+  }
+
+}
+
+
+/* =========================================================
+   TOGGLE ADMIN REPLY
+========================================================= */
+
+function toggleAdminReply() {
+
+  const form =
+    document.getElementById(
+      "adminForm"
+    );
+
+
+  const button =
+    document.getElementById(
+      "replyToggle"
+    );
+
+
+  if (
+    form.classList.contains(
+      "show"
+    )
+  ) {
+
+    form.classList.remove(
+      "show"
+    );
+
+
+    button.textContent =
+      "✉️ Admin Reply";
+
+  }
+
+  else {
+
+    form.classList.add(
+      "show"
+    );
+
+
+    button.textContent =
+      "✕ Close Admin Reply";
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN REPLY
 ========================================================= */
 
 async function sendAdminReply() {
@@ -7121,7 +9650,9 @@ async function sendAdminReply() {
       .trim();
 
 
-  if (!clientId) {
+  if (
+    !clientId
+  ) {
 
     alert(
       "Enter Client ID."
@@ -7132,7 +9663,9 @@ async function sendAdminReply() {
   }
 
 
-  if (!message) {
+  if (
+    !message
+  ) {
 
     alert(
       "Write your reply."
@@ -7185,11 +9718,13 @@ async function sendAdminReply() {
       await response.json();
 
 
-    if (!response.ok) {
+    if (
+      !response.ok
+    ) {
 
       throw new Error(
         data.error ||
-        "Unable to send reply"
+        "Reply failed"
       );
 
     }
@@ -7197,27 +9732,23 @@ async function sendAdminReply() {
 
     document.getElementById(
       "adminMessage"
-    ).value =
+    )
+      .value =
       "";
 
 
     setStatus(
-      "Reply sent successfully."
+      "Admin reply sent successfully."
     );
 
 
-    await refreshSelectedClient();
+    await loadClients();
 
   }
 
   catch (
     error
   ) {
-
-    console.error(
-      error
-    );
-
 
     alert(
       error.message
@@ -7253,20 +9784,13 @@ async function sendChatReply() {
     textarea.value.trim();
 
 
-  if (!message) {
+  if (
+    !message
+  ) {
 
     return;
 
   }
-
-
-  const senderId =
-    selectedClient.senderId;
-
-
-  const pageKey =
-    selectedClient.pageKey ||
-    selectedClient.page;
 
 
   try {
@@ -7293,10 +9817,10 @@ async function sendChatReply() {
             JSON.stringify({
 
               senderId:
-                senderId,
+                selectedClient.senderId,
 
               pageKey:
-                pageKey,
+                selectedClient.page,
 
               message:
                 message
@@ -7311,11 +9835,13 @@ async function sendChatReply() {
       await response.json();
 
 
-    if (!response.ok) {
+    if (
+      !response.ok
+    ) {
 
       throw new Error(
         data.error ||
-        "Unable to send reply"
+        "Reply failed"
       );
 
     }
@@ -7325,6 +9851,11 @@ async function sendChatReply() {
       "";
 
 
+    setStatus(
+      "Reply sent successfully."
+    );
+
+
     await refreshSelectedClient();
 
   }
@@ -7332,11 +9863,6 @@ async function sendChatReply() {
   catch (
     error
   ) {
-
-    console.error(
-      error
-    );
-
 
     alert(
       error.message
@@ -7348,7 +9874,7 @@ async function sendChatReply() {
 
 
 /* =========================================================
-   ENTER KEY — CHAT
+   CHAT SEND — ENTER
 ========================================================= */
 
 document
@@ -7376,60 +9902,31 @@ document
 
 
 /* =========================================================
-   ENTER KEY — LOGIN
-========================================================= */
-
-document
-  .getElementById(
-    "secret"
-  )
-  .addEventListener(
-    "keydown",
-    function(event) {
-
-      if (
-        event.key ===
-        "Enter"
-      ) {
-
-        event.preventDefault();
-
-        login();
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   INITIALIZE
+   LOAD SAVED ADMIN SECRET
 ========================================================= */
 
 window.addEventListener(
   "load",
   function() {
 
-    const savedSecret =
+    const saved =
       localStorage.getItem(
         "adminSecret"
       );
 
 
     if (
-      savedSecret
+      saved
     ) {
 
       adminSecret =
-        savedSecret;
+        saved;
 
 
-      document
-        .getElementById(
-          "secret"
-        )
-        .value =
-        savedSecret;
+      document.getElementById(
+        "secret"
+      ).value =
+        saved;
 
 
       loadClients();
@@ -7441,7 +9938,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   ESCAPE KEY — CLOSE CHAT
+   ESCAPE KEY
 ========================================================= */
 
 document.addEventListener(
@@ -7475,12 +9972,16 @@ document.addEventListener(
   }
 );
 
+
+/* =========================================================
+   END ADMIN UI SCRIPT
+========================================================= */
+
 </script>
 
 </body>
 
 </html>
-
     `);
 
   }
@@ -7489,7 +9990,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   HEALTH CHECK
+   ROOT
 ========================================================= */
 
 app.get(
@@ -7499,72 +10000,9 @@ app.get(
     res
   ) => {
 
-    res.json({
-
-      success:
-        true,
-
-      service:
-        BUSINESS_NAME,
-
-      status:
-        "online",
-
-      time:
-        nowISO()
-
-    });
-
-  }
-);
-
-
-/* =========================================================
-   ADMIN HEALTH
-========================================================= */
-
-app.get(
-  "/admin/health",
-  requireAdmin,
-  async (
-    req,
-    res
-  ) => {
-
-    const rows =
-      await supabaseGetAllConversations();
-
-
-    return res.json({
-
-      success:
-        true,
-
-      status:
-        "online",
-
-      database:
-        supabaseConfigured()
-          ? "configured"
-          : "not configured",
-
-      conversations:
-        rows.length,
-
-      pages:
-        Object.keys(
-          PAGE_CONFIGS
-        ),
-
-      ai:
-        Boolean(
-          OPEN_AI
-        ),
-
-      time:
-        nowISO()
-
-    });
+    res.send(
+      "Instagram automation is running."
+    );
 
   }
 );
@@ -7578,9 +10016,22 @@ async function startServer() {
 
   try {
 
-    await hydrateAdminConversations();
+    await hydrateConversations();
+
 
     await restorePendingReminders();
+
+
+    app.listen(
+      PORT,
+      () => {
+
+        console.log(
+          `Server running on port ${PORT}`
+        );
+
+      }
+    );
 
   }
 
@@ -7589,56 +10040,23 @@ async function startServer() {
   ) {
 
     console.error(
-      "STARTUP RESTORE ERROR:",
-      error.message
+      "SERVER START ERROR:",
+      error
+    );
+
+
+    process.exit(
+      1
     );
 
   }
-
-
-  app.listen(
-    PORT,
-    () => {
-
-      console.log(
-        `${BUSINESS_NAME} server running on port ${PORT}`
-      );
-
-
-      console.log(
-        "Instagram pages:",
-        Object.values(
-          PAGE_CONFIGS
-        )
-          .map(
-            page =>
-              page.username
-          )
-          .join(
-            ", "
-          )
-      );
-
-
-      console.log(
-        "Supabase:",
-        supabaseConfigured()
-          ? "configured"
-          : "NOT CONFIGURED"
-      );
-
-
-      console.log(
-        "OpenAI:",
-        OPEN_AI
-          ? "configured"
-          : "NOT CONFIGURED"
-      );
-
-    }
-  );
 
 }
 
 
 startServer();
+
+
+/* =========================================================
+   END FILE
+========================================================= */
