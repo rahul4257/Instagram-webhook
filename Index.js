@@ -5980,8 +5980,14 @@ app.post(
   }
 );
   
- /* =========================================================
-   SIMPLE ADMIN PAGE
+/* =========================================================
+   ADMIN PAGE — SIMPLE UI VERSION 2
+   - Page filters
+   - Search
+   - Client list
+   - Slide-up chat
+   - Same scroll position after closing chat
+   - Admin Reply at top
 ========================================================= */
 
 app.get(
@@ -6008,52 +6014,137 @@ app.get(
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
-  background: #f5f5f5;
+  padding: 0;
+  background: #f5f5f7;
   color: #111;
   font-family: Arial, sans-serif;
 }
 
+body {
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
 .container {
   width: 100%;
-  max-width: 900px;
+  max-width: 850px;
   margin: auto;
-  padding: 15px;
+  padding: 12px;
 }
 
-h1 {
-  margin: 5px 0 20px;
-  font-size: 28px;
+.title {
+  font-size: 25px;
+  font-weight: 700;
+  margin: 5px 0 14px;
 }
 
-h2 {
-  margin: 0 0 15px;
-  font-size: 22px;
-}
+
+/* =========================================================
+   COMMON CARD
+========================================================= */
 
 .section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.06);
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+.login-row {
+  display: flex;
+  gap: 8px;
+}
+
+.login-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.login-row button {
+  background: #1683ff;
+  color: white;
+  border: 0;
+  border-radius: 10px;
+  padding: 0 18px;
+  font-weight: 600;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid #d1d1d1;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px;
+  outline: none;
   background: white;
-  border-radius: 18px;
-  padding: 18px;
-  margin-bottom: 15px;
-  box-shadow: 0 1px 5px rgba(0,0,0,.08);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #1683ff;
+}
+
+.status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #777;
+}
+
+
+/* =========================================================
+   PAGE FILTERS
+========================================================= */
+
+.page-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
 .page-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
 
 .page-button {
+  flex: 0 0 auto;
   border: 0;
-  background: #eee;
+  border-radius: 9px;
+  background: #eeeeef;
   color: #1683ff;
-  border-radius: 12px;
-  padding: 16px 10px;
-  font-size: 16px;
-  font-weight: 500;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .page-button.active {
@@ -6061,199 +6152,352 @@ h2 {
   color: white;
 }
 
+
+/* =========================================================
+   ADMIN REPLY
+========================================================= */
+
+.reply-toggle {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #eeeeef;
+  color: #1683ff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .admin-form {
   display: none;
+  margin-top: 10px;
 }
 
 .admin-form.show {
   display: block;
 }
 
-input,
-select,
-textarea {
-  width: 100%;
-  border: 1px solid #aaa;
-  border-radius: 10px;
-  padding: 13px;
-  margin-bottom: 10px;
-  font-size: 15px;
-  background: white;
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  margin-bottom: 8px;
 }
 
-textarea {
-  min-height: 110px;
-  resize: vertical;
-}
-
-button {
-  cursor: pointer;
-}
-
-.reply-button,
 .send-button {
   width: 100%;
   border: 0;
   border-radius: 10px;
-  background: #eee;
-  color: #1683ff;
-  padding: 14px;
-  font-size: 16px;
-}
-
-.send-button {
+  padding: 13px;
   background: #1683ff;
   color: white;
+  font-size: 15px;
+  font-weight: 600;
 }
 
-.status {
-  margin-top: 10px;
-  color: #666;
-  font-size: 13px;
-  white-space: pre-wrap;
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
-.client-card {
-  border: 1px solid #ddd;
-  border-radius: 15px;
-  padding: 16px;
-  margin-bottom: 12px;
-  background: white;
+.search-row input {
+  flex: 1;
 }
 
-.client-card.selected {
-  border: 2px solid #1683ff;
-}
-
-.client-name {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  word-break: break-word;
-}
-
-.client-info {
-  color: #666;
-  line-height: 1.7;
+.refresh-button {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 10px;
+  background: #eeeeef;
+  color: #1683ff;
+  padding: 12px 14px;
   font-size: 14px;
 }
 
-.client-card button {
-  width: 100%;
-  border: 0;
-  background: #eee;
-  color: #1683ff;
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 15px;
-}
 
-.chat-box {
-  display: none;
-}
+/* =========================================================
+   CLIENT LIST
+========================================================= */
 
-.chat-box.show {
-  display: block;
-}
-
-.chat-header {
-  padding-bottom: 12px;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 12px;
-}
-
-.chat-message {
-  padding: 12px;
-  border-radius: 12px;
+.clients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
-  white-space: pre-wrap;
+}
+
+.clients-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.client-count {
+  font-size: 12px;
+  color: #777;
+}
+
+.client-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 13px;
+  margin-bottom: 9px;
+  background: white;
+}
+
+.client-name {
+  font-size: 17px;
+  font-weight: 700;
   word-break: break-word;
 }
 
+.client-details {
+  color: #666;
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 5px;
+}
+
+.open-chat {
+  width: 100%;
+  margin-top: 9px;
+  border: 0;
+  border-radius: 9px;
+  background: #eeeeef;
+  color: #1683ff;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+  padding: 25px 10px;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   SLIDE-UP CHAT OVERLAY
+========================================================= */
+
+.chat-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,.42);
+
+  display: flex;
+  align-items: flex-end;
+
+  visibility: hidden;
+  opacity: 0;
+
+  transition:
+    opacity .2s ease,
+    visibility .2s ease;
+}
+
+.chat-overlay.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.chat-panel {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+
+  height: 88vh;
+
+  background: #fff;
+
+  border-radius:
+    18px 18px 0 0;
+
+  display: flex;
+  flex-direction: column;
+
+  transform:
+    translateY(100%);
+
+  transition:
+    transform .25s ease;
+
+  overflow: hidden;
+}
+
+.chat-overlay.show
+.chat-panel {
+  transform:
+    translateY(0);
+}
+
+
+/* =========================================================
+   CHAT HEADER
+========================================================= */
+
+.chat-top {
+  flex: 0 0 auto;
+
+  padding: 12px 14px;
+
+  border-bottom:
+    1px solid #e5e5e5;
+
+  background: #fff;
+}
+
+.drag-line {
+  width: 38px;
+  height: 4px;
+  border-radius: 10px;
+  background: #ccc;
+  margin: 0 auto 10px;
+}
+
+.chat-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-title strong {
+  display: block;
+  font-size: 17px;
+  word-break: break-word;
+}
+
+.chat-title span {
+  display: block;
+  color: #777;
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.close-chat {
+  border: 0;
+  background: #eeeeef;
+  color: #333;
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   CHAT MESSAGES
+========================================================= */
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  background: #f7f7f8;
+}
+
+.chat-message {
+  max-width: 85%;
+  padding: 10px 12px;
+  border-radius: 13px;
+  margin-bottom: 9px;
+
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .chat-message.client {
-  background: #eeeeee;
+  margin-right: auto;
+  background: #e8e8ea;
 }
 
 .chat-message.assistant {
+  margin-left: auto;
   background: #d9f7ef;
 }
 
 .chat-time {
   display: block;
-  margin-top: 6px;
-  font-size: 11px;
+  margin-top: 5px;
+  font-size: 10px;
   color: #777;
 }
 
-.back-button {
-  width: 100%;
-  border: 0;
-  background: #eee;
-  color: #1683ff;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 12px;
-  font-size: 15px;
+
+/* =========================================================
+   CHAT REPLY
+========================================================= */
+
+.chat-reply {
+  flex: 0 0 auto;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background: #fff;
 }
 
-.refresh-button {
-  width: 100%;
-  border: 0;
-  background: #eee;
-  color: #1683ff;
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 15px;
+.chat-reply textarea {
+  min-height: 65px;
+  max-height: 130px;
+  resize: vertical;
+  margin-bottom: 7px;
 }
 
-.login-box {
+.chat-actions {
   display: flex;
-  gap: 8px;
+  gap: 7px;
 }
 
-.login-box input {
-  margin: 0;
-}
-
-.login-box button {
+.chat-send {
+  flex: 1;
   border: 0;
-  border-radius: 10px;
+  border-radius: 9px;
   background: #1683ff;
   color: white;
-  padding: 0 18px;
-  font-size: 15px;
+  padding: 11px;
+  font-weight: 600;
 }
 
-.count {
-  color: #777;
-  font-size: 14px;
-  margin-bottom: 12px;
+.chat-refresh {
+  border: 0;
+  border-radius: 9px;
+  background: #eeeeef;
+  color: #1683ff;
+  padding: 11px 13px;
 }
 
-.no-clients {
-  text-align: center;
-  color: #777;
-  padding: 20px;
-}
 
-@media(max-width:500px) {
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (
+  max-width: 500px
+) {
 
   .container {
-    padding: 10px;
+    padding: 9px;
   }
 
-  h1 {
-    font-size: 25px;
+  .chat-panel {
+    height: 92vh;
   }
 
-  .page-buttons {
-    gap: 9px;
-  }
-
-  .page-button {
-    padding: 14px 8px;
+  .chat-message {
+    max-width: 90%;
   }
 
 }
@@ -6262,11 +6506,15 @@ button {
 
 </head>
 
+
 <body>
 
 <div class="container">
 
-  <h1>Instagram Admin</h1>
+
+  <div class="title">
+    Instagram Admin
+  </div>
 
 
   <!-- =====================================================
@@ -6275,7 +6523,7 @@ button {
 
   <div class="section">
 
-    <div class="login-box">
+    <div class="login-row">
 
       <input
         id="secret"
@@ -6295,19 +6543,21 @@ button {
       id="status"
       class="status"
     >
-      Enter your Admin Secret.
+      Enter Admin Secret.
     </div>
 
   </div>
 
 
   <!-- =====================================================
-       PAGE SELECTION
+       PAGES
   ====================================================== -->
 
   <div class="section">
 
-    <h2>Pages</h2>
+    <div class="page-title">
+      Pages
+    </div>
 
     <div class="page-buttons">
 
@@ -6362,14 +6612,12 @@ button {
 
   <div class="section">
 
-    <h2>✉️ Admin Reply</h2>
-
     <button
       id="replyToggle"
-      class="reply-button"
-      onclick="toggleReply()"
+      class="reply-toggle"
+      onclick="toggleAdminReply()"
     >
-      Open Admin Reply
+      ✉️ Admin Reply
     </button>
 
 
@@ -6379,13 +6627,12 @@ button {
     >
 
       <input
-        id="replyUsername"
-        placeholder="Instagram username"
+        id="adminClientId"
+        placeholder="Client ID"
       >
 
-
       <select
-        id="replyPage"
+        id="adminPage"
       >
 
         <option value="europe">
@@ -6406,24 +6653,16 @@ button {
 
       </select>
 
-
-      <input
-        id="replyClientId"
-        placeholder="Instagram client ID"
-      >
-
-
       <textarea
-        id="replyMessage"
+        id="adminMessage"
         placeholder="Write your reply..."
       ></textarea>
-
 
       <button
         class="send-button"
         onclick="sendAdminReply()"
       >
-        📤 Send Reply
+        Send Reply
       </button>
 
     </div>
@@ -6432,25 +6671,54 @@ button {
 
 
   <!-- =====================================================
-       CLIENTS
+       SEARCH + CLIENTS
   ====================================================== -->
 
   <div class="section">
 
-    <h2>Clients</h2>
+    <div class="search-row">
 
-    <div
-      id="clientCount"
-      class="count"
-    >
-      0 clients
+      <input
+        id="search"
+        placeholder="🔎 Search username or client ID"
+        oninput="renderClients()"
+      >
+
+      <button
+        class="refresh-button"
+        onclick="loadClients()"
+      >
+        ↻
+      </button>
+
     </div>
+
+  </div>
+
+
+  <div class="section">
+
+    <div class="clients-header">
+
+      <div class="clients-title">
+        Clients
+      </div>
+
+      <div
+        id="clientCount"
+        class="client-count"
+      >
+        0
+      </div>
+
+    </div>
+
 
     <div
       id="clients"
     >
 
-      <div class="no-clients">
+      <div class="empty">
         Login to load clients.
       </div>
 
@@ -6458,65 +6726,99 @@ button {
 
   </div>
 
+</div>
 
-  <!-- =====================================================
-       CHAT
-  ====================================================== -->
+
+<!-- =======================================================
+     SLIDE-UP CHAT
+======================================================== -->
+
+<div
+  id="chatOverlay"
+  class="chat-overlay"
+  onclick="overlayClick(event)"
+>
 
   <div
-    id="chatSection"
-    class="section chat-box"
+    class="chat-panel"
+    onclick="event.stopPropagation()"
   >
 
-    <button
-      class="back-button"
-      onclick="closeChat()"
-    >
-      ← Back to Clients
-    </button>
+
+    <div class="chat-top">
+
+      <div class="drag-line"></div>
 
 
-    <div
-      id="chatHeader"
-      class="chat-header"
-    >
+      <div class="chat-header-row">
+
+        <div
+          id="chatTitle"
+          class="chat-title"
+        >
+
+        </div>
+
+
+        <button
+          class="close-chat"
+          onclick="closeChat()"
+        >
+          Close
+        </button>
+
+      </div>
+
     </div>
 
 
     <div
       id="chatMessages"
+      class="chat-messages"
     >
+
     </div>
 
 
-    <textarea
-      id="chatReply"
-      placeholder="Write your reply..."
-    ></textarea>
+    <div class="chat-reply">
+
+      <textarea
+        id="chatReply"
+        placeholder="Write your reply..."
+      ></textarea>
 
 
-    <button
-      class="send-button"
-      onclick="sendChatReply()"
-    >
-      Send Reply
-    </button>
+      <div class="chat-actions">
+
+        <button
+          class="chat-send"
+          onclick="sendChatReply()"
+        >
+          Send Reply
+        </button>
 
 
-    <button
-      class="refresh-button"
-      onclick="loadClients()"
-    >
-      Refresh Conversation
-    </button>
+        <button
+          class="chat-refresh"
+          onclick="refreshSelectedClient()"
+        >
+          ↻
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
-
 
 </div>
 
 
 <script>
+
+/* =========================================================
+   STATE
+========================================================= */
 
 let adminSecret = "";
 
@@ -6525,6 +6827,8 @@ let allClients = [];
 let selectedPage = "all";
 
 let selectedClient = null;
+
+let savedScrollPosition = 0;
 
 
 /* =========================================================
@@ -6799,18 +7103,16 @@ function selectPage(
     );
 
 
-  const selectedButton =
+  const button =
     document.getElementById(
       "page-" +
       page
     );
 
 
-  if (
-    selectedButton
-  ) {
+  if (button) {
 
-    selectedButton.classList.add(
+    button.classList.add(
       "active"
     );
 
@@ -6823,29 +7125,78 @@ function selectPage(
 
 
 /* =========================================================
-   FILTER CLIENTS
+   FILTER
 ========================================================= */
 
 function getFilteredClients() {
 
+  let result =
+    allClients;
+
+
   if (
-    selectedPage ===
+    selectedPage !==
     "all"
   ) {
 
-    return allClients;
+    result =
+      result.filter(
+        client =>
+          String(
+            client.page ||
+            ""
+          ).toLowerCase() ===
+          selectedPage.toLowerCase()
+      );
 
   }
 
 
-  return allClients.filter(
-    client =>
-      String(
-        client.page ||
-        ""
-      ).toLowerCase() ===
-      selectedPage.toLowerCase()
-  );
+  const search =
+    document.getElementById(
+      "search"
+    )
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  if (search) {
+
+    result =
+      result.filter(
+        client => {
+
+          const username =
+            String(
+              client.username ||
+              ""
+            ).toLowerCase();
+
+
+          const id =
+            String(
+              client.senderId ||
+              ""
+            ).toLowerCase();
+
+
+          return (
+            username.includes(
+              search
+            ) ||
+            id.includes(
+              search
+            )
+          );
+
+        }
+      );
+
+  }
+
+
+  return result;
 
 }
 
@@ -6862,26 +7213,26 @@ function renderClients() {
     );
 
 
-  const filtered =
+  const clients =
     getFilteredClients();
 
 
   document.getElementById(
     "clientCount"
   ).textContent =
-    filtered.length +
+    clients.length +
     (
-      filtered.length === 1
+      clients.length === 1
         ? " client"
         : " clients"
     );
 
 
-  if (!filtered.length) {
+  if (!clients.length) {
 
     container.innerHTML =
-      '<div class="no-clients">' +
-      "No clients on this page." +
+      '<div class="empty">' +
+      "No clients found." +
       "</div>";
 
     return;
@@ -6890,7 +7241,7 @@ function renderClients() {
 
 
   container.innerHTML =
-    filtered
+    clients
       .map(
         client => {
 
@@ -6909,81 +7260,85 @@ function renderClients() {
             "none";
 
 
+          const stage =
+            client.stage ||
+            "NEW";
+
+
           const reminder =
             client.reminder
               ? "Active"
               : "No reminder";
 
 
-          return (
+          return `
 
-            '<div class="client-card">' +
+<div class="client-card">
 
-              '<div class="client-name">' +
-                escapeHtml(
-                  username
-                ) +
-              '</div>' +
+  <div class="client-name">
+    ${escapeHtml(
+      username
+    )}
+  </div>
 
-              '<div class="client-info">' +
+  <div class="client-details">
 
-                "Page: " +
-                escapeHtml(
-                  client.page ||
-                  "unknown"
-                ) +
+    Page:
+    ${escapeHtml(
+      client.page ||
+      "unknown"
+    )}
 
-                "<br>" +
+    <br>
 
-                "Stage: " +
-                escapeHtml(
-                  client.stage ||
-                  "NEW"
-                ) +
+    Stage:
+    ${escapeHtml(
+      stage
+    )}
 
-                "<br>" +
+    <br>
 
-                "Package: " +
-                escapeHtml(
-                  packageName
-                ) +
+    Package:
+    ${escapeHtml(
+      packageName
+    )}
 
-                "<br>" +
+    <br>
 
-                "Payment: " +
-                escapeHtml(
-                  payment
-                ) +
+    Payment:
+    ${escapeHtml(
+      payment
+    )}
 
-                "<br>" +
+    <br>
 
-                "Reminder: " +
-                escapeHtml(
-                  reminder
-                ) +
+    Reminder:
+    ${escapeHtml(
+      reminder
+    )}
 
-                "<br>" +
+    <br>
 
-                "ID: " +
-                escapeHtml(
-                  client.senderId
-                ) +
+    ID:
+    ${escapeHtml(
+      client.senderId
+    )}
 
-              "</div>" +
+  </div>
 
-              '<button onclick="openClient(\\'' +
-                escapeHtml(
-                  client.senderId
-                ) +
-              '\\')">' +
 
-                "Reply / Open Chat" +
+  <button
+    class="open-chat"
+    onclick="openChat('${escapeHtml(
+      client.senderId
+    )}')"
+  >
+    💬 Open Chat
+  </button>
 
-              "</button>" +
+</div>
 
-            "</div>"
-
-          );
+`;
 
         }
       )
@@ -6993,50 +7348,52 @@ function renderClients() {
 
 
 /* =========================================================
-   OPEN CLIENT CHAT
+   OPEN CHAT
 ========================================================= */
 
-function openClient(
+function openChat(
   senderId
 ) {
 
-  const client =
+  selectedClient =
     allClients.find(
-      item =>
-        item.senderId ===
+      client =>
+        client.senderId ===
         senderId
-    );
+    ) ||
+    null;
 
 
-  if (!client) {
+  if (!selectedClient) {
 
     return;
 
   }
 
 
-  selectedClient =
-    client;
+  /*
+     Save exact page scroll position.
+     When chat closes we restore it.
+  */
+
+  savedScrollPosition =
+    window.scrollY;
 
 
-  document.getElementById(
-    "chatSection"
-  )
+  renderChat();
+
+
+  document
+    .getElementById(
+      "chatOverlay"
+    )
     .classList.add(
       "show"
     );
 
 
-  document.getElementById(
-    "chatSection"
-  )
-    .scrollIntoView({
-      behavior:
-        "smooth"
-    });
-
-
-  renderChat();
+  document.body.style.overflow =
+    "hidden";
 
 }
 
@@ -7047,9 +7404,7 @@ function openClient(
 
 function renderChat() {
 
-  if (
-    !selectedClient
-  ) {
+  if (!selectedClient) {
 
     return;
 
@@ -7062,32 +7417,40 @@ function renderChat() {
 
 
   document.getElementById(
-    "chatHeader"
-  ).innerHTML =
+    "chatTitle"
+  ).innerHTML = `
 
-    "<h2>" +
-      escapeHtml(
-        username
-      ) +
-    "</h2>" +
+<strong>
+  ${escapeHtml(
+    username
+  )}
+</strong>
 
-    "<div class='client-info'>" +
+<span>
 
-      "Page: " +
-      escapeHtml(
-        selectedClient.page ||
-        "unknown"
-      ) +
+  Page:
+  ${escapeHtml(
+    selectedClient.page ||
+    "unknown"
+  )}
 
-      "<br>" +
+  &nbsp; | &nbsp;
 
-      "Stage: " +
-      escapeHtml(
-        selectedClient.stage ||
-        "NEW"
-      ) +
+  Stage:
+  ${escapeHtml(
+    selectedClient.stage ||
+    "NEW"
+  )}
 
-    "</div>";
+</span>
+
+`;
+
+
+  const messages =
+    document.getElementById(
+      "chatMessages"
+    );
 
 
   const history =
@@ -7098,16 +7461,10 @@ function renderChat() {
       : [];
 
 
-  const messages =
-    document.getElementById(
-      "chatMessages"
-    );
-
-
   if (!history.length) {
 
     messages.innerHTML =
-      '<div class="no-clients">' +
+      '<div class="empty">' +
       "No messages found." +
       "</div>";
 
@@ -7128,47 +7485,40 @@ function renderChat() {
               : "assistant";
 
 
-          return (
+          return `
 
-            '<div class="chat-message ' +
-            role +
-            '">' +
+<div class="chat-message ${role}">
 
-              escapeHtml(
-                item.text ||
-                ""
-              ) +
+  ${escapeHtml(
+    item.text ||
+    ""
+  )}
 
-              (
+  ${
+    item.timestamp
+      ? `
+        <span class="chat-time">
+          ${escapeHtml(
+            formatTime(
+              item.timestamp
+            )
+          )}
+        </span>
+      `
+      : ""
+  }
 
-                item.timestamp
+</div>
 
-                  ? (
-
-                    '<span class="chat-time">' +
-
-                      escapeHtml(
-                        formatTime(
-                          item.timestamp
-                        )
-                      ) +
-
-                    "</span>"
-
-                  )
-
-                  : ""
-
-              ) +
-
-            "</div>"
-
-          );
+`;
 
         }
       )
       .join("");
 
+
+  messages.scrollTop =
+    messages.scrollHeight;
 
 }
 
@@ -7179,25 +7529,108 @@ function renderChat() {
 
 function closeChat() {
 
-  selectedClient =
-    null;
-
-
-  document.getElementById(
-    "chatSection"
-  )
+  document
+    .getElementById(
+      "chatOverlay"
+    )
     .classList.remove(
       "show"
     );
+
+
+  document.body.style.overflow =
+    "";
+
+
+  /*
+     Restore the exact position where
+     the client was selected.
+  */
+
+  setTimeout(
+    () => {
+
+      window.scrollTo(
+        0,
+        savedScrollPosition
+      );
+
+    },
+    30
+  );
+
+
+  selectedClient =
+    null;
 
 }
 
 
 /* =========================================================
-   ADMIN REPLY
+   CLICK OUTSIDE CHAT
 ========================================================= */
 
-function toggleReply() {
+function overlayClick(
+  event
+) {
+
+  if (
+    event.target.id ===
+    "chatOverlay"
+  ) {
+
+    closeChat();
+
+  }
+
+}
+
+
+/* =========================================================
+   REFRESH SELECTED CLIENT
+========================================================= */
+
+async function refreshSelectedClient() {
+
+  const senderId =
+    selectedClient?.senderId;
+
+
+  await loadClients();
+
+
+  if (!senderId) {
+
+    return;
+
+  }
+
+
+  const updated =
+    allClients.find(
+      client =>
+        client.senderId ===
+        senderId
+    );
+
+
+  if (updated) {
+
+    selectedClient =
+      updated;
+
+    renderChat();
+
+  }
+
+}
+
+
+/* =========================================================
+   TOGGLE ADMIN REPLY
+========================================================= */
+
+function toggleAdminReply() {
 
   const form =
     document.getElementById(
@@ -7223,7 +7656,7 @@ function toggleReply() {
 
 
     button.textContent =
-      "Open Admin Reply";
+      "✉️ Admin Reply";
 
   }
 
@@ -7235,7 +7668,7 @@ function toggleReply() {
 
 
     button.textContent =
-      "Close Admin Reply";
+      "✕ Close Admin Reply";
 
   }
 
@@ -7243,14 +7676,14 @@ function toggleReply() {
 
 
 /* =========================================================
-   SEND ADMIN REPLY FROM TOP
+   ADMIN REPLY
 ========================================================= */
 
 async function sendAdminReply() {
 
-  const username =
+  const clientId =
     document.getElementById(
-      "replyUsername"
+      "adminClientId"
     )
       .value
       .trim();
@@ -7258,22 +7691,14 @@ async function sendAdminReply() {
 
   const pageKey =
     document.getElementById(
-      "replyPage"
+      "adminPage"
     )
       .value;
 
 
-  const clientId =
-    document.getElementById(
-      "replyClientId"
-    )
-      .value
-      .trim();
-
-
   const message =
     document.getElementById(
-      "replyMessage"
+      "adminMessage"
     )
       .value
       .trim();
@@ -7282,7 +7707,7 @@ async function sendAdminReply() {
   if (!clientId) {
 
     alert(
-      "Enter Instagram client ID."
+      "Enter Client ID."
     );
 
     return;
@@ -7293,7 +7718,7 @@ async function sendAdminReply() {
   if (!message) {
 
     alert(
-      "Write your reply first."
+      "Write your reply."
     );
 
     return;
@@ -7354,7 +7779,7 @@ async function sendAdminReply() {
 
 
     document.getElementById(
-      "replyMessage"
+      "adminMessage"
     )
       .value =
       "";
@@ -7366,24 +7791,6 @@ async function sendAdminReply() {
 
 
     await loadClients();
-
-
-    const updated =
-      allClients.find(
-        client =>
-          client.senderId ===
-          clientId
-      );
-
-
-    if (updated) {
-
-      selectedClient =
-        updated;
-
-      renderChat();
-
-    }
 
   }
 
@@ -7401,14 +7808,12 @@ async function sendAdminReply() {
 
 
 /* =========================================================
-   SEND REPLY FROM CLIENT CHAT
+   CHAT REPLY
 ========================================================= */
 
 async function sendChatReply() {
 
-  if (
-    !selectedClient
-  ) {
+  if (!selectedClient) {
 
     return;
 
@@ -7488,30 +7893,12 @@ async function sendChatReply() {
       "";
 
 
+    await refreshSelectedClient();
+
+
     setStatus(
       "Reply sent successfully."
     );
-
-
-    await loadClients();
-
-
-    const updated =
-      allClients.find(
-        client =>
-          client.senderId ===
-          selectedClient.senderId
-      );
-
-
-    if (updated) {
-
-      selectedClient =
-        updated;
-
-      renderChat();
-
-    }
 
   }
 
@@ -7529,7 +7916,39 @@ async function sendChatReply() {
 
 
 /* =========================================================
-   AUTO LOAD SAVED SECRET
+   ENTER TO SEND
+   Ctrl + Enter / Command + Enter
+========================================================= */
+
+document
+  .getElementById(
+    "chatReply"
+  )
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        event.key ===
+        "Enter" &&
+        (
+          event.ctrlKey ||
+          event.metaKey
+        )
+      ) {
+
+        event.preventDefault();
+
+        sendChatReply();
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   LOAD SAVED ADMIN SECRET
 ========================================================= */
 
 (function() {
