@@ -9415,18 +9415,18 @@ async function loadClients() {
 
     }
 
+allClients =
+  Array.isArray(
+    data.clients
+  )
+    ? data.clients
+    : [];
 
-    allClients =
-      Array.isArray(
-        data.clients
-      )
-        ? data.clients
-        : [];
 
-
-    renderPageButtons();
-    renderAdminPages();
-    renderClients();
+renderPageButtons();
+renderAdminPages();
+renderClients();
+   
 
 
     setStatus(
@@ -9476,20 +9476,41 @@ function renderPageButtons() {
   }
 
 
-  const pages =
-    Array.from(
-      new Set(
-        allClients
-          .map(
-            client =>
-              client.pageKey ||
-              client.page
-          )
-          .filter(
-            Boolean
-          )
-      )
-    );
+  const pages = [
+
+    {
+      key:
+        "europe",
+
+      username:
+        "@expl.europe"
+    },
+
+    {
+      key:
+        "canada",
+
+      username:
+        "@expl.canada"
+    },
+
+    {
+      key:
+        "mentalxheal",
+
+      username:
+        "@mentalxheal"
+    },
+
+    {
+      key:
+        "miami",
+
+      username:
+        "@expl.miami"
+    }
+
+  ];
 
 
   let html =
@@ -9501,7 +9522,7 @@ function renderPageButtons() {
         : ""
     ) +
     '" onclick="selectPage(\'all\')">' +
-    'All' +
+    'All Pages' +
     '</button>';
 
 
@@ -9512,17 +9533,15 @@ function renderPageButtons() {
         '<button class="page-button ' +
         (
           selectedPage ===
-          page
+          page.key
             ? "active"
             : ""
         ) +
         '" onclick="selectPage(\'' +
-        escapeHtml(
-          page
-        ) +
+        page.key +
         '\')">' +
         escapeHtml(
-          page
+          page.username
         ) +
         '</button>';
 
@@ -9534,24 +9553,9 @@ function renderPageButtons() {
     html;
 
 }
-
-
-/* =========================================================
-   SELECT PAGE
+  
 ========================================================= */
 
-function selectPage(
-  page
-) {
-
-  selectedPage =
-    page;
-
-
-  renderPageButtons();
-  renderClients();
-
-}
 
 
 /* =========================================================
