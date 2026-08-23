@@ -38,7 +38,43 @@ const PORT =
 
 const ADMIN_SECRET =
   process.env.ADMIN_SECRET || "";
+/* =========================================================
+   ADMIN AUTHENTICATION
+========================================================= */
 
+function requireAdmin(
+  req,
+  res,
+  next
+) {
+
+  const secret =
+    String(
+      req.headers["x-admin-secret"] ||
+      ""
+    ).trim();
+
+
+  if (
+    !ADMIN_SECRET ||
+    secret !== ADMIN_SECRET
+  ) {
+
+    return res
+      .status(401)
+      .json({
+        success:
+          false,
+        error:
+          "Unauthorized"
+      });
+
+  }
+
+
+  next();
+
+}
 
 /* =========================================================
    SUPABASE
