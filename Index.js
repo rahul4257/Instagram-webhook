@@ -7457,77 +7457,64 @@ function renderClients() {
   ) {
 
     container.innerHTML =
-      `
-      <div class="empty">
-        No clients found.
-      </div>
-      `;
+  '<div class="empty">' +
+  'No clients found.' +
+  '</div>';
 
-    return;
+    container.innerHTML =
+  clients
+    .map(
+      function(client) {
 
-  }
+        return (
+          '<div class="client-card">' +
 
-
-  container.innerHTML =
-    clients
-      .map(
-        function(client) {
-
-          return `
-          <div
-            class="client-card"
-            onclick="openClient('${escapeHtml(
-              client.senderId
-            )}')"
-          >
-
-            <div class="client-name">
-              ${escapeHtml(
+            '<div class="client-name">' +
+              escapeHtml(
                 client.username ||
                 "Unknown"
-              )}
-            </div>
+              ) +
+            '</div>' +
 
-            <div class="client-details">
+            '<div class="client-details">' +
 
-              Page:
-              ${escapeHtml(
+              'Page: ' +
+              escapeHtml(
                 client.page ||
                 client.pageKey ||
                 "Unknown"
-              )}
+              ) +
 
-              <br>
+              '<br>' +
 
-              Stage:
-              ${escapeHtml(
+              'Stage: ' +
+              escapeHtml(
                 client.stage ||
                 "NEW"
-              )}
+              ) +
 
-              <br>
+              '<br>' +
 
-              ${escapeHtml(
+              escapeHtml(
                 client.lastCustomerMessage ||
                 client.lastOutgoingText ||
                 ""
-              )}
+              ) +
 
-            </div>
+            '</div>' +
 
-          </div>
-          `;
+          '</div>'
+        );
 
-        }
-      )
-      .join("");
-
-}
-
+      }
+    )
+    .join("");
 
 /* =========================================================
    END PART 7
 ========================================================= */
+`;
+}
 /* =========================================================
    WEBHOOK
 ========================================================= */
@@ -7773,7 +7760,9 @@ app.post(
                         "";
 
 
-                      return `${type}:${url}`;
+                      return (
+                        `${type}:${url}`
+                      );
 
                     }
                   )
@@ -7835,6 +7824,17 @@ app.post(
 
           }
 
+
+          /*
+           * IMPORTANT:
+           *
+           * The saved conversation is loaded
+           * BEFORE enqueueing the new message.
+           *
+           * This keeps the existing stage,
+           * Message 1/2/packages state,
+           * selected package and payment state.
+           */
 
           enqueueClientMessage(
             page,
@@ -8088,123 +8088,6 @@ function buildAdminClient(
   };
 
 }
-
-
-/* =========================================================
-   ADMIN CLIENT LIST
-========================================================= */
-
-async function getAdminClients() {
-
-  const rows =
-    await supabaseGetAllConversations();
-
-
-  const clients =
-    [];
-
-
-  for (
-    const row
-    of rows
-  ) {
-
-    const senderId =
-      String(
-        row?.id ||
-        ""
-      ).trim();
-
-
-    if (
-      !senderId
-    ) {
-
-      continue;
-
-    }
-
-
-    const stored =
-      row?.messages;
-
-
-    if (
-      !stored ||
-      typeof stored !==
-        "object" ||
-      Array.isArray(
-        stored
-      )
-    ) {
-
-      continue;
-
-    }
-
-
-    stored.senderId =
-      senderId;
-
-
-    stored.history =
-      normalizeAdminHistory(
-        stored.history
-      );
-
-
-    conversations.set(
-      senderId,
-      stored
-    );
-
-
-    clients.push(
-      buildAdminClient(
-        senderId,
-        stored
-      )
-    );
-
-  }
-
-
-  clients.sort(
-    (
-      a,
-      b
-    ) => {
-
-      const aTime =
-        new Date(
-          a.lastCustomerMessageAt ||
-          a.lastOutgoingAt ||
-          0
-        ).getTime();
-
-
-      const bTime =
-        new Date(
-          b.lastCustomerMessageAt ||
-          b.lastOutgoingAt ||
-          0
-        ).getTime();
-
-
-      return (
-        bTime -
-        aTime
-      );
-
-    }
-  );
-
-
-  return clients;
-
-}
-
-
 /* =========================================================
    ADMIN CLIENTS API
 ========================================================= */
@@ -8216,19 +8099,19 @@ app.get(
     req,
     res
   ) => {
-      try {
+
+    try {
 
       const clients =
         await getAdminClients();
 
 
       return res.json({
-
         success:
           true,
 
-        clients
-
+        clients:
+          clients
       });
 
     }
@@ -8253,7 +8136,7 @@ app.get(
             false,
 
           error:
-            error.message
+            "Unable to load clients"
 
         });
 
@@ -8311,16 +8194,20 @@ app.get(
         );
 
 
+      const client =
+        buildAdminClient(
+          senderId,
+          conversation
+        );
+
+
       return res.json({
 
         success:
           true,
 
         client:
-          buildAdminClient(
-            senderId,
-            conversation
-          )
+          client
 
       });
 
@@ -8346,253 +8233,7 @@ app.get(
             false,
 
           error:
-            error.message
-
-        });
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   ADMIN REPLY
-========================================================= */
-
-app.post(
-  "/admin/reply",
-  requireAdmin,
-  async (
-    req,
-    res
-  ) => {
-
-    try {
-
-      const senderId =
-        String(
-          req.body?.senderId ||
-          ""
-        ).trim();
-
-
-      const message =
-        String(
-          req.body?.message ||
-          ""
-        ).trim();
-
-
-      const requestedPage =
-        req.body?.pageKey ||
-        null;
-
-
-      if (
-        !senderId
-      ) {
-
-        return res
-          .status(
-            400
-          )
-          .json({
-
-            success:
-              false,
-
-            error:
-              "senderId is required"
-
-          });
-
-      }
-
-
-      if (
-        !message
-      ) {
-
-        return res
-          .status(
-            400
-          )
-          .json({
-
-            success:
-              false,
-
-            error:
-              "message is required"
-
-          });
-
-      }
-
-
-      const conversation =
-        await getConversation(
-          senderId
-        );
-
-
-      const pageKey =
-        requestedPage ||
-        conversation.pageKey;
-
-
-      const page =
-        PAGE_CONFIGS[
-          pageKey
-        ];
-
-
-      if (
-        !page
-      ) {
-
-        return res
-          .status(
-            400
-          )
-          .json({
-
-            success:
-              false,
-
-            error:
-              "Client page is missing or invalid."
-
-          });
-
-      }
-
-
-      /*
-         ADMIN REPLY HAS PRIORITY.
-
-         Cancel:
-         - pending reminder
-         - pending automatic AI reply
-      */
-
-      invalidatePendingAI(
-        senderId
-      );
-
-
-      const data =
-        await sendInstagramMessage(
-          page,
-          senderId,
-          message
-        );
-
-
-      const messageId =
-        data?.message_id ||
-        data?.id ||
-        null;
-
-
-      if (
-        messageId
-      ) {
-
-        outgoingMessages.add(
-          `${page.key}:${String(
-            messageId
-          )}`
-        );
-
-      }
-
-
-      conversation.pageKey =
-        page.key;
-
-
-      saveMessage(
-        conversation,
-        "assistant",
-        message
-      );
-
-
-      conversation.lastOutgoingMessageId =
-        messageId
-          ? String(
-              messageId
-            )
-          : null;
-
-
-      conversation.lastOutgoingText =
-        message;
-
-
-      conversation.lastOutgoingStage =
-        conversation.stage;
-
-
-      conversation.lastOutgoingAt =
-        nowISO();
-
-
-      conversation.reminder =
-        null;
-
-
-      await saveConversation(
-        senderId,
-        conversation
-      );
-
-
-      return res.json({
-
-        success:
-          true,
-
-        messageId:
-          messageId,
-
-        senderId:
-          senderId,
-
-        username:
-          conversation.clientUsername ||
-          null,
-
-        page:
-          page.username
-
-      });
-
-    }
-
-    catch (
-      error
-    ) {
-
-      console.error(
-        "ADMIN REPLY ERROR:",
-        error.message
-      );
-
-
-      return res
-        .status(
-          500
-        )
-        .json({
-
-          success:
-            false,
-
-          error:
-            error.message
+            "Unable to load client"
 
         });
 
@@ -8644,15 +8285,41 @@ app.post(
       }
 
 
-      invalidatePendingAI(
-        senderId
-      );
-
-
       const conversation =
-        createConversation(
+        await getConversation(
           senderId
         );
+
+
+      conversation.stage =
+        "NEW";
+
+      conversation.messageOneSent =
+        false;
+
+      conversation.messageTwoSent =
+        false;
+
+      conversation.packagesSent =
+        false;
+
+      conversation.selectedPackage =
+        null;
+
+      conversation.paymentMethod =
+        null;
+
+      conversation.paymentConfirmed =
+        false;
+
+      conversation.paymentProofReceived =
+        false;
+
+      conversation.promotionComplete =
+        false;
+
+      conversation.reminder =
+        null;
 
 
       await saveConversation(
@@ -8664,10 +8331,7 @@ app.post(
       return res.json({
 
         success:
-          true,
-
-        senderId:
-          senderId
+          true
 
       });
 
@@ -8693,7 +8357,7 @@ app.post(
             false,
 
           error:
-            error.message
+            "Unable to reset client"
 
         });
 
@@ -8704,18 +8368,191 @@ app.post(
 
 
 /* =========================================================
-   ADMIN PAGE — SIMPLE VERSION 2
-   - Page filters
-   - Search
-   - Client list
-   - Slide-up chat
-   - Same scroll position after closing chat
-   - Admin Reply at top
+   ADMIN REPLY
+========================================================= */
+
+app.post(
+  "/admin/reply",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
+
+    try {
+
+      const senderId =
+        String(
+          req.body?.senderId ||
+          ""
+        ).trim();
+
+
+      const pageKey =
+        String(
+          req.body?.pageKey ||
+          ""
+        ).trim();
+
+
+      const message =
+        String(
+          req.body?.message ||
+          ""
+        ).trim();
+
+
+      if (
+        !senderId ||
+        !pageKey ||
+        !message
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "senderId, pageKey and message are required"
+
+          });
+
+      }
+
+
+      const page =
+        getPageByKey(
+          pageKey
+        );
+
+
+      if (
+        !page
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "Invalid page"
+
+          });
+
+      }
+
+
+      await sendInstagramMessage(
+        page,
+        senderId,
+        message
+      );
+
+
+      const conversation =
+        await getConversation(
+          senderId
+        );
+
+
+      if (
+        !Array.isArray(
+          conversation.history
+        )
+      ) {
+
+        conversation.history =
+          [];
+
+      }
+
+
+      conversation.history.push({
+
+        role:
+          "assistant",
+
+        text:
+          message,
+
+        timestamp:
+          new Date().toISOString()
+
+      });
+
+
+      conversation.lastOutgoingText =
+        message;
+
+
+      conversation.lastOutgoingAt =
+        new Date().toISOString();
+
+
+      await saveConversation(
+        senderId,
+        conversation
+      );
+
+
+      return res.json({
+
+        success:
+          true
+
+      });
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "ADMIN REPLY ERROR:",
+        error.message
+      );
+
+
+      return res
+        .status(
+          500
+        )
+        .json({
+
+          success:
+            false,
+
+          error:
+            error.message ||
+            "Unable to send reply"
+
+        });
+
+    }
+
+  }
+);
+/* =========================================================
+   ADMIN PAGE
 ========================================================= */
 
 app.get(
   "/admin",
-  (req, res) => {
+  (
+    req,
+    res
+  ) => {
 
     res.send(`
 <!DOCTYPE html>
@@ -9009,16 +8846,11 @@ select:focus {
   position: fixed;
   inset: 0;
   z-index: 1000;
-
-  background:
-    rgba(0,0,0,.42);
-
+  background: rgba(0,0,0,.42);
   display: flex;
   align-items: flex-end;
-
   visibility: hidden;
   opacity: 0;
-
   transition:
     opacity .2s ease,
     visibility .2s ease;
@@ -9033,23 +8865,16 @@ select:focus {
   width: 100%;
   max-width: 850px;
   margin: 0 auto;
-
   height: 88vh;
-
   background: #fff;
-
   border-radius:
     18px 18px 0 0;
-
   display: flex;
   flex-direction: column;
-
   transform:
     translateY(100%);
-
   transition:
     transform .25s ease;
-
   overflow: hidden;
 }
 
@@ -9066,23 +8891,17 @@ select:focus {
 
 .chat-top {
   flex: 0 0 auto;
-
   padding: 12px 14px;
-
   border-bottom:
     1px solid #e5e5e5;
-
   background: #fff;
 }
 
 .drag-line {
   width: 38px;
   height: 4px;
-
   border-radius: 10px;
-
   background: #ccc;
-
   margin:
     0 auto 10px;
 }
@@ -9122,12 +8941,801 @@ select:focus {
 
 
 /* =========================================================
-   END PART 9
+   CHAT MESSAGES
 ========================================================= */
-`);
+
+.chat-messages {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 14px;
+  background: #f7f7f8;
+}
+
+.chat-message {
+  max-width: 82%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-message.client {
+  margin-right: auto;
+  background: #fff;
+  border:
+    1px solid #e2e2e2;
+}
+
+.chat-message.assistant {
+  margin-left: auto;
+  background: #1683ff;
+  color: #fff;
+}
+
+.chat-time {
+  display: block;
+  font-size: 9px;
+  opacity: .65;
+  margin-top: 4px;
+}
+
+
+/* =========================================================
+   CHAT REPLY
+========================================================= */
+
+.chat-reply {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top:
+    1px solid #e5e5e5;
+  background: #fff;
+}
+
+.chat-reply textarea {
+  flex: 1;
+  resize: none;
+  min-height: 44px;
+  max-height: 120px;
+  margin: 0;
+}
+
+.chat-reply button {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 10px;
+  background: #1683ff;
+  color: #fff;
+  padding: 0 16px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (
+  max-width: 600px
+) {
+
+  .container {
+    padding: 8px;
   }
-);
-    " clients";
+
+  .title {
+    font-size: 22px;
+  }
+
+  .chat-panel {
+    height: 92vh;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div
+  class="container"
+>
+
+  <div
+    class="title"
+  >
+    Instagram Admin
+  </div>
+
+
+  <div
+    class="section"
+  >
+
+    <div
+      class="login-row"
+    >
+
+      <input
+        id="secret"
+        type="password"
+        placeholder="Admin Secret"
+      >
+
+      <button
+        onclick="saveSecret()"
+      >
+        Login
+      </button>
+
+    </div>
+
+
+    <div
+      id="status"
+      class="status"
+    ></div>
+
+  </div>
+
+
+  <div
+    class="section"
+  >
+
+    <div
+      class="page-title"
+    >
+      Pages
+    </div>
+
+
+    <div
+      id="pageButtons"
+      class="page-buttons"
+    ></div>
+
+  </div>
+
+
+  <div
+    class="section"
+  >
+
+    <button
+      id="replyToggle"
+      class="reply-toggle"
+      onclick="toggleAdminReply()"
+    >
+      ✉️ Admin Reply
+    </button>
+
+
+    <div
+      id="adminForm"
+      class="admin-form"
+    >
+
+      <input
+        id="adminClientId"
+        placeholder="Client ID"
+      >
+
+
+      <select
+        id="adminPage"
+      ></select>
+
+
+      <textarea
+        id="adminMessage"
+        rows="4"
+        placeholder="Write reply..."
+      ></textarea>
+
+
+      <button
+        class="send-button"
+        onclick="sendAdminReply()"
+      >
+        Send Reply
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="section"
+  >
+
+    <div
+      class="search-row"
+    >
+
+      <input
+        id="search"
+        placeholder="Search username or client ID..."
+        oninput="renderClients()"
+      >
+
+      <button
+        class="refresh-button"
+        onclick="loadClients()"
+      >
+        Refresh
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="section"
+  >
+
+    <div
+      class="clients-header"
+    >
+
+      <div
+        class="clients-title"
+      >
+        Clients
+      </div>
+
+
+      <div
+        id="clientCount"
+        class="client-count"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div
+      id="clients"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<div
+  id="chatOverlay"
+  class="chat-overlay"
+  onclick="overlayClick(event)"
+>
+
+  <div
+    class="chat-panel"
+  >
+
+    <div
+      class="chat-top"
+    >
+
+      <div
+        class="drag-line"
+      ></div>
+
+
+      <div
+        class="chat-header-row"
+      >
+
+        <div
+          id="chatTitle"
+          class="chat-title"
+        ></div>
+
+
+        <button
+          class="close-chat"
+          onclick="closeChat()"
+        >
+          Close
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="chatMessages"
+      class="chat-messages"
+    ></div>
+
+
+    <div
+      class="chat-reply"
+    >
+
+      <textarea
+        id="chatReply"
+        rows="1"
+        placeholder="Reply..."
+      ></textarea>
+
+
+      <button
+        onclick="sendChatReply()"
+      >
+        Send
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+let adminSecret = "";
+let allClients = [];
+let selectedPage = "all";
+let selectedClient = null;
+
+
+/* =========================================================
+   ADMIN LOGIN
+========================================================= */
+
+function saveSecret() {
+
+  const input =
+    document.getElementById(
+      "secret"
+    );
+
+  adminSecret =
+    input.value.trim();
+
+
+  if (!adminSecret) {
+
+    setStatus(
+      "Enter Admin Secret."
+    );
+
+    return;
+
+  }
+
+
+  localStorage.setItem(
+    "adminSecret",
+    adminSecret
+  );
+
+
+  loadClients();
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setStatus(
+  message
+) {
+
+  const status =
+    document.getElementById(
+      "status"
+    );
+
+
+  if (
+    status
+  ) {
+
+    status.textContent =
+      message;
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD CLIENTS
+========================================================= */
+
+async function loadClients() {
+
+  if (
+    !adminSecret
+  ) {
+
+    setStatus(
+      "Admin Secret required."
+    );
+
+    return;
+
+  }
+
+
+  setStatus(
+    "Loading..."
+  );
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin/clients?secret=" +
+        encodeURIComponent(
+          adminSecret
+        ),
+        {
+          cache:
+            "no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Unable to load clients"
+      );
+
+    }
+
+
+    allClients =
+      Array.isArray(
+        data.clients
+      )
+        ? data.clients
+        : [];
+
+
+    renderPageButtons();
+    renderAdminPages();
+    renderClients();
+
+
+    setStatus(
+      "Loaded " +
+      allClients.length +
+      " clients."
+    );
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      error
+    );
+
+
+    setStatus(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   PAGE BUTTONS
+========================================================= */
+
+function renderPageButtons() {
+
+  const container =
+    document.getElementById(
+      "pageButtons"
+    );
+
+
+  if (
+    !container
+  ) {
+
+    return;
+
+  }
+
+
+  const pages =
+    Array.from(
+      new Set(
+        allClients
+          .map(
+            client =>
+              client.pageKey ||
+              client.page
+          )
+          .filter(
+            Boolean
+          )
+      )
+    );
+
+
+  let html =
+    '<button class="page-button ' +
+    (
+      selectedPage ===
+      "all"
+        ? "active"
+        : ""
+    ) +
+    '" onclick="selectPage(\'all\')">' +
+    'All' +
+    '</button>';
+
+
+  pages.forEach(
+    function(page) {
+
+      html +=
+        '<button class="page-button ' +
+        (
+          selectedPage ===
+          page
+            ? "active"
+            : ""
+        ) +
+        '" onclick="selectPage(\'' +
+        escapeHtml(
+          page
+        ) +
+        '\')">' +
+        escapeHtml(
+          page
+        ) +
+        '</button>';
+
+    }
+  );
+
+
+  container.innerHTML =
+    html;
+
+}
+
+
+/* =========================================================
+   SELECT PAGE
+========================================================= */
+
+function selectPage(
+  page
+) {
+
+  selectedPage =
+    page;
+
+
+  renderPageButtons();
+  renderClients();
+
+}
+
+
+/* =========================================================
+   ADMIN PAGE SELECT
+========================================================= */
+
+function renderAdminPages() {
+
+  const select =
+    document.getElementById(
+      "adminPage"
+    );
+
+
+  if (
+    !select
+  ) {
+
+    return;
+
+  }
+
+
+  const pages =
+    Array.from(
+      new Set(
+        allClients
+          .map(
+            client =>
+              client.pageKey ||
+              client.page
+          )
+          .filter(
+            Boolean
+          )
+      )
+    );
+
+
+  select.innerHTML =
+    pages
+      .map(
+        function(page) {
+
+          return (
+            '<option value="' +
+            escapeHtml(
+              page
+            ) +
+            '">' +
+            escapeHtml(
+              page
+            ) +
+            '</option>'
+          );
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   FILTER CLIENTS
+========================================================= */
+
+function getFilteredClients() {
+
+  let result =
+    allClients.slice();
+
+
+  if (
+    selectedPage !==
+    "all"
+  ) {
+
+    result =
+      result.filter(
+        function(client) {
+
+          return (
+            client.pageKey ===
+            selectedPage ||
+            client.page ===
+            selectedPage
+          );
+
+        }
+      );
+
+  }
+
+
+  const searchInput =
+    document.getElementById(
+      "search"
+    );
+
+
+  const search =
+    (
+      searchInput?.value ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    search
+  ) {
+
+    result =
+      result.filter(
+        function(client) {
+
+          const username =
+            String(
+              client.username ||
+              ""
+            ).toLowerCase();
+
+
+          const senderId =
+            String(
+              client.senderId ||
+              ""
+            ).toLowerCase();
+
+
+          return (
+            username.includes(
+              search
+            ) ||
+            senderId.includes(
+              search
+            )
+          );
+
+        }
+      );
+
+  }
+
+
+  return result;
+
+}
+
+
+/* =========================================================
+   RENDER CLIENTS
+========================================================= */
+
+function renderClients() {
+
+  const container =
+    document.getElementById(
+      "clients"
+    );
+
+
+  const count =
+    document.getElementById(
+      "clientCount"
+    );
+
+
+  if (
+    !container
+  ) {
+
+    return;
+
+  }
+
+
+  const clients =
+    getFilteredClients();
+
+
+  if (
+    count
+  ) {
+
+    count.textContent =
+      clients.length;
+
+  }
 
 
   if (
@@ -9145,171 +9753,244 @@ select:focus {
 
 
   container.innerHTML =
-    clients.map(
-      function(client) {
+    clients
+      .map(
+        function(client) {
 
-        const username =
-          client.username ||
-          "Username not available";
-
-
-        const packageName =
-          client.selectedPackage ||
-          "none";
+          const id =
+            String(
+              client.senderId ||
+              ""
+            );
 
 
-        const payment =
-          client.paymentMethod ||
-          "none";
+          const username =
+            client.username ||
+            "Unknown";
 
 
-        const stage =
-          client.stage ||
-          "NEW";
+          const page =
+            client.page ||
+            client.pageKey ||
+            "Unknown";
 
 
-        const reminder =
-          client.reminder
-            ? "Active"
-            : "No reminder";
+          const stage =
+            client.stage ||
+            "NEW";
 
 
-        const id =
-          escapeHtml(
-            client.senderId ||
-            ""
+          const last =
+            client.lastCustomerMessage ||
+            client.lastOutgoingText ||
+            "";
+
+
+          return (
+            '<div class="client-card">' +
+
+              '<div class="client-name">' +
+                escapeHtml(
+                  username
+                ) +
+              '</div>' +
+
+              '<div class="client-details">' +
+                'Page: ' +
+                escapeHtml(
+                  page
+                ) +
+                '<br>' +
+                'Stage: ' +
+                escapeHtml(
+                  stage
+                ) +
+                '<br>' +
+                escapeHtml(
+                  last
+                ) +
+              '</div>' +
+
+              '<button class="open-chat" ' +
+              'onclick="openClient(\'' +
+              escapeHtml(
+                id
+              ) +
+              '\')">' +
+              'Open Chat' +
+              '</button>' +
+
+            '</div>'
+          );
+
+        }
+      )
+      .join("");
+
+}
+/* =========================================================
+   OPEN CLIENT
+========================================================= */
+
+async function openClient(
+  senderId
+) {
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin/client/" +
+        encodeURIComponent(
+          senderId
+        ) +
+        "?secret=" +
+        encodeURIComponent(
+          adminSecret
+        ),
+        {
+          cache:
+            "no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Unable to load client"
+      );
+
+    }
+
+
+    selectedClient =
+      data.client;
+
+
+    renderChat();
+
+
+    const overlay =
+      document.getElementById(
+        "chatOverlay"
+      );
+
+
+    if (
+      overlay
+    ) {
+
+      overlay.classList.add(
+        "show"
+      );
+
+    }
+
+
+    document.body.style.overflow =
+      "hidden";
+
+
+    setTimeout(
+      function() {
+
+        const messages =
+          document.getElementById(
+            "chatMessages"
           );
 
 
-        return (
-          '<div class="client-card">' +
+        if (
+          messages
+        ) {
 
-            '<div class="client-name">' +
-              escapeHtml(
-                username
-              ) +
-            '</div>' +
+          messages.scrollTop =
+            messages.scrollHeight;
 
-            '<div class="client-details">' +
+        }
 
-              'Page: ' +
-              escapeHtml(
-                client.page ||
-                "unknown"
-              ) +
+      },
+      50
+    );
 
-              '<br>' +
+  }
 
-              'Stage: ' +
-              escapeHtml(
-                stage
-              ) +
+  catch (
+    error
+  ) {
 
-              '<br>' +
+    console.error(
+      error
+    );
 
-              'Package: ' +
-              escapeHtml(
-                packageName
-              ) +
 
-              '<br>' +
+    alert(
+      error.message
+    );
 
-              'Payment: ' +
-              escapeHtml(
-                payment
-              ) +
-
-              '<br>' +
-
-              'Reminder: ' +
-              escapeHtml(
-                reminder
-              ) +
-
-              '<br>' +
-
-              'ID: ' +
-              id +
-
-            '</div>' +
-
-            '<button ' +
-              'class="open-chat" ' +
-              'onclick="openChat(\\'' +
-                id +
-              '\\')">' +
-
-              '💬 Open Chat' +
-
-            '</button>' +
-
-          '</div>'
-        );
-
-      }
-    )
-    .join("");
+  }
 
 }
 
 
 /* =========================================================
-   OPEN CHAT
+   CLOSE CHAT
 ========================================================= */
 
-function openChat(
-  senderId
-) {
+function closeChat() {
 
-  selectedClient =
-    allClients.find(
-      function(client) {
-
-        return (
-          String(
-            client.senderId
-          ) ===
-          String(
-            senderId
-          )
-        );
-
-      }
-    ) ||
-    null;
+  const overlay =
+    document.getElementById(
+      "chatOverlay"
+    );
 
 
   if (
-    !selectedClient
+    overlay
   ) {
 
-    return;
+    overlay.classList.remove(
+      "show"
+    );
 
   }
 
 
-  /*
-   * Save exact page position.
-   */
-
-  savedScrollPosition =
-    window.scrollY;
-
-
-  renderChat();
-
-
-  document
-    .getElementById(
-      "chatOverlay"
-    )
-    .classList.add(
-      "show"
-    );
-
-
   document.body.style.overflow =
-    "hidden";
+    "";
+
+
+  selectedClient =
+    null;
+
+}
+
+
+/* =========================================================
+   OVERLAY CLICK
+========================================================= */
+
+function overlayClick(
+  event
+) {
+
+  if (
+    event.target &&
+    event.target.id ===
+      "chatOverlay"
+  ) {
+
+    closeChat();
+
+  }
 
 }
 
@@ -9329,54 +10010,43 @@ function renderChat() {
   }
 
 
-  const username =
-    selectedClient.username ||
-    "Username not available";
-
-
-  const page =
-    selectedClient.page ||
-    "unknown";
-
-
-  const stage =
-    selectedClient.stage ||
-    "NEW";
-
-
-  document.getElementById(
-    "chatTitle"
-  ).innerHTML =
-
-    '<strong>' +
-      escapeHtml(
-        username
-      ) +
-    '</strong>' +
-
-    '<span>' +
-
-      'Page: ' +
-
-      escapeHtml(
-        page
-      ) +
-
-      ' &nbsp; | &nbsp; ' +
-
-      'Stage: ' +
-
-      escapeHtml(
-        stage
-      ) +
-
-    '</span>';
+  const title =
+    document.getElementById(
+      "chatTitle"
+    );
 
 
   const messages =
     document.getElementById(
       "chatMessages"
     );
+
+
+  if (
+    !title ||
+    !messages
+  ) {
+
+    return;
+
+  }
+
+
+  title.innerHTML =
+    '<strong>' +
+    escapeHtml(
+      selectedClient.username ||
+      selectedClient.senderId
+    ) +
+    '</strong>' +
+
+    '<span>' +
+    escapeHtml(
+      selectedClient.page ||
+      selectedClient.pageKey ||
+      ""
+    ) +
+    '</span>';
 
 
   const history =
@@ -9393,7 +10063,7 @@ function renderChat() {
 
     messages.innerHTML =
       '<div class="empty">' +
-      'No messages found.' +
+      'No messages yet.' +
       '</div>';
 
     return;
@@ -9402,55 +10072,53 @@ function renderChat() {
 
 
   messages.innerHTML =
-    history.map(
-      function(item) {
+    history
+      .map(
+        function(item) {
 
-        const role =
-          item.role ===
-          "client"
-            ? "client"
-            : "assistant";
+          const role =
+            item.role ===
+            "client"
+              ? "client"
+              : "assistant";
 
 
-        let html =
-          '<div class="chat-message ' +
-          role +
-          '">' +
-
-          escapeHtml(
+          const text =
             item.text ||
-            ""
-          );
+            "";
 
 
-        if (
-          item.timestamp
-        ) {
+          const time =
+            item.timestamp
+              ? (
+                  '<span class="chat-time">' +
+                  escapeHtml(
+                    formatTime(
+                      item.timestamp
+                    )
+                  ) +
+                  '</span>'
+                )
+              : "";
 
-          html +=
 
-            '<span class="chat-time">' +
+          return (
+            '<div class="chat-message ' +
+            role +
+            '">' +
 
               escapeHtml(
-                formatTime(
-                  item.timestamp
-                )
+                text
               ) +
 
-            '</span>';
+              time +
+
+            '</div>'
+          );
 
         }
-
-
-        html +=
-          '</div>';
-
-
-        return html;
-
-      }
-    )
-    .join("");
+      )
+      .join("");
 
 
   messages.scrollTop =
@@ -9460,80 +10128,13 @@ function renderChat() {
 
 
 /* =========================================================
-   CLOSE CHAT
+   SEND CHAT REPLY
 ========================================================= */
 
-function closeChat() {
-
-  document
-    .getElementById(
-      "chatOverlay"
-    )
-    .classList.remove(
-      "show"
-    );
-
-
-  document.body.style.overflow =
-    "";
-
-
-  selectedClient =
-    null;
-
-
-  setTimeout(
-    function() {
-
-      window.scrollTo(
-        0,
-        savedScrollPosition
-      );
-
-    },
-    30
-  );
-
-}
-
-
-/* =========================================================
-   CLOSE BY CLICKING OUTSIDE
-========================================================= */
-
-function overlayClick(
-  event
-) {
+async function sendChatReply() {
 
   if (
-    event.target.id ===
-    "chatOverlay"
-  ) {
-
-    closeChat();
-
-  }
-
-}
-
-
-/* =========================================================
-   REFRESH SELECTED CLIENT
-========================================================= */
-
-async function refreshSelectedClient() {
-
-  const senderId =
-    selectedClient
-      ? selectedClient.senderId
-      : null;
-
-
-  await loadClients();
-
-
-  if (
-    !senderId
+    !selectedClient
   ) {
 
     return;
@@ -9541,139 +10142,41 @@ async function refreshSelectedClient() {
   }
 
 
-  const updated =
-    allClients.find(
-      function(client) {
-
-        return (
-          String(
-            client.senderId
-          ) ===
-          String(
-            senderId
-          )
-        );
-
-      }
+  const textarea =
+    document.getElementById(
+      "chatReply"
     );
 
 
   if (
-    updated
+    !textarea
   ) {
 
-    selectedClient =
-      updated;
-
-    renderChat();
+    return;
 
   }
-
-}
-
-
-/* =========================================================
-   TOGGLE ADMIN REPLY
-========================================================= */
-
-function toggleAdminReply() {
-
-  const form =
-    document.getElementById(
-      "adminForm"
-    );
-
-
-  const button =
-    document.getElementById(
-      "replyToggle"
-    );
-
-
-  if (
-    form.classList.contains(
-      "show"
-    )
-  ) {
-
-    form.classList.remove(
-      "show"
-    );
-
-
-    button.textContent =
-      "✉️ Admin Reply";
-
-  }
-
-  else {
-
-    form.classList.add(
-      "show"
-    );
-
-
-    button.textContent =
-      "✕ Close Admin Reply";
-
-  }
-
-}
-
-
-/* =========================================================
-   ADMIN REPLY
-========================================================= */
-
-async function sendAdminReply() {
-
-  const clientId =
-    document.getElementById(
-      "adminClientId"
-    )
-      .value
-      .trim();
-
-
-  const pageKey =
-    document.getElementById(
-      "adminPage"
-    )
-      .value;
 
 
   const message =
-    document.getElementById(
-      "adminMessage"
-    )
-      .value
-      .trim();
-
-
-  if (
-    !clientId
-  ) {
-
-    alert(
-      "Enter Client ID."
-    );
-
-    return;
-
-  }
+    textarea.value.trim();
 
 
   if (
     !message
   ) {
 
-    alert(
-      "Write your reply."
-    );
-
     return;
 
   }
+
+
+  const senderId =
+    selectedClient.senderId;
+
+
+  const pageKey =
+    selectedClient.pageKey ||
+    selectedClient.page;
 
 
   try {
@@ -9689,18 +10192,18 @@ async function sendAdminReply() {
           headers: {
 
             "Content-Type":
-              "application/json",
-
-            "x-admin-secret":
-              adminSecret
+              "application/json"
 
           },
 
           body:
             JSON.stringify({
 
+              secret:
+                adminSecret,
+
               senderId:
-                clientId,
+                senderId,
 
               pageKey:
                 pageKey,
@@ -9724,124 +10227,7 @@ async function sendAdminReply() {
 
       throw new Error(
         data.error ||
-        "Reply failed"
-      );
-
-    }
-
-
-    document.getElementById(
-      "adminMessage"
-    )
-      .value =
-      "";
-
-
-    setStatus(
-      "Admin reply sent successfully."
-    );
-
-
-    await loadClients();
-
-  }
-
-  catch (
-    error
-  ) {
-
-    alert(
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   CHAT REPLY
-========================================================= */
-
-async function sendChatReply() {
-
-  if (
-    !selectedClient
-  ) {
-
-    return;
-
-  }
-
-
-  const textarea =
-    document.getElementById(
-      "chatReply"
-    );
-
-
-  const message =
-    textarea.value.trim();
-
-
-  if (
-    !message
-  ) {
-
-    return;
-
-  }
-
-
-  try {
-
-    const response =
-      await fetch(
-        "/admin/reply",
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "x-admin-secret":
-              adminSecret
-
-          },
-
-          body:
-            JSON.stringify({
-
-              senderId:
-                selectedClient.senderId,
-
-              pageKey:
-                selectedClient.page,
-
-              message:
-                message
-
-            })
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        data.error ||
-        "Reply failed"
+        "Unable to send reply"
       );
 
     }
@@ -9849,11 +10235,6 @@ async function sendChatReply() {
 
     textarea.value =
       "";
-
-
-    setStatus(
-      "Reply sent successfully."
-    );
 
 
     await refreshSelectedClient();
@@ -9874,14 +10255,232 @@ async function sendChatReply() {
 
 
 /* =========================================================
+   REFRESH SELECTED CLIENT
+========================================================= */
+
+async function refreshSelectedClient() {
+
+  if (
+    !selectedClient
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin/client/" +
+        encodeURIComponent(
+          selectedClient.senderId
+        ) +
+        "?secret=" +
+        encodeURIComponent(
+          adminSecret
+        ),
+        {
+          cache:
+            "no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        data.error ||
+        "Unable to refresh client"
+      );
+
+    }
+
+
+    selectedClient =
+      data.client;
+
+
+    renderChat();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      error
+    );
+
+  }
+
+}
+/* =========================================================
+   TOGGLE ADMIN REPLY
+========================================================= */
+
+function toggleAdminReply() {
+
+  const form =
+    document.getElementById(
+      "adminForm"
+    );
+
+
+  if (
+    form
+  ) {
+
+    form.classList.toggle(
+      "show"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   FORMAT TIME
+========================================================= */
+
+function formatTime(
+  value
+) {
+
+  if (
+    !value
+  ) {
+
+    return "";
+
+  }
+
+
+  try {
+
+    return new Date(
+      value
+    ).toLocaleString();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    return String(
+      value
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value ??
+    ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+window.addEventListener(
+  "load",
+  function() {
+
+    adminSecret =
+      localStorage.getItem(
+        "adminSecret"
+      ) ||
+      "";
+
+
+    const secretInput =
+      document.getElementById(
+        "secret"
+      );
+
+
+    if (
+      secretInput &&
+      adminSecret
+    ) {
+
+      secretInput.value =
+        adminSecret;
+
+    }
+
+
+    if (
+      adminSecret
+    ) {
+
+      loadClients();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
    CHAT SEND — ENTER
 ========================================================= */
 
-document
-  .getElementById(
+const chatReplyInput =
+  document.getElementById(
     "chatReply"
-  )
-  .addEventListener(
+  );
+
+
+if (
+  chatReplyInput
+) {
+
+  chatReplyInput.addEventListener(
     "keydown",
     function(event) {
 
@@ -9900,41 +10499,42 @@ document
     }
   );
 
+}
+
 
 /* =========================================================
-   LOAD SAVED ADMIN SECRET
+   SEARCH — ENTER
 ========================================================= */
 
-window.addEventListener(
-  "load",
-  function() {
-
-    const saved =
-      localStorage.getItem(
-        "adminSecret"
-      );
+const searchInput =
+  document.getElementById(
+    "search"
+  );
 
 
-    if (
-      saved
-    ) {
+if (
+  searchInput
+) {
 
-      adminSecret =
-        saved;
+  searchInput.addEventListener(
+    "keydown",
+    function(event) {
 
+      if (
+        event.key ===
+        "Enter"
+      ) {
 
-      document.getElementById(
-        "secret"
-      ).value =
-        saved;
+        event.preventDefault();
 
+        renderClients();
 
-      loadClients();
+      }
 
     }
+  );
 
-  }
-);
+}
 
 
 /* =========================================================
@@ -9971,8 +10571,6 @@ document.addEventListener(
 
   }
 );
-
-
 /* =========================================================
    END ADMIN UI SCRIPT
 ========================================================= */
@@ -9982,6 +10580,7 @@ document.addEventListener(
 </body>
 
 </html>
+
     `);
 
   }
