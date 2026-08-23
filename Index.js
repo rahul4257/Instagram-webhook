@@ -5979,8 +5979,9 @@ app.post(
 
   }
 );
-/* =========================================================
-   ADMIN PAGE
+  
+ /* =========================================================
+   SIMPLE ADMIN PAGE
 ========================================================= */
 
 app.get(
@@ -5991,8 +5992,14 @@ app.get(
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
 <title>Instagram Admin</title>
 
 <style>
@@ -6003,331 +6010,508 @@ app.get(
 
 body {
   margin: 0;
-  background: #0f1115;
-  color: #fff;
+  background: #f5f5f5;
+  color: #111;
   font-family: Arial, sans-serif;
 }
 
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #171a21;
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
   padding: 15px;
-  border-bottom: 1px solid #292d36;
 }
 
-.header h2 {
-  margin: 0 0 10px 0;
+h1 {
+  margin: 5px 0 20px;
+  font-size: 28px;
 }
 
-.login {
-  display: flex;
-  gap: 8px;
+h2 {
+  margin: 0 0 15px;
+  font-size: 22px;
+}
+
+.section {
+  background: white;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 5px rgba(0,0,0,.08);
+}
+
+.page-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.page-button {
+  border: 0;
+  background: #eee;
+  color: #1683ff;
+  border-radius: 12px;
+  padding: 16px 10px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.page-button.active {
+  background: #1683ff;
+  color: white;
+}
+
+.admin-form {
+  display: none;
+}
+
+.admin-form.show {
+  display: block;
 }
 
 input,
-textarea,
-button {
-  font-family: inherit;
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  padding: 13px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  background: white;
 }
 
-input {
-  flex: 1;
-  background: #0c0e12;
-  color: white;
-  border: 1px solid #343945;
-  border-radius: 8px;
-  padding: 11px;
+textarea {
+  min-height: 110px;
+  resize: vertical;
 }
 
 button {
+  cursor: pointer;
+}
+
+.reply-button,
+.send-button {
+  width: 100%;
   border: 0;
-  border-radius: 8px;
-  padding: 11px 15px;
-  cursor: pointer;
-  font-weight: bold;
+  border-radius: 10px;
+  background: #eee;
+  color: #1683ff;
+  padding: 14px;
+  font-size: 16px;
 }
 
-.login button {
-  background: #2196f3;
+.send-button {
+  background: #1683ff;
   color: white;
 }
 
-.layout {
-  display: flex;
-  height: calc(100vh - 116px);
+.status {
+  margin-top: 10px;
+  color: #666;
+  font-size: 13px;
+  white-space: pre-wrap;
 }
 
-.clients {
-  width: 35%;
-  min-width: 280px;
-  overflow-y: auto;
-  border-right: 1px solid #292d36;
-  background: #14171d;
+.client-card {
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: white;
 }
 
-.client {
-  padding: 14px;
-  border-bottom: 1px solid #292d36;
-  cursor: pointer;
-}
-
-.client:hover,
-.client.active {
-  background: #222631;
+.client-card.selected {
+  border: 2px solid #1683ff;
 }
 
 .client-name {
+  font-size: 20px;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  word-break: break-word;
 }
 
-.client-stage {
-  font-size: 12px;
-  color: #9da5b4;
+.client-info {
+  color: #666;
+  line-height: 1.7;
+  font-size: 14px;
 }
 
-.client-time {
-  font-size: 11px;
-  color: #6f7785;
-  margin-top: 5px;
+.client-card button {
+  width: 100%;
+  border: 0;
+  background: #eee;
+  color: #1683ff;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 15px;
 }
 
-.chat {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+.chat-box {
+  display: none;
+}
+
+.chat-box.show {
+  display: block;
 }
 
 .chat-header {
-  padding: 14px;
-  background: #171a21;
-  border-bottom: 1px solid #292d36;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 12px;
 }
 
-.chat-header strong {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.chat-header span {
-  font-size: 12px;
-  color: #9da5b4;
-}
-
-.messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 15px;
-}
-
-.message {
-  max-width: 80%;
-  padding: 10px 12px;
+.chat-message {
+  padding: 12px;
   border-radius: 12px;
   margin-bottom: 10px;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-.message.client {
-  background: #252a35;
-  margin-right: auto;
+.chat-message.client {
+  background: #eeeeee;
 }
 
-.message.assistant {
-  background: #075e54;
-  margin-left: auto;
+.chat-message.assistant {
+  background: #d9f7ef;
 }
 
-.message small {
+.chat-time {
   display: block;
-  margin-top: 5px;
-  opacity: .6;
-  font-size: 10px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #777;
 }
 
-.reply {
-  padding: 12px;
-  background: #171a21;
-  border-top: 1px solid #292d36;
-}
-
-.reply textarea {
+.back-button {
   width: 100%;
-  min-height: 70px;
-  resize: vertical;
-  background: #0c0e12;
-  color: white;
-  border: 1px solid #343945;
-  border-radius: 8px;
-  padding: 10px;
+  border: 0;
+  background: #eee;
+  color: #1683ff;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  font-size: 15px;
 }
 
-.reply-buttons {
+.refresh-button {
+  width: 100%;
+  border: 0;
+  background: #eee;
+  color: #1683ff;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+.login-box {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
 }
 
-.send {
-  background: #2196f3;
+.login-box input {
+  margin: 0;
+}
+
+.login-box button {
+  border: 0;
+  border-radius: 10px;
+  background: #1683ff;
   color: white;
+  padding: 0 18px;
+  font-size: 15px;
 }
 
-.reset {
-  background: #d32f2f;
-  color: white;
-}
-
-.refresh {
-  background: #444b59;
-  color: white;
-}
-
-.empty {
+.count {
   color: #777;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.no-clients {
   text-align: center;
-  padding: 30px 15px;
+  color: #777;
+  padding: 20px;
 }
 
-.status {
-  font-size: 12px;
-  margin-top: 8px;
-  color: #9da5b4;
-}
+@media(max-width:500px) {
 
-@media(max-width:700px) {
-
-  .layout {
-    height: calc(100vh - 145px);
+  .container {
+    padding: 10px;
   }
 
-  .clients {
-    width: 38%;
-    min-width: 125px;
+  h1 {
+    font-size: 25px;
   }
 
-  .message {
-    max-width: 90%;
+  .page-buttons {
+    gap: 9px;
+  }
+
+  .page-button {
+    padding: 14px 8px;
   }
 
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="header">
+<div class="container">
 
-  <h2>Instagram Admin</h2>
+  <h1>Instagram Admin</h1>
 
-  <div class="login">
 
-    <input
-      id="secret"
-      type="password"
-      placeholder="Admin Secret"
+  <!-- =====================================================
+       LOGIN
+  ====================================================== -->
+
+  <div class="section">
+
+    <div class="login-box">
+
+      <input
+        id="secret"
+        type="password"
+        placeholder="Admin Secret"
+      >
+
+      <button
+        onclick="login()"
+      >
+        Login
+      </button>
+
+    </div>
+
+    <div
+      id="status"
+      class="status"
     >
-
-    <button onclick="loadClients()">
-      Login
-    </button>
-
-    <button
-      class="refresh"
-      onclick="loadClients()"
-    >
-      Refresh
-    </button>
-
-  </div>
-
-  <div
-    id="status"
-    class="status"
-  >
-    Enter ADMIN_SECRET and press Login.
-  </div>
-
-</div>
-
-
-<div class="layout">
-
-  <div
-    id="clients"
-    class="clients"
-  >
-
-    <div class="empty">
-      No clients loaded.
+      Enter your Admin Secret.
     </div>
 
   </div>
 
 
-  <div class="chat">
+  <!-- =====================================================
+       PAGE SELECTION
+  ====================================================== -->
+
+  <div class="section">
+
+    <h2>Pages</h2>
+
+    <div class="page-buttons">
+
+      <button
+        id="page-all"
+        class="page-button active"
+        onclick="selectPage('all')"
+      >
+        ALL
+      </button>
+
+      <button
+        id="page-europe"
+        class="page-button"
+        onclick="selectPage('europe')"
+      >
+        EUROPE
+      </button>
+
+      <button
+        id="page-miami"
+        class="page-button"
+        onclick="selectPage('miami')"
+      >
+        MIAMI
+      </button>
+
+      <button
+        id="page-canada"
+        class="page-button"
+        onclick="selectPage('canada')"
+      >
+        CANADA
+      </button>
+
+      <button
+        id="page-mentalxheal"
+        class="page-button"
+        onclick="selectPage('mentalxheal')"
+      >
+        MENTALXHEAL
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       ADMIN REPLY
+  ====================================================== -->
+
+  <div class="section">
+
+    <h2>✉️ Admin Reply</h2>
+
+    <button
+      id="replyToggle"
+      class="reply-button"
+      onclick="toggleReply()"
+    >
+      Open Admin Reply
+    </button>
+
+
+    <div
+      id="adminForm"
+      class="admin-form"
+    >
+
+      <input
+        id="replyUsername"
+        placeholder="Instagram username"
+      >
+
+
+      <select
+        id="replyPage"
+      >
+
+        <option value="europe">
+          @expl.europe
+        </option>
+
+        <option value="canada">
+          @expl.canada
+        </option>
+
+        <option value="mentalxheal">
+          @mentalxheal
+        </option>
+
+        <option value="miami">
+          @expl.miami
+        </option>
+
+      </select>
+
+
+      <input
+        id="replyClientId"
+        placeholder="Instagram client ID"
+      >
+
+
+      <textarea
+        id="replyMessage"
+        placeholder="Write your reply..."
+      ></textarea>
+
+
+      <button
+        class="send-button"
+        onclick="sendAdminReply()"
+      >
+        📤 Send Reply
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       CLIENTS
+  ====================================================== -->
+
+  <div class="section">
+
+    <h2>Clients</h2>
+
+    <div
+      id="clientCount"
+      class="count"
+    >
+      0 clients
+    </div>
+
+    <div
+      id="clients"
+    >
+
+      <div class="no-clients">
+        Login to load clients.
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       CHAT
+  ====================================================== -->
+
+  <div
+    id="chatSection"
+    class="section chat-box"
+  >
+
+    <button
+      class="back-button"
+      onclick="closeChat()"
+    >
+      ← Back to Clients
+    </button>
+
 
     <div
       id="chatHeader"
       class="chat-header"
     >
-
-      <strong>
-        Select a client
-      </strong>
-
-      <span>
-        No conversation selected
-      </span>
-
     </div>
 
 
     <div
-      id="messages"
-      class="messages"
+      id="chatMessages"
     >
-
-      <div class="empty">
-        Select a client to view conversation.
-      </div>
-
     </div>
 
 
-    <div class="reply">
+    <textarea
+      id="chatReply"
+      placeholder="Write your reply..."
+    ></textarea>
 
-      <textarea
-        id="replyText"
-        placeholder="Type your reply..."
-      ></textarea>
 
-      <div class="reply-buttons">
+    <button
+      class="send-button"
+      onclick="sendChatReply()"
+    >
+      Send Reply
+    </button>
 
-        <button
-          class="send"
-          onclick="sendReply()"
-        >
-          Send Reply
-        </button>
 
-        <button
-          class="reset"
-          onclick="resetClient()"
-        >
-          Reset Client
-        </button>
-
-      </div>
-
-    </div>
+    <button
+      class="refresh-button"
+      onclick="loadClients()"
+    >
+      Refresh Conversation
+    </button>
 
   </div>
+
 
 </div>
 
@@ -6335,24 +6519,78 @@ button {
 <script>
 
 let adminSecret = "";
-let clients = [];
+
+let allClients = [];
+
+let selectedPage = "all";
+
 let selectedClient = null;
 
 
 /* =========================================================
-   HELPERS
+   LOGIN
 ========================================================= */
 
-function setStatus(text) {
+function login() {
 
-  document.getElementById(
-    "status"
-  ).textContent = text;
+  const input =
+    document.getElementById(
+      "secret"
+    );
+
+  const value =
+    input.value.trim();
+
+
+  if (!value) {
+
+    setStatus(
+      "Please enter Admin Secret."
+    );
+
+    return;
+
+  }
+
+
+  adminSecret =
+    value;
+
+
+  localStorage.setItem(
+    "adminSecret",
+    adminSecret
+  );
+
+
+  loadClients();
 
 }
 
 
-function escapeHtml(value) {
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setStatus(
+  text
+) {
+
+  document.getElementById(
+    "status"
+  ).textContent =
+    text;
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(
+  value
+) {
 
   return String(
     value || ""
@@ -6381,22 +6619,37 @@ function escapeHtml(value) {
 }
 
 
-function formatTime(value) {
+/* =========================================================
+   TIME
+========================================================= */
+
+function formatTime(
+  value
+) {
 
   if (!value) {
+
     return "";
+
   }
 
+
   const date =
-    new Date(value);
+    new Date(
+      value
+    );
+
 
   if (
     Number.isNaN(
       date.getTime()
     )
   ) {
+
     return "";
+
   }
+
 
   return date.toLocaleString();
 
@@ -6409,25 +6662,6 @@ function formatTime(value) {
 
 async function loadClients() {
 
-  const secretInput =
-    document.getElementById(
-      "secret"
-    );
-
-  if (
-    secretInput.value.trim()
-  ) {
-
-    adminSecret =
-      secretInput.value.trim();
-
-    localStorage.setItem(
-      "adminSecret",
-      adminSecret
-    );
-
-  }
-
   if (!adminSecret) {
 
     adminSecret =
@@ -6438,10 +6672,11 @@ async function loadClients() {
 
   }
 
+
   if (!adminSecret) {
 
     setStatus(
-      "Enter ADMIN_SECRET first."
+      "Please enter Admin Secret."
     );
 
     return;
@@ -6479,7 +6714,7 @@ async function loadClients() {
     }
 
 
-    clients =
+    allClients =
       Array.isArray(
         data.clients
       )
@@ -6491,8 +6726,8 @@ async function loadClients() {
 
 
     setStatus(
-      clients.length +
-      " client(s) loaded."
+      allClients.length +
+      " clients loaded."
     );
 
 
@@ -6501,7 +6736,7 @@ async function loadClients() {
     ) {
 
       const updated =
-        clients.find(
+        allClients.find(
           client =>
             client.senderId ===
             selectedClient.senderId
@@ -6513,7 +6748,7 @@ async function loadClients() {
         selectedClient =
           updated;
 
-        renderConversation();
+        renderChat();
 
       }
 
@@ -6529,12 +6764,88 @@ async function loadClients() {
       error
     );
 
+
     setStatus(
       "ERROR: " +
       error.message
     );
 
   }
+
+}
+
+
+/* =========================================================
+   SELECT PAGE
+========================================================= */
+
+function selectPage(
+  page
+) {
+
+  selectedPage =
+    page;
+
+
+  document
+    .querySelectorAll(
+      ".page-button"
+    )
+    .forEach(
+      button =>
+        button.classList.remove(
+          "active"
+        )
+    );
+
+
+  const selectedButton =
+    document.getElementById(
+      "page-" +
+      page
+    );
+
+
+  if (
+    selectedButton
+  ) {
+
+    selectedButton.classList.add(
+      "active"
+    );
+
+  }
+
+
+  renderClients();
+
+}
+
+
+/* =========================================================
+   FILTER CLIENTS
+========================================================= */
+
+function getFilteredClients() {
+
+  if (
+    selectedPage ===
+    "all"
+  ) {
+
+    return allClients;
+
+  }
+
+
+  return allClients.filter(
+    client =>
+      String(
+        client.page ||
+        ""
+      ).toLowerCase() ===
+      selectedPage.toLowerCase()
+  );
 
 }
 
@@ -6551,10 +6862,27 @@ function renderClients() {
     );
 
 
-  if (!clients.length) {
+  const filtered =
+    getFilteredClients();
+
+
+  document.getElementById(
+    "clientCount"
+  ).textContent =
+    filtered.length +
+    (
+      filtered.length === 1
+        ? " client"
+        : " clients"
+    );
+
+
+  if (!filtered.length) {
 
     container.innerHTML =
-      '<div class="empty">No clients found.</div>';
+      '<div class="no-clients">' +
+      "No clients on this page." +
+      "</div>";
 
     return;
 
@@ -6562,55 +6890,98 @@ function renderClients() {
 
 
   container.innerHTML =
-    clients
+    filtered
       .map(
         client => {
 
-          const name =
+          const username =
             client.username ||
-            client.senderId;
+            "Username not available";
 
 
-          const active =
-            selectedClient &&
-            selectedClient.senderId ===
-            client.senderId
-              ? "active"
-              : "";
+          const packageName =
+            client.selectedPackage ||
+            "none";
+
+
+          const payment =
+            client.paymentMethod ||
+            "none";
+
+
+          const reminder =
+            client.reminder
+              ? "Active"
+              : "No reminder";
 
 
           return (
 
-            '<div class="client ' +
-            active +
-            '" onclick="selectClient(\\'' +
-            escapeHtml(
-              client.senderId
-            ) +
-            '\\')">' +
+            '<div class="client-card">' +
 
               '<div class="client-name">' +
                 escapeHtml(
-                  name
+                  username
                 ) +
               '</div>' +
 
-              '<div class="client-stage">' +
+              '<div class="client-info">' +
+
+                "Page: " +
+                escapeHtml(
+                  client.page ||
+                  "unknown"
+                ) +
+
+                "<br>" +
+
+                "Stage: " +
                 escapeHtml(
                   client.stage ||
                   "NEW"
                 ) +
-              '</div>' +
 
-              '<div class="client-time">' +
+                "<br>" +
+
+                "Package: " +
                 escapeHtml(
-                  formatTime(
-                    client.lastCustomerMessageAt
-                  )
+                  packageName
                 ) +
-              '</div>' +
 
-            '</div>'
+                "<br>" +
+
+                "Payment: " +
+                escapeHtml(
+                  payment
+                ) +
+
+                "<br>" +
+
+                "Reminder: " +
+                escapeHtml(
+                  reminder
+                ) +
+
+                "<br>" +
+
+                "ID: " +
+                escapeHtml(
+                  client.senderId
+                ) +
+
+              "</div>" +
+
+              '<button onclick="openClient(\\'' +
+                escapeHtml(
+                  client.senderId
+                ) +
+              '\\')">' +
+
+                "Reply / Open Chat" +
+
+              "</button>" +
+
+            "</div>"
 
           );
 
@@ -6622,90 +6993,101 @@ function renderClients() {
 
 
 /* =========================================================
-   SELECT CLIENT
+   OPEN CLIENT CHAT
 ========================================================= */
 
-function selectClient(
+function openClient(
   senderId
 ) {
 
-  selectedClient =
-    clients.find(
-      client =>
-        client.senderId ===
+  const client =
+    allClients.find(
+      item =>
+        item.senderId ===
         senderId
-    ) ||
-    null;
-
-
-  renderClients();
-  renderConversation();
-
-}
-
-
-/* =========================================================
-   RENDER CONVERSATION
-========================================================= */
-
-function renderConversation() {
-
-  const header =
-    document.getElementById(
-      "chatHeader"
-    );
-
-  const messages =
-    document.getElementById(
-      "messages"
     );
 
 
-  if (
-    !selectedClient
-  ) {
-
-    header.innerHTML =
-      "<strong>Select a client</strong>" +
-      "<span>No conversation selected</span>";
-
-
-    messages.innerHTML =
-      '<div class="empty">' +
-      "Select a client to view conversation." +
-      "</div>";
+  if (!client) {
 
     return;
 
   }
 
 
-  const name =
+  selectedClient =
+    client;
+
+
+  document.getElementById(
+    "chatSection"
+  )
+    .classList.add(
+      "show"
+    );
+
+
+  document.getElementById(
+    "chatSection"
+  )
+    .scrollIntoView({
+      behavior:
+        "smooth"
+    });
+
+
+  renderChat();
+
+}
+
+
+/* =========================================================
+   RENDER CHAT
+========================================================= */
+
+function renderChat() {
+
+  if (
+    !selectedClient
+  ) {
+
+    return;
+
+  }
+
+
+  const username =
     selectedClient.username ||
-    selectedClient.senderId;
+    "Username not available";
 
 
-  header.innerHTML =
-    "<strong>" +
+  document.getElementById(
+    "chatHeader"
+  ).innerHTML =
+
+    "<h2>" +
       escapeHtml(
-        name
+        username
       ) +
-    "</strong>" +
+    "</h2>" +
 
-    "<span>" +
+    "<div class='client-info'>" +
+
+      "Page: " +
       escapeHtml(
-        "Page: " +
-        (
-          selectedClient.page ||
-          "unknown"
-        ) +
-        " | Stage: " +
-        (
-          selectedClient.stage ||
-          "NEW"
-        )
+        selectedClient.page ||
+        "unknown"
       ) +
-    "</span>";
+
+      "<br>" +
+
+      "Stage: " +
+      escapeHtml(
+        selectedClient.stage ||
+        "NEW"
+      ) +
+
+    "</div>";
 
 
   const history =
@@ -6716,11 +7098,17 @@ function renderConversation() {
       : [];
 
 
+  const messages =
+    document.getElementById(
+      "chatMessages"
+    );
+
+
   if (!history.length) {
 
     messages.innerHTML =
-      '<div class="empty">' +
-      "No messages yet." +
+      '<div class="no-clients">' +
+      "No messages found." +
       "</div>";
 
     return;
@@ -6742,26 +7130,35 @@ function renderConversation() {
 
           return (
 
-            '<div class="message ' +
+            '<div class="chat-message ' +
             role +
             '">' +
 
               escapeHtml(
-                item.text
+                item.text ||
+                ""
               ) +
 
               (
+
                 item.timestamp
+
                   ? (
-                    '<small>' +
-                    escapeHtml(
-                      formatTime(
-                        item.timestamp
-                      )
-                    ) +
-                    "</small>"
+
+                    '<span class="chat-time">' +
+
+                      escapeHtml(
+                        formatTime(
+                          item.timestamp
+                        )
+                      ) +
+
+                    "</span>"
+
                   )
+
                   : ""
+
               ) +
 
             "</div>"
@@ -6773,25 +7170,245 @@ function renderConversation() {
       .join("");
 
 
-  messages.scrollTop =
-    messages.scrollHeight;
+}
+
+
+/* =========================================================
+   CLOSE CHAT
+========================================================= */
+
+function closeChat() {
+
+  selectedClient =
+    null;
+
+
+  document.getElementById(
+    "chatSection"
+  )
+    .classList.remove(
+      "show"
+    );
 
 }
 
 
 /* =========================================================
-   SEND ADMIN REPLY
+   ADMIN REPLY
 ========================================================= */
 
-async function sendReply() {
+function toggleReply() {
+
+  const form =
+    document.getElementById(
+      "adminForm"
+    );
+
+
+  const button =
+    document.getElementById(
+      "replyToggle"
+    );
+
+
+  if (
+    form.classList.contains(
+      "show"
+    )
+  ) {
+
+    form.classList.remove(
+      "show"
+    );
+
+
+    button.textContent =
+      "Open Admin Reply";
+
+  }
+
+  else {
+
+    form.classList.add(
+      "show"
+    );
+
+
+    button.textContent =
+      "Close Admin Reply";
+
+  }
+
+}
+
+
+/* =========================================================
+   SEND ADMIN REPLY FROM TOP
+========================================================= */
+
+async function sendAdminReply() {
+
+  const username =
+    document.getElementById(
+      "replyUsername"
+    )
+      .value
+      .trim();
+
+
+  const pageKey =
+    document.getElementById(
+      "replyPage"
+    )
+      .value;
+
+
+  const clientId =
+    document.getElementById(
+      "replyClientId"
+    )
+      .value
+      .trim();
+
+
+  const message =
+    document.getElementById(
+      "replyMessage"
+    )
+      .value
+      .trim();
+
+
+  if (!clientId) {
+
+    alert(
+      "Enter Instagram client ID."
+    );
+
+    return;
+
+  }
+
+
+  if (!message) {
+
+    alert(
+      "Write your reply first."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin/reply",
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "x-admin-secret":
+              adminSecret
+
+          },
+
+          body:
+            JSON.stringify({
+
+              senderId:
+                clientId,
+
+              pageKey:
+                pageKey,
+
+              message:
+                message
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Reply failed"
+      );
+
+    }
+
+
+    document.getElementById(
+      "replyMessage"
+    )
+      .value =
+      "";
+
+
+    setStatus(
+      "Admin reply sent successfully."
+    );
+
+
+    await loadClients();
+
+
+    const updated =
+      allClients.find(
+        client =>
+          client.senderId ===
+          clientId
+      );
+
+
+    if (updated) {
+
+      selectedClient =
+        updated;
+
+      renderChat();
+
+    }
+
+  }
+
+  catch (
+    error
+  ) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SEND REPLY FROM CLIENT CHAT
+========================================================= */
+
+async function sendChatReply() {
 
   if (
     !selectedClient
   ) {
-
-    alert(
-      "Please select a client first."
-    );
 
     return;
 
@@ -6800,7 +7417,7 @@ async function sendReply() {
 
   const textarea =
     document.getElementById(
-      "replyText"
+      "chatReply"
     );
 
 
@@ -6813,22 +7430,6 @@ async function sendReply() {
     return;
 
   }
-
-
-  if (!adminSecret) {
-
-    alert(
-      "Admin secret is missing."
-    );
-
-    return;
-
-  }
-
-
-  setStatus(
-    "Sending reply..."
-  );
 
 
   try {
@@ -6896,7 +7497,7 @@ async function sendReply() {
 
 
     const updated =
-      clients.find(
+      allClients.find(
         client =>
           client.senderId ===
           selectedClient.senderId
@@ -6908,8 +7509,7 @@ async function sendReply() {
       selectedClient =
         updated;
 
-      renderClients();
-      renderConversation();
+      renderChat();
 
     }
 
@@ -6917,111 +7517,9 @@ async function sendReply() {
 
   catch (
     error
-  ) {
-
-    console.error(
-      error
-    );
-
-
-    setStatus(
-      "ERROR: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   RESET CLIENT
-========================================================= */
-
-async function resetClient() {
-
-  if (
-    !selectedClient
   ) {
 
     alert(
-      "Please select a client first."
-    );
-
-    return;
-
-  }
-
-
-  const confirmed =
-    confirm(
-      "Reset this client's conversation?"
-    );
-
-
-  if (!confirmed) {
-
-    return;
-
-  }
-
-
-  try {
-
-    const response =
-      await fetch(
-        "/admin/reset/" +
-        encodeURIComponent(
-          selectedClient.senderId
-        ) +
-        "?secret=" +
-        encodeURIComponent(
-          adminSecret
-        ),
-        {
-
-          method:
-            "POST"
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.error ||
-        "Reset failed"
-      );
-
-    }
-
-
-    setStatus(
-      "Client conversation reset."
-    );
-
-
-    selectedClient =
-      null;
-
-
-    await loadClients();
-
-    renderConversation();
-
-  }
-
-  catch (
-    error
-  ) {
-
-    setStatus(
-      "ERROR: " +
       error.message
     );
 
@@ -7034,7 +7532,7 @@ async function resetClient() {
    AUTO LOAD SAVED SECRET
 ========================================================= */
 
-(function () {
+(function() {
 
   const saved =
     localStorage.getItem(
@@ -7050,40 +7548,16 @@ async function resetClient() {
 
     document.getElementById(
       "secret"
-    ).value =
+    )
+      .value =
       saved;
+
+
+    loadClients();
 
   }
 
 })();
-
-
-/* =========================================================
-   ENTER KEY
-========================================================= */
-
-document
-  .getElementById(
-    "replyText"
-  )
-  .addEventListener(
-    "keydown",
-    function(event) {
-
-      if (
-        event.key ===
-        "Enter" &&
-        event.ctrlKey
-      ) {
-
-        event.preventDefault();
-
-        sendReply();
-
-      }
-
-    }
-  );
 
 </script>
 
