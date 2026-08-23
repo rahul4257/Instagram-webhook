@@ -537,6 +537,66 @@ function getPageById(
 
 
 /* =========================================================
+   MANAGED PAGE PROTECTION
+========================================================= */
+
+const MANAGED_PAGE_IDS =
+  new Set(
+    Object.values(
+      PAGE_CONFIGS
+    ).map(
+      page =>
+        String(
+          page.id
+        )
+    )
+  );
+
+
+function isManagedPageEvent(
+  event
+) {
+
+  const senderId =
+    String(
+      event?.sender?.id ||
+      ""
+    ).trim();
+
+
+  const message =
+    event?.message ||
+    {};
+
+
+  if (
+    message.is_echo ===
+    true
+  ) {
+
+    return true;
+
+  }
+
+
+  if (
+    senderId &&
+    MANAGED_PAGE_IDS.has(
+      senderId
+    )
+  ) {
+
+    return true;
+
+  }
+
+
+  return false;
+
+}
+
+
+/* =========================================================
    FIXED MESSAGE 1
 ========================================================= */
 
@@ -657,17 +717,22 @@ Our team will provide the secure card payment instructions.`
 const conversations =
   new Map();
 
+
 const clientQueues =
   new Map();
+
 
 const processedMessageIds =
   new Map();
 
+
 const outgoingMessages =
   new Set();
 
+
 const manualReplyVersion =
   new Map();
+
 
 const reminderTimers =
   new Map();
@@ -757,6 +822,27 @@ function createConversation(
 
     stage:
       "NEW",
+
+    messageOneSent:
+      false,
+
+    messageTwoSent:
+      false,
+
+    packagesSent:
+      false,
+
+    promotionMediaReceived:
+      false,
+
+    promotionUsernameReceived:
+      false,
+
+    promotionUsernameRequested:
+      false,
+
+    promotionComplete:
+      false,
 
     history:
       [],
@@ -861,11 +947,8 @@ function saveMessage(
 function supabaseConfigured() {
 
   return Boolean(
-
     SUPABASE_URL &&
-
     SUPABASE_SERVICE_ROLE_KEY
-
   );
 
 }
@@ -887,8 +970,6 @@ function supabaseHeaders() {
   };
 
 }
-
-
 async function supabaseGetConversation(
   senderId
 ) {
@@ -929,7 +1010,6 @@ async function supabaseGetConversation(
         `&limit=1`,
 
         {
-
           method:
             "GET",
 
@@ -971,72 +1051,8 @@ async function supabaseGetConversation(
     }
 
 
-    const stored =
-      data[0]?.messages;
-
-
-    if (
-      stored &&
-      typeof stored ===
-        "object" &&
-      !Array.isArray(
-        stored
-      )
-    ) {
-
-      return stored;
-
-    }
-
-
-    if (
-      Array.isArray(
-        stored
-      )
-    ) {
-
-      const conversation =
-        createConversation(
-          senderId
-        );
-
-
-      conversation.history =
-        stored
-          .map(
-            item => ({
-
-              role:
-                item?.role ===
-                "assistant"
-                  ? "assistant"
-                  : "client",
-
-              text:
-                String(
-                  item?.text ??
-                  item?.content ??
-                  ""
-                ),
-
-              timestamp:
-                item?.timestamp ||
-                nowISO()
-
-            })
-          )
-          .filter(
-            item =>
-              item.text
-          );
-
-
-      return conversation;
-
-    }
-
-
-    return null;
+    return data[0]?.messages ||
+      null;
 
   }
 
@@ -1056,10 +1072,6 @@ async function supabaseGetConversation(
 }
 
 
-/* =========================================================
-   SUPABASE SAVE
-========================================================= */
-
 async function supabaseSaveConversation(
   senderId,
   conversation
@@ -1068,10 +1080,6 @@ async function supabaseSaveConversation(
   if (
     !supabaseConfigured()
   ) {
-
-    console.error(
-      "SUPABASE NOT CONFIGURED - MEMORY NOT SAVED"
-    );
 
     return false;
 
@@ -1093,7 +1101,6 @@ async function supabaseSaveConversation(
         )}`,
 
         {
-
           method:
             "POST",
 
@@ -1102,7 +1109,7 @@ async function supabaseSaveConversation(
             ...supabaseHeaders(),
 
             Prefer:
-              "resolution=merge-duplicates,return=minimal"
+              "resolution=merge-duplicates"
 
           },
 
@@ -1127,7 +1134,7 @@ async function supabaseSaveConversation(
       );
 
 
-    const raw =
+    const data =
       await response.text();
 
 
@@ -1137,8 +1144,7 @@ async function supabaseSaveConversation(
 
       console.error(
         "SUPABASE SAVE ERROR:",
-        response.status,
-        raw
+        data
       );
 
       return false;
@@ -1165,116 +1171,6 @@ async function supabaseSaveConversation(
 
 }
 
-
-/* =========================================================
-   GET CONVERSATION
-========================================================= */
-
-async function getConversation(
-  senderId
-) {
-
-  const key =
-    String(
-      senderId
-    );
-
-
-  if (
-    conversations.has(
-      key
-    )
-  ) {
-
-    return conversations.get(
-      key
-    );
-
-  }
-
-
-  /*
-     ALWAYS LOAD SUPABASE FIRST.
-
-     This keeps the conversation alive if the client
-     replies hours later or after a server restart.
-  */
-
-  const saved =
-    await supabaseGetConversation(
-      senderId
-    );
-
-
-  const conversation =
-    saved &&
-    typeof saved ===
-      "object"
-
-      ? saved
-
-      : createConversation(
-          senderId
-        );
-
-
-  conversation.senderId =
-    key;
-
-
-  conversation.history =
-    Array.isArray(
-      conversation.history
-    )
-      ? conversation.history
-      : [];
-
-
-  conversations.set(
-    key,
-    conversation
-  );
-
-
-  return conversation;
-
-}
-
-
-/* =========================================================
-   SAVE CONVERSATION
-========================================================= */
-
-async function saveConversation(
-  senderId,
-  conversation
-) {
-
-  const key =
-    String(
-      senderId
-    );
-
-
-  conversation.senderId =
-    key;
-
-
-  conversations.set(
-    key,
-    conversation
-  );
-
-
-  return supabaseSaveConversation(
-    key,
-    conversation
-  );
-
-}
-/* =========================================================
-   SUPABASE - ALL CONVERSATIONS
-========================================================= */
 
 async function supabaseGetAllConversations() {
 
@@ -1303,12 +1199,9 @@ async function supabaseGetAllConversations() {
 
         `?select=id,messages,updated_at` +
 
-        `&order=updated_at.desc` +
-
-        `&limit=1000`,
+        `&order=updated_at.desc`,
 
         {
-
           method:
             "GET",
 
@@ -1358,6 +1251,194 @@ async function supabaseGetAllConversations() {
     return [];
 
   }
+
+}
+
+
+/* =========================================================
+   GET CONVERSATION
+========================================================= */
+
+async function getConversation(
+  senderId
+) {
+
+  const key =
+    String(
+      senderId
+    );
+
+
+  let conversation =
+    conversations.get(
+      key
+    );
+
+
+  if (
+    conversation
+  ) {
+
+    return conversation;
+
+  }
+
+
+  const stored =
+    await supabaseGetConversation(
+      key
+    );
+
+
+  if (
+    stored &&
+    typeof stored ===
+      "object"
+  ) {
+
+    conversation =
+      stored;
+
+    conversation.senderId =
+      key;
+
+    conversation.history =
+      Array.isArray(
+        conversation.history
+      )
+        ? conversation.history
+        : [];
+
+    conversation.stage =
+      conversation.stage ||
+      "NEW";
+
+    conversation.messageOneSent =
+      Boolean(
+        conversation.messageOneSent
+      );
+
+    conversation.messageTwoSent =
+      Boolean(
+        conversation.messageTwoSent
+      );
+
+    conversation.packagesSent =
+      Boolean(
+        conversation.packagesSent
+      );
+
+    conversation.paymentDetailsSent =
+      Boolean(
+        conversation.paymentDetailsSent
+      );
+
+    conversation.paymentConfirmed =
+      Boolean(
+        conversation.paymentConfirmed
+      );
+
+    conversation.paymentProofReceived =
+      Boolean(
+        conversation.paymentProofReceived
+      );
+
+    conversation.awaitingPaymentConfirmation =
+      Boolean(
+        conversation.awaitingPaymentConfirmation
+      );
+
+    conversation.promotionMediaReceived =
+      Boolean(
+        conversation.promotionMediaReceived
+      );
+
+    conversation.promotionUsernameReceived =
+      Boolean(
+        conversation.promotionUsernameReceived
+      );
+
+    conversation.promotionUsernameRequested =
+      Boolean(
+        conversation.promotionUsernameRequested
+      );
+
+    conversation.promotionComplete =
+      Boolean(
+        conversation.promotionComplete
+      );
+
+    conversation.customerMessageVersion =
+      Number(
+        conversation.customerMessageVersion ||
+        0
+      );
+
+    conversations.set(
+      key,
+      conversation
+    );
+
+    return conversation;
+
+  }
+
+
+  conversation =
+    createConversation(
+      key
+    );
+
+
+  conversations.set(
+    key,
+    conversation
+  );
+
+
+  await supabaseSaveConversation(
+    key,
+    conversation
+  );
+
+
+  return conversation;
+
+}
+
+
+/* =========================================================
+   SAVE CONVERSATION
+========================================================= */
+
+async function saveConversation(
+  senderId,
+  conversation
+) {
+
+  const key =
+    String(
+      senderId
+    );
+
+
+  conversation.senderId =
+    key;
+
+
+  conversations.set(
+    key,
+    conversation
+  );
+
+
+  await supabaseSaveConversation(
+    key,
+    conversation
+  );
+
+
+  return conversation;
 
 }
 
@@ -2177,28 +2258,9 @@ ${page.currency}${selected.price} = ${selected.details}
 🎯 ${selected.followers}
 
 How would you like to pay?
-
 ${page.paymentMethods.join(
   "\n"
 )}`;
-
-}
-
-
-/* =========================================================
-   PAYMENT DETAILS
-========================================================= */
-
-function getPaymentDetails(
-  paymentMethod
-) {
-
-  return (
-    PAYMENT_DETAILS[
-      paymentMethod
-    ] ||
-    null
-  );
 
 }
 
@@ -2325,8 +2387,6 @@ function isGuaranteeQuestion(
   );
 
 }
-
-
 function isPaymentConfirmation(
   text
 ) {
@@ -2365,6 +2425,219 @@ function hasMedia(
 
 
 /* =========================================================
+   AI FALLBACK
+========================================================= */
+
+async function getAIReply(
+  page,
+  conversation,
+  clientMessage,
+  attachmentInfo
+) {
+
+  if (
+    !OPEN_AI
+  ) {
+
+    return null;
+
+  }
+
+
+  const history =
+    Array.isArray(
+      conversation.history
+    )
+      ? conversation.history
+          .slice(-40)
+          .map(
+            item => ({
+
+              role:
+                item.role ===
+                "client"
+                  ? "user"
+                  : "assistant",
+
+              content:
+                String(
+                  item.text ||
+                  ""
+                )
+
+            })
+          )
+      : [];
+
+
+  const systemPrompt = `
+You are the AI sales assistant for ${BUSINESS_NAME}.
+
+You are continuing an EXISTING Instagram conversation.
+
+IMPORTANT RULES:
+
+- Never restart the conversation.
+- Never send the opening message again if it has already been sent.
+- Never send MESSAGE_TWO again if it has already been sent.
+- Never resend the package list if packages were already shown.
+- Never ask for information that is already saved.
+- Never invent package prices.
+- Never invent payment details.
+- Follow the fixed sales flow.
+- Keep replies short, natural and friendly.
+- Use ❤️ or 😊 naturally.
+- If the customer's message is unclear, answer based on the previous conversation.
+- Do not pretend that a payment is confirmed unless the system has confirmed it.
+- Do not say that promotion is complete unless the system says it is complete.
+
+Current page:
+${page.username}
+
+Current stage:
+${conversation.stage}
+
+Selected package:
+${conversation.selectedPackage || "none"}
+
+Payment method:
+${conversation.paymentMethod || "none"}
+
+Payment confirmed:
+${Boolean(
+    conversation.paymentConfirmed
+  )}
+
+Promotion media received:
+${Boolean(
+    conversation.promotionMediaReceived
+  )}
+
+Promotion username received:
+${Boolean(
+    conversation.promotionUsernameReceived ||
+    conversation.clientUsername
+  )}
+`;
+
+
+  try {
+
+    const response =
+      await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            Authorization:
+              `Bearer ${OPEN_AI}`
+
+          },
+
+          body:
+            JSON.stringify({
+
+              model:
+                OPENAI_MODEL,
+
+              temperature:
+                0.7,
+
+              messages: [
+
+                {
+
+                  role:
+                    "system",
+
+                  content:
+                    systemPrompt
+
+                },
+
+                ...history,
+
+                {
+
+                  role:
+                    "user",
+
+                  content:
+                    String(
+                      clientMessage ||
+                      (
+                        attachmentInfo
+                          ? `[${attachmentInfo}]`
+                          : ""
+                      )
+                    )
+
+                }
+
+              ]
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      console.error(
+        "OPENAI ERROR:",
+        data
+      );
+
+
+      return null;
+
+    }
+
+
+    const reply =
+      data?.choices?.[0]?.message?.content
+        ?.trim();
+
+
+    return (
+      reply ||
+      null
+    );
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "OPENAI EXCEPTION:",
+      error.message
+    );
+
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================================
    REMINDER CONFIGURATION
 ========================================================= */
 
@@ -2386,11 +2659,6 @@ const REMINDER_TEXTS = {
 
 
 const REMINDER_DELAYS = {
-
-  /*
-     FIRST OPENING REMINDER:
-     EXACTLY 1 MINUTE.
-  */
 
   MESSAGE_ONE_SENT:
     60 * 1000,
@@ -2462,7 +2730,7 @@ function cancelReminder(
 
 
 /* =========================================================
-   MANUAL REPLY VERSION
+   MANUAL REPLY PROTECTION
 ========================================================= */
 
 function invalidatePendingAI(
@@ -2520,6 +2788,8 @@ function manualReplyStillValid(
   );
 
 }
+
+
 /* =========================================================
    SCHEDULE REMINDER
 ========================================================= */
@@ -2680,10 +2950,6 @@ async function processReminder(
 
   }
 
-
-  /*
-     A customer reply invalidates the reminder.
-  */
 
   if (
     Number(
@@ -3114,8 +3380,9 @@ async function sendInstagramMessage(
 
           })
 
-      }
-    );
+        }
+
+      );
 
 
   const data =
@@ -3167,15 +3434,6 @@ async function sendReplySafely(
     );
 
 
-  /*
-     Small human-like delay.
-
-     IMPORTANT:
-     The first reminder is NOT here.
-     Reminder timing is controlled separately
-     by scheduleReminder().
-  */
-
   await wait(
     replyDelay()
   );
@@ -3199,14 +3457,15 @@ async function sendReplySafely(
     );
 
 
-  /*
-     If the client replied while AI was waiting,
-     don't send the old AI answer.
-  */
-
   if (
-    latest.customerMessageVersion !==
-    conversation.customerMessageVersion
+    Number(
+      latest.customerMessageVersion ||
+      0
+    ) !==
+    Number(
+      conversation.customerMessageVersion ||
+      0
+    )
   ) {
 
     return null;
@@ -3278,11 +3537,6 @@ async function sendReplySafely(
   );
 
 
-  /*
-     Only schedule a reminder when the caller
-     explicitly requested one.
-  */
-
   if (
     reminderStage &&
     messageId
@@ -3304,167 +3558,7 @@ async function sendReplySafely(
 
 
 /* =========================================================
-   ADMIN REPLY
-========================================================= */
-
-async function sendAdminReplyMessage(
-  senderId,
-  message,
-  requestedPage = null
-) {
-
-  const key =
-    String(
-      senderId
-    );
-
-
-  const conversation =
-    await getConversation(
-      key
-    );
-
-
-  if (
-    !conversation
-  ) {
-
-    throw new Error(
-      "Client conversation not found."
-    );
-
-  }
-
-
-  const pageKey =
-    requestedPage ||
-    conversation.pageKey;
-
-
-  const page =
-    PAGE_CONFIGS[
-      pageKey
-    ];
-
-
-  if (
-    !page
-  ) {
-
-    throw new Error(
-      "Client page is missing or invalid."
-    );
-
-  }
-
-
-  /*
-     Admin reply cancels:
-     1. reminder
-     2. pending delayed AI reply
-  */
-
-  invalidatePendingAI(
-    key
-  );
-
-
-  const data =
-    await sendInstagramMessage(
-      page,
-      key,
-      message
-    );
-
-
-  const messageId =
-    data?.message_id ||
-    data?.id ||
-    null;
-
-
-  if (
-    messageId
-  ) {
-
-    outgoingMessages.add(
-      `${page.key}:${String(
-        messageId
-      )}`
-    );
-
-  }
-
-
-  saveMessage(
-    conversation,
-    "assistant",
-    message
-  );
-
-
-  conversation.pageKey =
-    page.key;
-
-
-  conversation.lastOutgoingMessageId =
-    messageId
-      ? String(
-          messageId
-        )
-      : null;
-
-
-  conversation.lastOutgoingText =
-    message;
-
-
-  conversation.lastOutgoingStage =
-    conversation.stage;
-
-
-  conversation.lastOutgoingAt =
-    nowISO();
-
-
-  conversation.reminder =
-    null;
-
-
-  await saveConversation(
-    key,
-    conversation
-  );
-
-
-  return {
-
-    success:
-      true,
-
-    senderId:
-      key,
-
-    username:
-      conversation.clientUsername ||
-      null,
-
-    page:
-      page.username,
-
-    pageKey:
-      page.key,
-
-    messageId:
-      messageId
-
-  };
-
-}
-
-
-/* =========================================================
-   PROMOTION STATE
+   PROMOTION COMPLETE
 ========================================================= */
 
 function updatePromotionComplete(
@@ -3496,8 +3590,6 @@ function updatePromotionComplete(
   }
 
 }
-
-
 /* =========================================================
    PROCESS USERNAME + MEDIA
 ========================================================= */
@@ -3512,10 +3604,6 @@ async function processUsernameAndMedia(
   let changed =
     false;
 
-
-  /*
-     Username received from customer text.
-  */
 
   const username =
     extractInstagramUsername(
@@ -3532,14 +3620,11 @@ async function processUsernameAndMedia(
     conversation.clientUsername =
       username;
 
-
     conversation.promotionUsernameReceived =
       true;
 
-
     conversation.promotionUsernameRequested =
       false;
-
 
     changed =
       true;
@@ -3548,14 +3633,8 @@ async function processUsernameAndMedia(
 
 
   /*
-     IMPORTANT:
-
-     Media is promotion media ONLY after
-     payment is confirmed.
-
-     This fixes the previous problem where
-     sending a picture before payment caused
-     the bot to ask for the same picture again.
+     Media is promotion media ONLY after payment
+     has been confirmed.
   */
 
   if (
@@ -3571,7 +3650,6 @@ async function processUsernameAndMedia(
 
       conversation.promotionMediaReceived =
         true;
-
 
       changed =
         true;
@@ -3636,7 +3714,6 @@ async function sendPromotionNextStep(
       conversation
     );
 
-
     return;
 
   }
@@ -3645,11 +3722,6 @@ async function sendPromotionNextStep(
   let message =
     null;
 
-
-  /*
-     Ask for pictures ONLY if payment is confirmed
-     and pictures have not already been received.
-  */
 
   if (
     !conversation.promotionMediaReceived
@@ -3660,11 +3732,6 @@ async function sendPromotionNextStep(
 
   }
 
-
-  /*
-     Ask for username ONLY if it isn't already saved.
-  */
-
   else if (
     !conversation.promotionUsernameReceived &&
     !conversation.clientUsername
@@ -3672,7 +3739,6 @@ async function sendPromotionNextStep(
 
     message =
       "Perfect dear ❤️ Please send me your Instagram username.";
-
 
     conversation.promotionUsernameRequested =
       true;
@@ -3689,10 +3755,6 @@ async function sendPromotionNextStep(
   }
 
 
-  /*
-     Don't repeat the exact same request.
-  */
-
   if (
     conversation.lastOutgoingText ===
     message
@@ -3702,7 +3764,6 @@ async function sendPromotionNextStep(
       senderId,
       conversation
     );
-
 
     return;
 
@@ -3733,7 +3794,6 @@ async function sendPromotionNextStep(
     conversation.promotionUsernameRequested =
       true;
 
-
     await saveConversation(
       senderId,
       conversation
@@ -3745,7 +3805,7 @@ async function sendPromotionNextStep(
 
 
 /* =========================================================
-   PAYMENT CONFIRMATION HELPER
+   PAYMENT CONFIRMATION
 ========================================================= */
 
 function isSimplePaymentConfirmation(
@@ -3782,258 +3842,7 @@ function isSimplePaymentConfirmation(
 
 
 /* =========================================================
-   AI FALLBACK
-========================================================= */
-
-function buildAIHistory(
-  conversation
-) {
-
-  return conversation.history
-    .slice(-40)
-    .map(
-      item => {
-
-        const role =
-          item.role ===
-          "assistant"
-            ? "assistant"
-            : "client";
-
-
-        return (
-          `${role}: ${item.text}`
-        );
-
-      }
-    )
-    .join(
-      "\n"
-    );
-
-}
-
-
-async function getAIReply(
-  page,
-  conversation,
-  clientMessage,
-  attachmentInfo
-) {
-
-  if (
-    !OPEN_AI
-  ) {
-
-    return null;
-
-  }
-
-
-  const packageSummary =
-    Object.values(
-      page.packages
-    )
-      .map(
-        item =>
-          `${item.name}: ${page.currency}${item.price} = ${item.details}; ${item.followers}`
-      )
-      .join(
-        "\n"
-      );
-
-
-  const history =
-    buildAIHistory(
-      conversation
-    );
-
-
-  const prompt =
-`You are the Instagram sales assistant for Global Promote.
-
-PAGE:
-${page.username}
-
-CURRENT STAGE:
-${conversation.stage}
-
-CLIENT USERNAME:
-${conversation.clientUsername || "not available"}
-
-SELECTED PACKAGE:
-${conversation.selectedPackage || "none"}
-
-PAYMENT METHOD:
-${conversation.paymentMethod || "none"}
-
-PACKAGES ALREADY SENT:
-${conversation.packagesSent ? "YES" : "NO"}
-
-PAYMENT DETAILS ALREADY SENT:
-${conversation.paymentDetailsSent ? "YES" : "NO"}
-
-PAYMENT CONFIRMED:
-${conversation.paymentConfirmed ? "YES" : "NO"}
-
-PROMOTION MEDIA RECEIVED:
-${conversation.promotionMediaReceived ? "YES" : "NO"}
-
-PROMOTION USERNAME RECEIVED:
-${conversation.promotionUsernameReceived ? "YES" : "NO"}
-
-STRICT RULES:
-
-1. Continue the existing conversation.
-2. NEVER restart the conversation.
-3. NEVER send the opening message again.
-4. NEVER send MESSAGE_TWO again.
-5. NEVER send the package list if packagesSent is YES.
-6. NEVER invent a package price.
-7. NEVER invent payment details.
-8. NEVER ask for promotion pictures before payment is confirmed.
-9. After payment is confirmed, never ask for pictures if they were already received.
-10. Never ask for the Instagram username if it is already saved.
-11. If the client asks a normal question, answer it naturally.
-12. Keep replies short and suitable for Instagram.
-13. Use the conversation history to understand what has already been discussed.
-14. Do not claim that payment is confirmed unless the conversation state says it is confirmed.
-15. Do not change conversation state yourself.
-16. Do not send the fixed opening, second message, or package list yourself.
-
-AVAILABLE PACKAGES:
-${packageSummary}
-
-CONVERSATION HISTORY:
-${history}
-
-LATEST CUSTOMER MESSAGE:
-${clientMessage || "[media received]"}
-
-ATTACHMENT:
-${attachmentInfo || "none"}
-
-Return ONLY the customer-facing reply.`;
-
-  try {
-
-    const response =
-      await fetch(
-        "https://api.openai.com/v1/responses",
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            Authorization:
-              `Bearer ${OPEN_AI}`
-
-          },
-
-          body:
-            JSON.stringify({
-
-              model:
-                OPENAI_MODEL,
-
-              input:
-                prompt,
-
-              max_output_tokens:
-                350
-
-            })
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok
-    ) {
-
-      console.error(
-        "OPENAI ERROR:",
-        data
-      );
-
-
-      return null;
-
-    }
-
-
-    if (
-      typeof data.output_text ===
-      "string"
-    ) {
-
-      return data.output_text.trim();
-
-    }
-
-
-    let output =
-      "";
-
-
-    for (
-      const item
-      of data.output || []
-    ) {
-
-      for (
-        const part
-        of item.content || []
-      ) {
-
-        if (
-          part.type ===
-            "output_text" &&
-          part.text
-        ) {
-
-          output +=
-            part.text;
-
-        }
-
-      }
-
-    }
-
-
-    return output.trim() ||
-      null;
-
-  }
-
-  catch (
-    error
-  ) {
-
-    console.error(
-      "OPENAI EXCEPTION:",
-      error.message
-    );
-
-
-    return null;
-
-  }
-
-}
-/* =========================================================
-   CUSTOMER MESSAGE PROCESSOR
+   CLIENT MESSAGE PROCESSOR
 ========================================================= */
 
 async function processClientMessage(
@@ -4064,22 +3873,10 @@ async function processClientMessage(
   }
 
 
-  /*
-     Any genuine customer message cancels the
-     current reminder.
-  */
-
   cancelReminder(
     key
   );
 
-
-  /*
-     Increment customer-message version.
-
-     This prevents an old delayed AI response from
-     being sent after the customer has already replied.
-  */
 
   conversation.customerMessageVersion =
     Number(
@@ -4102,56 +3899,6 @@ async function processClientMessage(
   conversation.pageKey =
     page.key;
 
-
-  /*
-     Try to get username from the customer's message.
-  */
-
-  await processUsernameFromMessage(
-    key,
-    conversation,
-    clientMessage
-  );
-
-
-  /*
-     If username wasn't supplied in the message,
-     try Meta's username field.
-  */
-
-  if (
-    !conversation.clientUsername
-  ) {
-
-    const metaUsername =
-      await getInstagramUsername(
-        page,
-        key
-      );
-
-
-    if (
-      metaUsername
-    ) {
-
-      conversation.clientUsername =
-        metaUsername;
-
-
-      conversation.promotionUsernameReceived =
-        true;
-
-    }
-
-  }
-
-
-  /*
-     Save the incoming customer message BEFORE
-     processing it.
-
-     This is critical for AI memory.
-  */
 
   saveMessage(
     conversation,
@@ -4187,11 +3934,6 @@ async function processClientMessage(
     );
 
 
-    /*
-       If both media and username are already available,
-       nothing else should be requested.
-    */
-
     updatePromotionComplete(
       conversation
     );
@@ -4211,10 +3953,6 @@ async function processClientMessage(
 
     }
 
-
-    /*
-       Only ask for whatever is still missing.
-    */
 
     await sendPromotionNextStep(
       page,
@@ -4236,10 +3974,6 @@ async function processClientMessage(
     conversation.paymentDetailsSent
   ) {
 
-    /*
-       Customer explicitly says payment is done.
-    */
-
     if (
       isSimplePaymentConfirmation(
         clientMessage
@@ -4249,10 +3983,8 @@ async function processClientMessage(
       conversation.paymentProofReceived =
         true;
 
-
       conversation.awaitingPaymentConfirmation =
         true;
-
 
       await saveConversation(
         key,
@@ -4270,7 +4002,7 @@ async function processClientMessage(
         page,
         key,
         conversation,
-        "Thank you dear ❤️ Please confirm once the payment has been completed successfully so I can proceed with your promotion.",
+        "Thank you dear ❤️ Please send me your payment screenshot and confirm once the payment has been completed successfully.",
         version
       );
 
@@ -4279,14 +4011,6 @@ async function processClientMessage(
 
     }
 
-
-    /*
-       If customer sends an attachment after payment
-       details, treat it as payment proof.
-
-       It is NOT promotion media until payment
-       has been confirmed.
-    */
 
     if (
       hasMedia(
@@ -4297,10 +4021,8 @@ async function processClientMessage(
       conversation.paymentProofReceived =
         true;
 
-
       conversation.awaitingPaymentConfirmation =
         true;
-
 
       await saveConversation(
         key,
@@ -4318,7 +4040,7 @@ async function processClientMessage(
         page,
         key,
         conversation,
-        "Thank you dear ❤️ Please confirm once the payment has been completed successfully so I can proceed with your promotion.",
+        "Thank you dear ❤️ I received your payment screenshot. Please confirm once the payment has been completed successfully.",
         version
       );
 
@@ -4327,11 +4049,6 @@ async function processClientMessage(
 
     }
 
-
-    /*
-       If payment proof was received and the client
-       sends a simple confirmation, mark payment confirmed.
-    */
 
     if (
       conversation.awaitingPaymentConfirmation &&
@@ -4361,10 +4078,8 @@ async function processClientMessage(
       conversation.paymentConfirmed =
         true;
 
-
       conversation.awaitingPaymentConfirmation =
         false;
-
 
       conversation.stage =
         "PAYMENT_CONFIRMED";
@@ -4380,14 +4095,6 @@ async function processClientMessage(
         conversation
       );
 
-
-      /*
-         IMPORTANT:
-         After payment confirmation, the next step
-         is promotion media / username.
-
-         It will NOT ask for payment again.
-      */
 
       await sendPromotionNextStep(
         page,
@@ -4413,19 +4120,10 @@ async function processClientMessage(
     );
 
 
-  /*
-     A package number/name is only treated as a package
-     selection AFTER the package list was already sent.
-  */
-
   if (
     packageKey &&
     conversation.packagesSent
   ) {
-
-    /*
-       Don't send the same package confirmation repeatedly.
-    */
 
     if (
       conversation.selectedPackage ===
@@ -4519,11 +4217,6 @@ async function processClientMessage(
     conversation.selectedPackage
   ) {
 
-    /*
-       Make sure this payment method is available
-       for this particular page.
-    */
-
     if (
       !paymentMethodAvailable(
         page,
@@ -4558,10 +4251,6 @@ Please choose one of these.`,
 
     }
 
-
-    /*
-       Do NOT send the same payment details again.
-    */
 
     if (
       conversation.paymentDetailsSent &&
@@ -4750,19 +4439,12 @@ Please choose one of these.`,
 
 
   /* =======================================================
-     FIRST OPENING MESSAGE
+     FIRST MESSAGE
   ======================================================= */
 
   if (
     !conversation.messageOneSent
   ) {
-
-    /*
-       Mark BEFORE sending.
-
-       This prevents duplicate webhook events from
-       sending the opening message twice.
-    */
 
     conversation.messageOneSent =
       true;
@@ -4806,13 +4488,6 @@ Please choose one of these.`,
   if (
     !conversation.messageTwoSent
   ) {
-
-    /*
-       Only send the second message after a positive
-       response.
-
-       It can NEVER be sent again after the flag is true.
-    */
 
     if (
       !isPositiveInterest(
@@ -4905,11 +4580,6 @@ Please choose one of these.`,
     asksPackages
   ) {
 
-    /*
-       Mark BEFORE sending to prevent duplicate packages
-       from multiple webhook events.
-    */
-
     conversation.packagesSent =
       true;
 
@@ -4992,14 +4662,6 @@ Please choose one of these.`,
      FINAL FALLBACK
   ======================================================= */
 
-  const fallback =
-    conversation.packagesSent
-
-      ? "Sure dear ❤️ Please let me know what you would like to know about our promotion."
-
-      : "Sure dear ❤️ Please let me know how I can help you.";
-
-
   const version =
     getManualReplyVersion(
       key
@@ -5010,7 +4672,7 @@ Please choose one of these.`,
     page,
     key,
     conversation,
-    fallback,
+    "Sure dear ❤️ Please tell me what you would like to know.",
     version
   );
 
@@ -5018,68 +4680,14 @@ Please choose one of these.`,
 
 
 /* =========================================================
-   WEBHOOK VERIFY
+   CLIENT MESSAGE QUEUE
 ========================================================= */
 
-app.get(
-  "/webhook",
-  (
-    req,
-    res
-  ) => {
-
-    const mode =
-      req.query[
-        "hub.mode"
-      ];
-
-
-    const token =
-      req.query[
-        "hub.verify_token"
-      ];
-
-
-    const challenge =
-      req.query[
-        "hub.challenge"
-      ];
-
-
-    if (
-      mode ===
-      "subscribe" &&
-
-      token ===
-      VERIFY_TOKEN
-    ) {
-
-      return res
-        .status(
-          200
-        )
-        .send(
-          challenge
-        );
-
-    }
-
-
-    return res.sendStatus(
-      403
-    );
-
-  }
-);
-
-
-/* =========================================================
-   CLIENT QUEUE
-========================================================= */
-
-function queueForClient(
+function enqueueClientMessage(
+  page,
   senderId,
-  task
+  clientMessage,
+  attachmentInfo
 ) {
 
   const key =
@@ -5101,7 +4709,20 @@ function queueForClient(
         () => {}
       )
       .then(
-        task
+        () =>
+          processClientMessage(
+            page,
+            key,
+            clientMessage,
+            attachmentInfo
+          )
+      )
+      .catch(
+        error =>
+          console.error(
+            "CLIENT MESSAGE PROCESSING ERROR:",
+            error.message
+          )
       );
 
 
@@ -5128,8 +4749,6 @@ function queueForClient(
       }
 
     }
-  ).catch(
-    () => {}
   );
 
 
@@ -5139,218 +4758,109 @@ function queueForClient(
 
 
 /* =========================================================
-   WEBHOOK EVENT HELPERS
+   WEBHOOK VERIFICATION
 ========================================================= */
 
-function isReadEvent(
-  event
-) {
-
-  return Boolean(
-    event?.read
-  );
-
-}
-
-
-function isDeliveryEvent(
-  event
-) {
-
-  return Boolean(
-    event?.delivery
-  );
-
-}
-
-
-function isReactionEvent(
-  event
-) {
-
-  return Boolean(
-    event?.reaction
-  );
-
-}
-
-
-function isEchoMessage(
-  event
-) {
-
-  return (
-    event?.message?.is_echo ===
-    true
-  );
-
-}
-
-
-/* =========================================================
-   WEBHOOK POST
-========================================================= */
-
-app.post(
+app.get(
   "/webhook",
   (
     req,
     res
   ) => {
 
-    /*
-       Always acknowledge Meta immediately.
-    */
+    const mode =
+      req.query["hub.mode"];
+
+
+    const token =
+      req.query["hub.verify_token"];
+
+
+    const challenge =
+      req.query["hub.challenge"];
+
+
+    if (
+      mode ===
+        "subscribe" &&
+      token ===
+        VERIFY_TOKEN
+    ) {
+
+      return res
+        .status(
+          200
+        )
+        .send(
+          challenge
+        );
+
+    }
+
+
+    return res
+      .sendStatus(
+        403
+      );
+
+  }
+);
+
+
+/* =========================================================
+   WEBHOOK
+========================================================= */
+
+app.post(
+  "/webhook",
+  async (
+    req,
+    res
+  ) => {
 
     res.sendStatus(
       200
     );
 
 
-    const body =
-      req.body;
+    try {
 
-
-    if (
-      body?.object !==
-      "instagram"
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-      !Array.isArray(
-        body.entry
-      )
-    ) {
-
-      return;
-
-    }
-
-
-    for (
-      const entry
-      of body.entry
-    ) {
-
-      const page =
-        getPageById(
-          entry?.id
-        );
+      const body =
+        req.body;
 
 
       if (
-        !page
+        !body ||
+        body.object !==
+        "instagram"
       ) {
 
-        continue;
+        return;
 
       }
 
 
-      const messaging =
+      const entries =
         Array.isArray(
-          entry?.messaging
+          body.entry
         )
-          ? entry.messaging
+          ? body.entry
           : [];
 
 
       for (
-        const event
-        of messaging
+        const entry
+        of entries
       ) {
 
-        /*
-           NEVER reply to:
-           - read
-           - delivery
-           - reaction
-           - non-message events
-        */
-
-        if (
-          isReadEvent(
-            event
-          ) ||
-
-          isDeliveryEvent(
-            event
-          ) ||
-
-          isReactionEvent(
-            event
-          ) ||
-
-          !event?.message
-        ) {
-
-          continue;
-
-        }
-
-
-        const senderId =
-          event?.sender?.id;
-
-
-        const recipientId =
-          event?.recipient?.id;
-
-
-        const messageId =
-          event?.message?.mid;
-
-
-        if (
-          !senderId ||
-          !messageId
-        ) {
-
-          continue;
-
-        }
-
-
-        const outgoingKey =
-          `${page.key}:${String(
-            messageId
-          )}`;
-
-
-        /*
-           Ignore messages that our own application
-           already knows it sent.
-        */
-
-        if (
-          outgoingMessages.has(
-            outgoingKey
-          )
-        ) {
-
-          outgoingMessages.delete(
-            outgoingKey
+        const page =
+          getPageById(
+            entry.id
           );
 
 
-          continue;
-
-        }
-
-
-        /*
-           Ignore Meta echo messages.
-        */
-
         if (
-          isEchoMessage(
-            event
-          )
+          !page
         ) {
 
           continue;
@@ -5358,138 +4868,241 @@ app.post(
         }
 
 
-        /* =================================================
-           DUPLICATE WEBHOOK PROTECTION
-        ================================================= */
-
-        const duplicateKey =
-          `${page.key}:${String(
-            messageId
-          )}`;
-
-
-        if (
-          processedMessageIds.has(
-            duplicateKey
-          )
-        ) {
-
-          continue;
-
-        }
-
-
-        processedMessageIds.set(
-          duplicateKey,
-          Date.now()
-        );
-
-
-        setTimeout(
-          () => {
-
-            processedMessageIds.delete(
-              duplicateKey
-            );
-
-          },
-          60 * 60 * 1000
-        );
-
-
-        /* =================================================
-           MESSAGE CONTENT
-        ================================================= */
-
-        const clientMessage =
-          String(
-            event.message?.text ||
-            ""
-          ).trim();
-
-
-        const attachments =
+        const messaging =
           Array.isArray(
-            event.message?.attachments
+            entry.messaging
           )
-            ? event.message.attachments
+            ? entry.messaging
             : [];
 
 
-        const attachmentInfo =
-          attachments
-            .map(
-              attachment =>
-                `type=${
-                  attachment?.type ||
-                  "unknown"
-                }`
+        for (
+          const event
+          of messaging
+        ) {
+
+          if (
+            isManagedPageEvent(
+              event
             )
-            .join(
-              "\n"
+          ) {
+
+            continue;
+
+          }
+
+
+          if (
+            event.read ||
+            event.delivery
+          ) {
+
+            continue;
+
+          }
+
+
+          const senderId =
+            String(
+              event?.sender?.id ||
+              ""
+            ).trim();
+
+
+          if (
+            !senderId
+          ) {
+
+            continue;
+
+          }
+
+
+          const message =
+            event?.message;
+
+
+          if (
+            !message
+          ) {
+
+            continue;
+
+          }
+
+
+          if (
+            message.reaction
+          ) {
+
+            continue;
+
+          }
+
+
+          if (
+            message.is_echo ===
+            true
+          ) {
+
+            continue;
+
+          }
+
+
+          const messageId =
+            String(
+              message.mid ||
+              message.id ||
+              ""
+            ).trim();
+
+
+          if (
+            messageId
+          ) {
+
+            const outgoingKey =
+              `${page.key}:${messageId}`;
+
+
+            if (
+              outgoingMessages.has(
+                outgoingKey
+              )
+            ) {
+
+              continue;
+
+            }
+
+
+            if (
+              processedMessageIds.has(
+                outgoingKey
+              )
+            ) {
+
+              continue;
+
+            }
+
+
+            processedMessageIds.set(
+              outgoingKey,
+              Date.now()
             );
 
 
-        const hasShare =
-          Boolean(
-            event.message?.share
-          );
+            if (
+              processedMessageIds.size >
+              10000
+            ) {
 
-
-        if (
-          !clientMessage &&
-          !attachmentInfo &&
-          !hasShare
-        ) {
-
-          continue;
-
-        }
-
-
-        /* =================================================
-           CUSTOMER QUEUE
-        ================================================= */
-
-        queueForClient(
-          senderId,
-          async () => {
-
-            try {
-
-              const conversation =
-                await getConversation(
-                  senderId
-                );
-
-
-              conversation.pageKey =
-                page.key;
-
-
-              /*
-                 Meta may provide the username directly.
-              */
-
-              const incomingUsername =
-                event?.sender?.username ||
-                null;
+              const oldest =
+                processedMessageIds
+                  .entries()
+                  .next()
+                  .value;
 
 
               if (
-                incomingUsername
+                oldest
               ) {
 
-                conversation.clientUsername =
-                  normalizeInstagramUsername(
-                    incomingUsername
-                  );
-
-
-                conversation.promotionUsernameReceived =
-                  true;
+                processedMessageIds.delete(
+                  oldest[0]
+                );
 
               }
+
+            }
+
+          }
+
+
+          const clientMessage =
+            String(
+              message.text ||
+              ""
+            ).trim();
+
+
+          const attachments =
+            Array.isArray(
+              message.attachments
+            )
+              ? message.attachments
+              : [];
+
+
+          const attachmentInfo =
+            attachments.length
+              ? attachments
+                  .map(
+                    attachment => {
+
+                      const type =
+                        attachment?.type ||
+                        "unknown";
+
+
+                      const url =
+                        attachment?.payload?.url ||
+                        "";
+
+
+                      return `${type}:${url}`;
+
+                    }
+                  )
+                  .join(
+                    " | "
+                  )
+              : null;
+
+
+          if (
+            !clientMessage &&
+            !attachmentInfo
+          ) {
+
+            continue;
+
+          }
+
+
+          const conversation =
+            await getConversation(
+              senderId
+            );
+
+
+          conversation.pageKey =
+            page.key;
+
+
+          if (
+            !conversation.clientUsername
+          ) {
+
+            const username =
+              await getInstagramUsername(
+                page,
+                senderId
+              );
+
+
+            if (
+              username
+            ) {
+
+              conversation.clientUsername =
+                username;
+
+
+              conversation.promotionUsernameReceived =
+                true;
 
 
               await saveConversation(
@@ -5497,60 +5110,954 @@ app.post(
                 conversation
               );
 
-
-              await processClientMessage(
-                page,
-                senderId,
-                clientMessage,
-                attachmentInfo
-              );
-
-            }
-
-            catch (
-              error
-            ) {
-
-              console.error(
-                "CUSTOMER PROCESSING ERROR:",
-                error
-              );
-
             }
 
           }
-        );
+
+
+          enqueueClientMessage(
+            page,
+            senderId,
+            clientMessage,
+            attachmentInfo
+          );
+
+        }
 
       }
 
     }
 
+    catch (
+      error
+    ) {
+
+      console.error(
+        "WEBHOOK ERROR:",
+        error.message
+      );
+
+    }
+
   }
 );
- 
+/* =========================================================
+   ADMIN AUTHENTICATION
+========================================================= */
 
-</script>
+function isAdminAuthorized(
+  req
+) {
 
-</body>
+  if (
+    !ADMIN_SECRET
+  ) {
 
-</html>
+    return false;
 
-`);
+  }
+
+
+  const provided =
+    req.headers[
+      "x-admin-secret"
+    ] ||
+    req.query.secret ||
+    req.body?.secret;
+
+
+  return (
+    String(
+      provided ||
+      ""
+    ) ===
+    String(
+      ADMIN_SECRET
+    )
+  );
+
+}
+
+
+function requireAdmin(
+  req,
+  res,
+  next
+) {
+
+  if (
+    !isAdminAuthorized(
+      req
+    )
+  ) {
+
+    return res
+      .status(
+        401
+      )
+      .json({
+
+        success:
+          false,
+
+        error:
+          "Unauthorized"
+
+      });
+
+  }
+
+
+  next();
+
+}
+
+
+/* =========================================================
+   ADMIN CLIENT DATA
+========================================================= */
+
+function normalizeAdminHistory(
+  history
+) {
+
+  if (
+    !Array.isArray(
+      history
+    )
+  ) {
+
+    return [];
+
+  }
+
+
+  return history.map(
+    item => ({
+
+      role:
+        item?.role ===
+        "client"
+          ? "client"
+          : "assistant",
+
+      text:
+        String(
+          item?.text ||
+          "[media]"
+        ),
+
+      timestamp:
+        item?.timestamp ||
+        null
+
+    })
+  );
+
+}
+
+
+function buildAdminClient(
+  senderId,
+  conversation
+) {
+
+  return {
+
+    senderId:
+      String(
+        senderId
+      ),
+
+    username:
+      conversation.clientUsername ||
+      null,
+
+    page:
+      conversation.pageKey ||
+      null,
+
+    stage:
+      conversation.stage ||
+      "NEW",
+
+    messageOneSent:
+      Boolean(
+        conversation.messageOneSent
+      ),
+
+    messageTwoSent:
+      Boolean(
+        conversation.messageTwoSent
+      ),
+
+    packagesSent:
+      Boolean(
+        conversation.packagesSent
+      ),
+
+    selectedPackage:
+      conversation.selectedPackage ||
+      null,
+
+    paymentMethod:
+      conversation.paymentMethod ||
+      null,
+
+    paymentConfirmed:
+      Boolean(
+        conversation.paymentConfirmed
+      ),
+
+    paymentProofReceived:
+      Boolean(
+        conversation.paymentProofReceived
+      ),
+
+    promotionMediaReceived:
+      Boolean(
+        conversation.promotionMediaReceived
+      ),
+
+    promotionUsernameReceived:
+      Boolean(
+        conversation.promotionUsernameReceived ||
+        conversation.clientUsername
+      ),
+
+    promotionComplete:
+      Boolean(
+        conversation.promotionComplete
+      ),
+
+    reminder:
+      conversation.reminder ||
+      null,
+
+    messages:
+      Array.isArray(
+        conversation.history
+      )
+        ? conversation.history.length
+        : 0,
+
+    history:
+      normalizeAdminHistory(
+        conversation.history
+      ),
+
+    lastOutgoingText:
+      conversation.lastOutgoingText ||
+      null,
+
+    lastOutgoingMessageId:
+      conversation.lastOutgoingMessageId ||
+      null,
+
+    lastOutgoingAt:
+      conversation.lastOutgoingAt ||
+      null,
+
+    lastCustomerMessageAt:
+      conversation.lastCustomerMessageAt ||
+      null
+
+  };
+
+}
+
+
+/* =========================================================
+   ADMIN CLIENT LIST
+========================================================= */
+
+async function getAdminClients() {
+
+  const rows =
+    await supabaseGetAllConversations();
+
+
+  const clients =
+    [];
+
+
+  for (
+    const row
+    of rows
+  ) {
+
+    const senderId =
+      String(
+        row?.id ||
+        ""
+      ).trim();
+
+
+    if (
+      !senderId
+    ) {
+
+      continue;
+
+    }
+
+
+    const stored =
+      row?.messages;
+
+
+    if (
+      !stored ||
+      typeof stored !==
+        "object" ||
+      Array.isArray(
+        stored
+      )
+    ) {
+
+      continue;
+
+    }
+
+
+    stored.senderId =
+      senderId;
+
+
+    stored.history =
+      normalizeAdminHistory(
+        stored.history
+      );
+
+
+    conversations.set(
+      senderId,
+      stored
+    );
+
+
+    clients.push(
+      buildAdminClient(
+        senderId,
+        stored
+      )
+    );
+
+  }
+
+
+  clients.sort(
+    (
+      a,
+      b
+    ) => {
+
+      const aTime =
+        new Date(
+          a.lastCustomerMessageAt ||
+          a.lastOutgoingAt ||
+          0
+        ).getTime();
+
+
+      const bTime =
+        new Date(
+          b.lastCustomerMessageAt ||
+          b.lastOutgoingAt ||
+          0
+        ).getTime();
+
+
+      return (
+        bTime -
+        aTime
+      );
+
+    }
+  );
+
+
+  return clients;
+
+}
+
+
+/* =========================================================
+   ADMIN CLIENTS API
+========================================================= */
+
+app.get(
+  "/admin/clients",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
+
+    try {
+
+      const clients =
+        await getAdminClients();
+
+
+      return res.json({
+
+        success:
+          true,
+
+        clients
+
+      });
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "ADMIN CLIENTS ERROR:",
+        error.message
+      );
+
+
+      return res
+        .status(
+          500
+        )
+        .json({
+
+          success:
+            false,
+
+          error:
+            error.message
+
+        });
+
+    }
+
   }
 );
 
 
 /* =========================================================
-   ROOT
+   ADMIN SINGLE CLIENT
+========================================================= */
+
+app.get(
+  "/admin/client/:senderId",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
+
+    try {
+
+      const senderId =
+        String(
+          req.params.senderId ||
+          ""
+        ).trim();
+
+
+      if (
+        !senderId
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "Missing senderId"
+
+          });
+
+      }
+
+
+      const conversation =
+        await getConversation(
+          senderId
+        );
+
+
+      return res.json({
+
+        success:
+          true,
+
+        client:
+          buildAdminClient(
+            senderId,
+            conversation
+          )
+
+      });
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "ADMIN CLIENT ERROR:",
+        error.message
+      );
+
+
+      return res
+        .status(
+          500
+        )
+        .json({
+
+          success:
+            false,
+
+          error:
+            error.message
+
+        });
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   ADMIN REPLY
+========================================================= */
+
+app.post(
+  "/admin/reply",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
+
+    try {
+
+      const senderId =
+        String(
+          req.body?.senderId ||
+          ""
+        ).trim();
+
+
+      const message =
+        String(
+          req.body?.message ||
+          ""
+        ).trim();
+
+
+      const requestedPage =
+        req.body?.pageKey ||
+        null;
+
+
+      if (
+        !senderId
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "senderId is required"
+
+          });
+
+      }
+
+
+      if (
+        !message
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "message is required"
+
+          });
+
+      }
+
+
+      const conversation =
+        await getConversation(
+          senderId
+        );
+
+
+      const pageKey =
+        requestedPage ||
+        conversation.pageKey;
+
+
+      const page =
+        PAGE_CONFIGS[
+          pageKey
+        ];
+
+
+      if (
+        !page
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "Client page is missing or invalid."
+
+          });
+
+      }
+
+
+      /*
+         ADMIN REPLY HAS PRIORITY.
+
+         Cancel:
+         - pending reminder
+         - pending automatic AI reply
+      */
+
+      invalidatePendingAI(
+        senderId
+      );
+
+
+      const data =
+        await sendInstagramMessage(
+          page,
+          senderId,
+          message
+        );
+
+
+      const messageId =
+        data?.message_id ||
+        data?.id ||
+        null;
+
+
+      if (
+        messageId
+      ) {
+
+        outgoingMessages.add(
+          `${page.key}:${String(
+            messageId
+          )}`
+        );
+
+      }
+
+
+      conversation.pageKey =
+        page.key;
+
+
+      saveMessage(
+        conversation,
+        "assistant",
+        message
+      );
+
+
+      conversation.lastOutgoingMessageId =
+        messageId
+          ? String(
+              messageId
+            )
+          : null;
+
+
+      conversation.lastOutgoingText =
+        message;
+
+
+      conversation.lastOutgoingStage =
+        conversation.stage;
+
+
+      conversation.lastOutgoingAt =
+        nowISO();
+
+
+      conversation.reminder =
+        null;
+
+
+      await saveConversation(
+        senderId,
+        conversation
+      );
+
+
+      return res.json({
+
+        success:
+          true,
+
+        messageId:
+          messageId,
+
+        senderId:
+          senderId,
+
+        username:
+          conversation.clientUsername ||
+          null,
+
+        page:
+          page.username
+
+      });
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "ADMIN REPLY ERROR:",
+        error.message
+      );
+
+
+      return res
+        .status(
+          500
+        )
+        .json({
+
+          success:
+            false,
+
+          error:
+            error.message
+
+        });
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   ADMIN RESET CLIENT
+========================================================= */
+
+app.post(
+  "/admin/reset/:senderId",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
+
+    try {
+
+      const senderId =
+        String(
+          req.params.senderId ||
+          ""
+        ).trim();
+
+
+      if (
+        !senderId
+      ) {
+
+        return res
+          .status(
+            400
+          )
+          .json({
+
+            success:
+              false,
+
+            error:
+              "Missing senderId"
+
+          });
+
+      }
+
+
+      invalidatePendingAI(
+        senderId
+      );
+
+
+      const conversation =
+        createConversation(
+          senderId
+        );
+
+
+      await saveConversation(
+        senderId,
+        conversation
+      );
+
+
+      return res.json({
+
+        success:
+          true,
+
+        senderId:
+          senderId
+
+      });
+
+    }
+
+    catch (
+      error
+    ) {
+
+      console.error(
+        "ADMIN RESET ERROR:",
+        error.message
+      );
+
+
+      return res
+        .status(
+          500
+        )
+        .json({
+
+          success:
+            false,
+
+          error:
+            error.message
+
+        });
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   HEALTH CHECK
 ========================================================= */
 
 app.get(
   "/",
-  (req, res) => {
+  (
+    req,
+    res
+  ) => {
 
-    res.send(
-      "Global Promote 4-Page Instagram AI is running!"
-    );
+    res.json({
+
+      success:
+        true,
+
+      service:
+        BUSINESS_NAME,
+
+      status:
+        "online",
+
+      time:
+        nowISO()
+
+    });
+
+  }
+);
+
+
+/* =========================================================
+   ADMIN HEALTH
+========================================================= */
+
+app.get(
+  "/admin/health",
+  requireAdmin,
+  async (
+    req,
+    res
+  ) => {
+
+    const rows =
+      await supabaseGetAllConversations();
+
+
+    return res.json({
+
+      success:
+        true,
+
+      status:
+        "online",
+
+      database:
+        supabaseConfigured()
+          ? "configured"
+          : "not configured",
+
+      conversations:
+        rows.length,
+
+      pages:
+        Object.keys(
+          PAGE_CONFIGS
+        ),
+
+      ai:
+        Boolean(
+          OPEN_AI
+        ),
+
+      time:
+        nowISO()
+
+    });
 
   }
 );
@@ -5560,125 +6067,71 @@ app.get(
    START SERVER
 ========================================================= */
 
-app.listen(
-  PORT,
-  () => {
+async function startServer() {
 
-    console.log(
-      "========================================"
+  try {
+
+    await hydrateAdminConversations();
+
+    await restorePendingReminders();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "STARTUP RESTORE ERROR:",
+      error.message
     );
 
-
-    console.log(
-      "GLOBAL PROMOTE 4-PAGE AI STARTED"
-    );
+  }
 
 
-    console.log(
-      "PORT:",
-      PORT
-    );
-
-
-    console.log(
-      "AI:",
-      OPEN_AI
-        ? "CONNECTED"
-        : "MISSING"
-    );
-
-
-    console.log(
-      "SUPABASE:",
-      supabaseConfigured()
-        ? "CONNECTED"
-        : "MISSING"
-    );
-
-
-    console.log(
-      "----------------------------------------"
-    );
-
-
-    for (
-      const page
-      of Object.values(
-        PAGE_CONFIGS
-      )
-    ) {
+  app.listen(
+    PORT,
+    () => {
 
       console.log(
-        page.username,
-        "|",
-        page.id,
-        "| TOKEN:",
-        page.token
-          ? "CONNECTED"
-          : "MISSING"
+        `${BUSINESS_NAME} server running on port ${PORT}`
       );
 
-    }
 
-
-    console.log(
-      "----------------------------------------"
-    );
-
-
-    console.log(
-      "READ EVENTS: IGNORED FOR REMINDERS"
-    );
-
-
-    console.log(
-      "FIRST REMINDER: 1 MINUTE AFTER AUTOMATED OPENING"
-    );
-
-
-    console.log(
-      "SUPABASE MEMORY: ENABLED"
-    );
-
-
-    console.log(
-      "MANUAL REPLY: ENABLED"
-    );
-
-
-    console.log(
-      "CLIENT USERNAME LOOKUP: ENABLED"
-    );
-
-
-    console.log(
-      "PAYMENT VERIFICATION: ENABLED"
-    );
-
-
-    console.log(
-      "4 PAGE PACKAGE SYSTEM: ENABLED"
-    );
-
-
-    console.log(
-      "========================================"
-    );
-
-
-    /*
-       Restore any reminders that were already scheduled
-       before a Render/server restart.
-    */
-
-    restorePendingReminders()
-      .catch(
-        error =>
-          console.error(
-            "STARTUP REMINDER RESTORE ERROR:",
-            error
+      console.log(
+        "Instagram pages:",
+        Object.values(
+          PAGE_CONFIGS
+        )
+          .map(
+            page =>
+              page.username
+          )
+          .join(
+            ", "
           )
       );
 
-  }
-);
+
+      console.log(
+        "Supabase:",
+        supabaseConfigured()
+          ? "configured"
+          : "NOT CONFIGURED"
+      );
+
+
+      console.log(
+        "OpenAI:",
+        OPEN_AI
+          ? "configured"
+          : "NOT CONFIGURED"
+      );
+
+    }
+  );
+
+}
+
+
+startServer();
