@@ -70,9 +70,11 @@ const PAGE_CONFIGS = {
 
   europe: {
 
-    key: "europe",
+    key:
+      "europe",
 
-    username: "@expl.europe",
+    username:
+      "@expl.europe",
 
     id:
       "17841404831696204",
@@ -86,48 +88,83 @@ const PAGE_CONFIGS = {
     packages: {
 
       bronze: {
-        name: "Bronze",
-        price: 39,
-        details: "2 story",
+
+        name:
+          "Bronze",
+
+        price:
+          39,
+
+        details:
+          "2 story",
+
         followers:
           "1.5K followers guaranteed"
+
       },
 
       silver: {
-        name: "Silver",
-        price: 66,
+
+        name:
+          "Silver",
+
+        price:
+          66,
+
         details:
           "1 post and 3 story + 2 highlights",
+
         followers:
           "4K followers guaranteed"
+
       },
 
       gold: {
-        name: "Gold",
-        price: 99,
+
+        name:
+          "Gold",
+
+        price:
+          99,
+
         details:
           "3 post and 4 story + 3 highlights",
+
         followers:
           "7K followers guaranteed"
+
       },
 
       diamond: {
-        name: "Diamond",
-        price: 129,
+
+        name:
+          "Diamond",
+
+        price:
+          129,
+
         details:
           "5 post and 8 story + 7 highlights",
+
         followers:
           "10K followers guaranteed"
+
       }
 
     },
 
     paymentMethods: [
+
       "PayPal",
+
       "IBAN / Wise",
+
       "Revolut",
+
       "MB WAY",
+
       "Credit/Debit Card"
+
     ]
 
   },
@@ -139,9 +176,11 @@ const PAGE_CONFIGS = {
 
   miami: {
 
-    key: "miami",
+    key:
+      "miami",
 
-    username: "@expl.miami",
+    username:
+      "@expl.miami",
 
     id:
       "17841403973063146",
@@ -155,47 +194,81 @@ const PAGE_CONFIGS = {
     packages: {
 
       bronze: {
-        name: "Bronze",
-        price: 38,
-        details: "2 story",
+
+        name:
+          "Bronze",
+
+        price:
+          38,
+
+        details:
+          "2 story",
+
         followers:
           "1K followers guaranteed"
+
       },
 
       silver: {
-        name: "Silver",
-        price: 66,
+
+        name:
+          "Silver",
+
+        price:
+          66,
+
         details:
           "1 post and 3 story + 2 highlights",
+
         followers:
           "3K followers guaranteed"
+
       },
 
       gold: {
-        name: "Gold",
-        price: 99,
+
+        name:
+          "Gold",
+
+        price:
+          99,
+
         details:
           "3 post and 4 story + 3 highlights",
+
         followers:
           "5K followers guaranteed"
+
       },
 
       diamond: {
-        name: "Diamond",
-        price: 129,
+
+        name:
+          "Diamond",
+
+        price:
+          129,
+
         details:
           "5 post and 8 story + 7 highlights",
+
         followers:
           "8K followers guaranteed"
+
       }
 
     },
 
     paymentMethods: [
+
       "PayPal",
+
       "Venmo",
+
       "Credit/Debit Card",
+
       "Bank Transfer (ACH / Wire Transfer)"
+
     ]
 
   },
@@ -207,9 +280,11 @@ const PAGE_CONFIGS = {
 
   canada: {
 
-    key: "canada",
+    key:
+      "canada",
 
-    username: "@expl.canada",
+    username:
+      "@expl.canada",
 
     id:
       "17841452723605206",
@@ -223,47 +298,79 @@ const PAGE_CONFIGS = {
     packages: {
 
       bronze: {
-        name: "Bronze",
-        price: 35,
+
+        name:
+          "Bronze",
+
+        price:
+          35,
+
         details:
           "2 Stories",
+
         followers:
           "300–400 Global Followers Guaranteed"
+
       },
 
       silver: {
-        name: "Silver",
-        price: 60,
+
+        name:
+          "Silver",
+
+        price:
+          60,
+
         details:
           "1 Feed Post + 2 Stories",
+
         followers:
           "1.5K Followers Guaranteed (Includes 300–400 Canadian audience)"
+
       },
 
       gold: {
-        name: "Gold",
-        price: 99,
+
+        name:
+          "Gold",
+
+        price:
+          99,
+
         details:
           "3 Feed Posts + 4 Stories",
+
         followers:
           "4.5K Guaranteed Followers (Only Canadian Audience)"
+
       },
 
       diamond: {
-        name: "Diamond",
-        price: 199,
+
+        name:
+          "Diamond",
+
+        price:
+          199,
+
         details:
           "5 Feed Posts + 8 Stories",
+
         followers:
           "10K Guaranteed Followers (Only Toronto Audience)"
+
       }
 
     },
 
     paymentMethods: [
+
       "E-transfer",
+
       "Bank Transfer",
+
       "Credit/Debit Card"
+
     ]
 
   },
@@ -275,9 +382,11 @@ const PAGE_CONFIGS = {
 
   mentalxheal: {
 
-    key: "mentalxheal",
+    key:
+      "mentalxheal",
 
-    username: "@mentalxheal",
+    username:
+      "@mentalxheal",
 
     id:
       "17841402953609202",
@@ -291,56 +400,95 @@ const PAGE_CONFIGS = {
     packages: {
 
       bronze: {
-        name: "Bronze",
-        price: 39,
+
+        name:
+          "Bronze",
+
+        price:
+          39,
+
         details:
           "2 story",
+
         followers:
           "1K followers guaranteed"
+
       },
 
       silver: {
-        name: "Silver",
-        price: 66,
+
+        name:
+          "Silver",
+
+        price:
+          66,
+
         details:
           "1 post and 3 story + 2 highlights",
+
         followers:
           "3K followers guaranteed"
+
       },
 
       gold: {
-        name: "Gold",
-        price: 99,
+
+        name:
+          "Gold",
+
+        price:
+          99,
+
         details:
           "3 post and 4 story +3 highlights",
+
         followers:
           "5K followers guaranteed"
+
       },
 
       diamond: {
-        name: "Diamond",
-        price: 129,
+
+        name:
+          "Diamond",
+
+        price:
+          129,
+
         details:
           "5 post and 8 story + 7 highlights",
+
         followers:
           "8K followers guaranteed"
+
       }
 
     },
 
     extraServices: [
+
       "TikTok",
+
       "Facebook",
+
       "YouTube"
+
     ],
 
     paymentMethods: [
+
       "PayPal",
+
       "Venmo",
+
       "IBAN",
+
       "E-transfer",
+
       "Credit/Debit Card",
+
       "Revolut"
+
     ]
 
   }
@@ -352,19 +500,28 @@ const PAGE_CONFIGS = {
    PAGE LOOKUP
 ========================================================= */
 
-function getPageById(id) {
+function getPageById(
+  id
+) {
 
   const value =
-    String(id || "").trim();
+    String(
+      id || ""
+    ).trim();
 
 
   for (
     const page
-    of Object.values(PAGE_CONFIGS)
+    of Object.values(
+      PAGE_CONFIGS
+    )
   ) {
 
     if (
-      String(page.id) === value
+      String(
+        page.id
+      ) ===
+      value
     ) {
 
       return page;
@@ -372,6 +529,7 @@ function getPageById(id) {
     }
 
   }
+
 
   return null;
 
@@ -521,16 +679,22 @@ const reminderTimers =
 
 function nowISO() {
 
-  return new Date().toISOString();
+  return new Date()
+    .toISOString();
 
 }
 
 
-function wait(ms) {
+function wait(
+  ms
+) {
 
   return new Promise(
     resolve =>
-      setTimeout(resolve, ms)
+      setTimeout(
+        resolve,
+        ms
+      )
   );
 
 }
@@ -541,20 +705,31 @@ function replyDelay() {
   return (
     6000 +
     Math.floor(
-      Math.random() * 3000
+      Math.random() *
+      3000
     )
   );
 
 }
 
 
-function normalize(text) {
+function normalize(
+  text
+) {
 
-  return String(text || "")
+  return String(
+    text || ""
+  )
     .toLowerCase()
     .trim()
-    .replace(/[.,!?]/g, " ")
-    .replace(/\s+/g, " ");
+    .replace(
+      /[.,!?]/g,
+      " "
+    )
+    .replace(
+      /\s+/g,
+      " "
+    );
 
 }
 
@@ -570,7 +745,9 @@ function createConversation(
   return {
 
     senderId:
-      String(senderId),
+      String(
+        senderId
+      ),
 
     pageKey:
       null,
@@ -634,7 +811,13 @@ function saveMessage(
   text
 ) {
 
-  if (!text) return;
+  if (
+    !text
+  ) {
+
+    return;
+
+  }
 
 
   conversation.history.push({
@@ -642,7 +825,9 @@ function saveMessage(
     role,
 
     text:
-      String(text),
+      String(
+        text
+      ),
 
     timestamp:
       nowISO()
@@ -651,11 +836,14 @@ function saveMessage(
 
 
   if (
-    conversation.history.length > 80
+    conversation.history.length >
+    80
   ) {
 
     conversation.history =
-      conversation.history.slice(-80);
+      conversation.history.slice(
+        -80
+      );
 
   }
 
@@ -664,6 +852,8 @@ function saveMessage(
     nowISO();
 
 }
+
+
 /* =========================================================
    SUPABASE
 ========================================================= */
@@ -671,8 +861,11 @@ function saveMessage(
 function supabaseConfigured() {
 
   return Boolean(
+
     SUPABASE_URL &&
+
     SUPABASE_SERVICE_ROLE_KEY
+
   );
 
 }
@@ -718,10 +911,21 @@ async function supabaseGetConversation(
     const response =
       await fetch(
 
-        `${SUPABASE_URL.replace(/\/+$/, "")}` +
-        `/rest/v1/${encodeURIComponent(SUPABASE_TABLE)}` +
+        `${SUPABASE_URL.replace(
+          /\/+$/,
+          ""
+        )}` +
+
+        `/rest/v1/${encodeURIComponent(
+          SUPABASE_TABLE
+        )}` +
+
         `?select=id,messages,updated_at` +
-        `&id=eq.${encodeURIComponent(senderId)}` +
+
+        `&id=eq.${encodeURIComponent(
+          senderId
+        )}` +
+
         `&limit=1`,
 
         {
@@ -756,7 +960,9 @@ async function supabaseGetConversation(
 
 
     if (
-      !Array.isArray(data) ||
+      !Array.isArray(
+        data
+      ) ||
       !data.length
     ) {
 
@@ -771,8 +977,11 @@ async function supabaseGetConversation(
 
     if (
       stored &&
-      typeof stored === "object" &&
-      !Array.isArray(stored)
+      typeof stored ===
+        "object" &&
+      !Array.isArray(
+        stored
+      )
     ) {
 
       return stored;
@@ -781,7 +990,9 @@ async function supabaseGetConversation(
 
 
     if (
-      Array.isArray(stored)
+      Array.isArray(
+        stored
+      )
     ) {
 
       const conversation =
@@ -872,8 +1083,14 @@ async function supabaseSaveConversation(
     const response =
       await fetch(
 
-        `${SUPABASE_URL.replace(/\/+$/, "")}` +
-        `/rest/v1/${encodeURIComponent(SUPABASE_TABLE)}`,
+        `${SUPABASE_URL.replace(
+          /\/+$/,
+          ""
+        )}` +
+
+        `/rest/v1/${encodeURIComponent(
+          SUPABASE_TABLE
+        )}`,
 
         {
 
@@ -893,7 +1110,9 @@ async function supabaseSaveConversation(
             JSON.stringify({
 
               id:
-                String(senderId),
+                String(
+                  senderId
+                ),
 
               messages:
                 conversation,
@@ -956,14 +1175,20 @@ async function getConversation(
 ) {
 
   const key =
-    String(senderId);
+    String(
+      senderId
+    );
 
 
   if (
-    conversations.has(key)
+    conversations.has(
+      key
+    )
   ) {
 
-    return conversations.get(key);
+    return conversations.get(
+      key
+    );
 
   }
 
@@ -983,7 +1208,8 @@ async function getConversation(
 
   const conversation =
     saved &&
-    typeof saved === "object"
+    typeof saved ===
+      "object"
 
       ? saved
 
@@ -1004,87 +1230,6 @@ async function getConversation(
       : [];
 
 
-  conversation.pageKey =
-    conversation.pageKey ||
-    null;
-
-
-  conversation.clientUsername =
-    conversation.clientUsername ||
-    null;
-
-
-  conversation.stage =
-    conversation.stage ||
-    "NEW";
-
-
-  conversation.selectedPackage =
-    conversation.selectedPackage ||
-    null;
-
-
-  conversation.paymentMethod =
-    conversation.paymentMethod ||
-    null;
-
-
-  conversation.paymentDetailsSent =
-    Boolean(
-      conversation.paymentDetailsSent
-    );
-
-
-  conversation.paymentConfirmed =
-    Boolean(
-      conversation.paymentConfirmed
-    );
-
-
-  conversation.paymentProofReceived =
-    Boolean(
-      conversation.paymentProofReceived
-    );
-
-
-  conversation.awaitingPaymentConfirmation =
-    Boolean(
-      conversation.awaitingPaymentConfirmation
-    );
-
-
-  conversation.customerMessageVersion =
-    Number(
-      conversation.customerMessageVersion ||
-      0
-    );
-
-
-  conversation.lastOutgoingMessageId =
-    conversation.lastOutgoingMessageId ||
-    null;
-
-
-  conversation.lastOutgoingText =
-    conversation.lastOutgoingText ||
-    null;
-
-
-  conversation.lastOutgoingStage =
-    conversation.lastOutgoingStage ||
-    null;
-
-
-  conversation.lastOutgoingAt =
-    conversation.lastOutgoingAt ||
-    null;
-
-
-  conversation.reminder =
-    conversation.reminder ||
-    null;
-
-
   conversations.set(
     key,
     conversation
@@ -1097,7 +1242,7 @@ async function getConversation(
 
 
 /* =========================================================
-   SAVE
+   SAVE CONVERSATION
 ========================================================= */
 
 async function saveConversation(
@@ -1106,7 +1251,13 @@ async function saveConversation(
 ) {
 
   const key =
-    String(senderId);
+    String(
+      senderId
+    );
+
+
+  conversation.senderId =
+    key;
 
 
   conversations.set(
@@ -1115,65 +1266,488 @@ async function saveConversation(
   );
 
 
-  return await supabaseSaveConversation(
-    senderId,
+  return supabaseSaveConversation(
+    key,
     conversation
   );
 
 }
-
-
 /* =========================================================
-   CLIENT QUEUE
+   SUPABASE - ALL CONVERSATIONS
 ========================================================= */
 
-function queueForClient(
-  senderId,
-  task
-) {
+async function supabaseGetAllConversations() {
 
-  const key =
-    String(senderId);
+  if (
+    !supabaseConfigured()
+  ) {
 
+    return [];
 
-  const previous =
-    clientQueues.get(key) ||
-    Promise.resolve();
+  }
 
 
-  const next =
-    previous
-      .catch(() => {})
-      .then(task);
+  try {
+
+    const response =
+      await fetch(
+
+        `${SUPABASE_URL.replace(
+          /\/+$/,
+          ""
+        )}` +
+
+        `/rest/v1/${encodeURIComponent(
+          SUPABASE_TABLE
+        )}` +
+
+        `?select=id,messages,updated_at` +
+
+        `&order=updated_at.desc` +
+
+        `&limit=1000`,
+
+        {
+
+          method:
+            "GET",
+
+          headers:
+            supabaseHeaders()
+
+        }
+
+      );
 
 
-  clientQueues.set(
-    key,
-    next
-  );
+    const data =
+      await response.json();
 
-
-  next.finally(() => {
 
     if (
-      clientQueues.get(key) ===
-      next
+      !response.ok
     ) {
 
-      clientQueues.delete(key);
+      console.error(
+        "SUPABASE LIST ERROR:",
+        data
+      );
+
+      return [];
 
     }
 
-  }).catch(() => {});
 
+    return Array.isArray(
+      data
+    )
+      ? data
+      : [];
 
-  return next;
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "SUPABASE LIST EXCEPTION:",
+      error.message
+    );
+
+    return [];
+
+  }
 
 }
 
 
 /* =========================================================
-   PACKAGE DETECTION
+   HYDRATE ADMIN CONVERSATIONS
+========================================================= */
+
+async function hydrateAdminConversations() {
+
+  const rows =
+    await supabaseGetAllConversations();
+
+
+  for (
+    const row
+    of rows
+  ) {
+
+    const senderId =
+      String(
+        row?.id ||
+        ""
+      ).trim();
+
+
+    if (
+      !senderId
+    ) {
+
+      continue;
+
+    }
+
+
+    if (
+      !row?.messages ||
+      typeof row.messages !==
+        "object"
+    ) {
+
+      continue;
+
+    }
+
+
+    const conversation =
+      row.messages;
+
+
+    conversation.senderId =
+      senderId;
+
+
+    conversation.history =
+      Array.isArray(
+        conversation.history
+      )
+        ? conversation.history
+        : [];
+
+
+    conversation.clientUsername =
+      conversation.clientUsername ||
+      null;
+
+
+    conversation.pageKey =
+      conversation.pageKey ||
+      null;
+
+
+    conversations.set(
+      senderId,
+      conversation
+    );
+
+  }
+
+
+  return conversations;
+
+}
+
+
+/* =========================================================
+   USERNAME NORMALIZATION
+========================================================= */
+
+function normalizeInstagramUsername(
+  username
+) {
+
+  if (
+    !username
+  ) {
+
+    return null;
+
+  }
+
+
+  const value =
+    String(
+      username
+    )
+      .trim()
+      .replace(
+        /^@+/,
+        ""
+      );
+
+
+  if (
+    !value
+  ) {
+
+    return null;
+
+  }
+
+
+  return `@${value}`;
+
+}
+
+
+/* =========================================================
+   EXTRACT USERNAME
+========================================================= */
+
+function extractInstagramUsername(
+  text
+) {
+
+  const match =
+    String(
+      text || ""
+    ).match(
+      /(?:^|\s)@([a-zA-Z0-9._]{1,30})\b/
+    );
+
+
+  if (
+    !match
+  ) {
+
+    return null;
+
+  }
+
+
+  return normalizeInstagramUsername(
+    match[1]
+  );
+
+}
+
+
+/* =========================================================
+   SAVE USERNAME
+========================================================= */
+
+async function setConversationUsername(
+  senderId,
+  username
+) {
+
+  const normalized =
+    normalizeInstagramUsername(
+      username
+    );
+
+
+  if (
+    !normalized
+  ) {
+
+    return false;
+
+  }
+
+
+  const conversation =
+    await getConversation(
+      senderId
+    );
+
+
+  if (
+    !conversation
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    conversation.clientUsername ===
+    normalized
+  ) {
+
+    conversation.promotionUsernameReceived =
+      true;
+
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+
+    return true;
+
+  }
+
+
+  conversation.clientUsername =
+    normalized;
+
+
+  conversation.promotionUsernameReceived =
+    true;
+
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  console.log(
+    "CLIENT USERNAME SAVED:",
+    normalized,
+    senderId
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   META USERNAME LOOKUP
+========================================================= */
+
+async function getInstagramUsername(
+  page,
+  senderId
+) {
+
+  if (
+    !page?.token ||
+    !senderId
+  ) {
+
+    return null;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+
+        `https://graph.instagram.com/${INSTAGRAM_API_VERSION}` +
+
+        `/${encodeURIComponent(
+          senderId
+        )}` +
+
+        `?fields=username`,
+
+        {
+
+          method:
+            "GET",
+
+          headers: {
+
+            Authorization:
+              `Bearer ${page.token}`
+
+          }
+
+        }
+
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok
+    ) {
+
+      console.error(
+        "META USERNAME ERROR:",
+        data
+      );
+
+      return null;
+
+    }
+
+
+    return normalizeInstagramUsername(
+      data?.username
+    );
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "META USERNAME EXCEPTION:",
+      error.message
+    );
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================================
+   CUSTOMER MESSAGE USERNAME
+========================================================= */
+
+async function processUsernameFromMessage(
+  senderId,
+  conversation,
+  text
+) {
+
+  const username =
+    extractInstagramUsername(
+      text
+    );
+
+
+  if (
+    !username
+  ) {
+
+    return false;
+
+  }
+
+
+  conversation.clientUsername =
+    username;
+
+
+  conversation.promotionUsernameReceived =
+    true;
+
+
+  conversation.promotionUsernameRequested =
+    false;
+
+
+  await saveConversation(
+    senderId,
+    conversation
+  );
+
+
+  console.log(
+    "USERNAME FROM MESSAGE:",
+    username,
+    senderId
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   DETECTION HELPERS
 ========================================================= */
 
 function detectPackage(
@@ -1181,51 +1755,53 @@ function detectPackage(
 ) {
 
   const t =
-    normalize(text);
+    normalize(
+      text
+    );
 
 
   if (
-    /\bbronze\b/.test(t)
-  ) return "bronze";
-
-
-  if (
-    /\bsilver\b/.test(t)
-  ) return "silver";
-
-
-  if (
-    /\bgold\b/.test(t)
-  ) return "gold";
-
-
-  if (
-    /\bdiamond\b/.test(t)
-  ) return "diamond";
-
-
-  if (
+    /\bbronze\b/.test(t) ||
     /\bpackage\s*1\b/.test(t) ||
     /^1$/.test(t)
-  ) return "bronze";
+  ) {
+
+    return "bronze";
+
+  }
 
 
   if (
+    /\bsilver\b/.test(t) ||
     /\bpackage\s*2\b/.test(t) ||
     /^2$/.test(t)
-  ) return "silver";
+  ) {
+
+    return "silver";
+
+  }
 
 
   if (
+    /\bgold\b/.test(t) ||
     /\bpackage\s*3\b/.test(t) ||
     /^3$/.test(t)
-  ) return "gold";
+  ) {
+
+    return "gold";
+
+  }
 
 
   if (
+    /\bdiamond\b/.test(t) ||
     /\bpackage\s*4\b/.test(t) ||
     /^4$/.test(t)
-  ) return "diamond";
+  ) {
+
+    return "diamond";
+
+  }
 
 
   return null;
@@ -1242,46 +1818,75 @@ function detectPaymentMethod(
 ) {
 
   const t =
-    normalize(text);
+    normalize(
+      text
+    );
 
 
   if (
     /\bpaypal\b/.test(t)
-  ) return "paypal";
+  ) {
+
+    return "paypal";
+
+  }
 
 
   if (
     /\bvenmo\b/.test(t)
-  ) return "venmo";
+  ) {
+
+    return "venmo";
+
+  }
 
 
   if (
     /\be[\s-]?transfer\b/.test(t)
-  ) return "etransfer";
+  ) {
+
+    return "etransfer";
+
+  }
 
 
   if (
     /\biban\b/.test(t) ||
     /\bwise\b/.test(t)
-  ) return "iban";
+  ) {
+
+    return "iban";
+
+  }
 
 
   if (
     /\brevolut\b/.test(t)
-  ) return "revolut";
+  ) {
+
+    return "revolut";
+
+  }
 
 
   if (
     /\bmb[\s-]?way\b/.test(t)
-  ) return "mbway";
+  ) {
+
+    return "mbway";
+
+  }
 
 
   if (
+    /\bcredit\s*\/?\s*debit\b/.test(t) ||
     /\bcredit card\b/.test(t) ||
-    /\bdebit card\b/.test(t) ||
-    /\bcredit\/debit\b/.test(t) ||
-    /\bcard\b/.test(t)
-  ) return "card";
+    /\bdebit card\b/.test(t)
+  ) {
+
+    return "card";
+
+  }
 
 
   if (
@@ -1289,7 +1894,11 @@ function detectPaymentMethod(
     /\bwire\b/.test(t) ||
     /\bbank transfer\b/.test(t) ||
     /\bbank\b/.test(t)
-  ) return "achWire";
+  ) {
+
+    return "achWire";
+
+  }
 
 
   return null;
@@ -1298,7 +1907,57 @@ function detectPaymentMethod(
 
 
 /* =========================================================
-   PAYMENT METHOD AVAILABLE?
+   PAYMENT METHOD ALIASES
+========================================================= */
+
+const PAYMENT_METHOD_ALIASES = {
+
+  paypal: [
+    "paypal"
+  ],
+
+  venmo: [
+    "venmo"
+  ],
+
+  etransfer: [
+    "e-transfer",
+    "etransfer"
+  ],
+
+  iban: [
+    "iban",
+    "wise",
+    "iban / wise"
+  ],
+
+  revolut: [
+    "revolut"
+  ],
+
+  mbway: [
+    "mb way",
+    "mbway"
+  ],
+
+  card: [
+    "credit/debit card",
+    "credit card",
+    "debit card"
+  ],
+
+  achWire: [
+    "bank transfer",
+    "bank transfer (ach / wire transfer)",
+    "ach",
+    "wire transfer"
+  ]
+
+};
+
+
+/* =========================================================
+   CHECK PAYMENT METHOD FOR PAGE
 ========================================================= */
 
 function paymentMethodAvailable(
@@ -1306,51 +1965,40 @@ function paymentMethodAvailable(
   method
 ) {
 
-  const names = {
+  if (
+    !page ||
+    !method
+  ) {
 
-    paypal:
-      ["PayPal"],
+    return false;
 
-    venmo:
-      ["Venmo"],
-
-    etransfer:
-      ["E-transfer"],
-
-    iban:
-      ["IBAN", "IBAN / Wise"],
-
-    revolut:
-      ["Revolut"],
-
-    mbway:
-      ["MB WAY"],
-
-    card:
-      ["Credit/Debit Card"],
-
-    achWire:
-      [
-        "Bank Transfer",
-        "Bank Transfer (ACH / Wire Transfer)"
-      ]
-
-  };
+  }
 
 
-  return (
-    names[method] || []
-  ).some(
-    expected =>
-      page.paymentMethods.some(
-        available =>
+  const aliases =
+    PAYMENT_METHOD_ALIASES[
+      method
+    ] || [];
+
+
+  return page.paymentMethods.some(
+    paymentMethod => {
+
+      const normalized =
+        normalize(
+          paymentMethod
+        );
+
+
+      return aliases.some(
+        alias =>
+          normalized ===
           normalize(
-            available
-          ) ===
-          normalize(
-            expected
+            alias
           )
-      )
+      );
+
+    }
   );
 
 }
@@ -1365,7 +2013,8 @@ function buildPackagesMessage(
 ) {
 
   if (
-    page.key === "europe"
+    page.key ===
+    "europe"
   ) {
 
     return `
@@ -1394,7 +2043,8 @@ Mostly client choose this package!!
 
 
   if (
-    page.key === "miami"
+    page.key ===
+    "miami"
   ) {
 
     return `
@@ -1423,7 +2073,8 @@ Mostly client choose this package!!
 
 
   if (
-    page.key === "canada"
+    page.key ===
+    "canada"
   ) {
 
     return `
@@ -1453,7 +2104,8 @@ Mostly client choose this package!!
 
 
   if (
-    page.key === "mentalxheal"
+    page.key ===
+    "mentalxheal"
   ) {
 
     return `
@@ -1501,24 +2153,52 @@ function buildPackageConfirmation(
   packageKey
 ) {
 
-  const p =
-    page.packages[packageKey];
+  const selected =
+    page?.packages?.[
+      packageKey
+    ];
 
 
-  if (!p) return null;
+  if (
+    !selected
+  ) {
+
+    return null;
+
+  }
 
 
   return `
 Perfect ❤️
 
-You've selected the ${p.name} package.
+You've selected the ${selected.name} package.
 
-${page.currency}${p.price} = ${p.details}
-🎯 ${p.followers}
+${page.currency}${selected.price} = ${selected.details}
+🎯 ${selected.followers}
 
 How would you like to pay?
 
-${page.paymentMethods.join("\n")}`;
+${page.paymentMethods.join(
+  "\n"
+)}`;
+
+}
+
+
+/* =========================================================
+   PAYMENT DETAILS
+========================================================= */
+
+function getPaymentDetails(
+  paymentMethod
+) {
+
+  return (
+    PAYMENT_DETAILS[
+      paymentMethod
+    ] ||
+    null
+  );
 
 }
 
@@ -1530,50 +2210,42 @@ ${page.paymentMethods.join("\n")}`;
 function buildPaymentMessage(
   page,
   packageKey,
-  method
+  paymentMethod
 ) {
 
-  const p =
-    page.packages[packageKey];
-
-
-  if (!p) return null;
-
-
-  if (
-    !paymentMethodAvailable(
-      page,
-      method
-    )
-  ) {
-
-    return `
-That payment method isn't listed for this page.
-
-Available methods:
-
-${page.paymentMethods.join("\n")}
-
-Please choose one of these ❤️`;
-
-  }
+  const selected =
+    page?.packages?.[
+      packageKey
+    ];
 
 
   const details =
-    PAYMENT_DETAILS[method];
+    getPaymentDetails(
+      paymentMethod
+    );
+
+
+  if (
+    !selected ||
+    !details
+  ) {
+
+    return null;
+
+  }
 
 
   return `
 Perfect ❤️
 
 Package:
-${p.name}
+${selected.name}
 
 Package price:
-${page.currency}${p.price}
+${page.currency}${selected.price}
 
 Payment method:
-${method.toUpperCase()}
+${paymentMethod}
 
 Payment details:
 
@@ -1582,8 +2254,118 @@ ${details}
 After successful payment, please send us your payment screenshot ❤️`;
 
 }
+
+
 /* =========================================================
-   REMINDER SYSTEM
+   BASIC DETECTION
+========================================================= */
+
+function isPositiveInterest(
+  text
+) {
+
+  const t =
+    normalize(
+      text
+    );
+
+
+  return (
+    /\byes\b/.test(t) ||
+    /\byep\b/.test(t) ||
+    /\byup\b/.test(t) ||
+    /\bsure\b/.test(t) ||
+    /\binterested\b/.test(t) ||
+    /\bsounds good\b/.test(t) ||
+    /\bokay\b/.test(t) ||
+    /\bok\b/.test(t) ||
+    /\bshow me\b/.test(t) ||
+    /\bsend me\b/.test(t)
+  );
+
+}
+
+
+function isNegative(
+  text
+) {
+
+  const t =
+    normalize(
+      text
+    );
+
+
+  return (
+    /not interested/.test(t) ||
+    /no thanks/.test(t) ||
+    /^no$/.test(t) ||
+    /\bstop\b/.test(t) ||
+    /don't message/.test(t)
+  );
+
+}
+
+
+function isGuaranteeQuestion(
+  text
+) {
+
+  const t =
+    normalize(
+      text
+    );
+
+
+  return (
+    /\bguarantee\b/.test(t) ||
+    /\bguaranteed\b/.test(t) ||
+    /\brefund\b/.test(t) ||
+    /\brefunded\b/.test(t)
+  );
+
+}
+
+
+function isPaymentConfirmation(
+  text
+) {
+
+  const t =
+    normalize(
+      text
+    );
+
+
+  return (
+    /\bpaid\b/.test(t) ||
+    /payment done/.test(t) ||
+    /payment completed/.test(t) ||
+    /payment sent/.test(t) ||
+    /i paid/.test(t) ||
+    /paid already/.test(t) ||
+    /successfully paid/.test(t)
+  );
+
+}
+
+
+function hasMedia(
+  attachmentInfo
+) {
+
+  return Boolean(
+    attachmentInfo &&
+    String(
+      attachmentInfo
+    ).trim()
+  );
+
+}
+
+
+/* =========================================================
+   REMINDER CONFIGURATION
 ========================================================= */
 
 const REMINDER_TEXTS = {
@@ -1597,32 +2379,27 @@ const REMINDER_TEXTS = {
   PACKAGES_SHOWN:
     "So which package would you like to choose? ❤️",
 
-  PACKAGE_SELECTED:
-    "Which mode of payment do you have? ❤️",
-
   PAYMENT_PENDING:
     "Did you try to make the payment? ❤️ Let me know if you need any help."
 
 };
 
 
-/* =========================================================
-   REMINDER DELAYS
-========================================================= */
-
 const REMINDER_DELAYS = {
 
+  /*
+     FIRST OPENING REMINDER:
+     EXACTLY 1 MINUTE.
+  */
+
   MESSAGE_ONE_SENT:
-    0,
+    60 * 1000,
 
   MESSAGE_TWO_SENT:
     2 * 60 * 1000,
 
   PACKAGES_SHOWN:
     3 * 60 * 1000,
-
-  PACKAGE_SELECTED:
-    1 * 60 * 1000,
 
   PAYMENT_PENDING:
     5 * 60 * 1000
@@ -1639,27 +2416,42 @@ function cancelReminder(
 ) {
 
   const key =
-    String(senderId);
+    String(
+      senderId
+    );
 
 
   const timer =
-    reminderTimers.get(key);
+    reminderTimers.get(
+      key
+    );
 
 
-  if (timer) {
+  if (
+    timer
+  ) {
 
-    clearTimeout(timer);
-
-    reminderTimers.delete(key);
+    clearTimeout(
+      timer
+    );
 
   }
 
 
+  reminderTimers.delete(
+    key
+  );
+
+
   const conversation =
-    conversations.get(key);
+    conversations.get(
+      key
+    );
 
 
-  if (conversation) {
+  if (
+    conversation
+  ) {
 
     conversation.reminder =
       null;
@@ -1670,23 +2462,84 @@ function cancelReminder(
 
 
 /* =========================================================
-   SCHEDULE REMINDER
-   IMPORTANT:
-   Reminder is created immediately after an automated
-   message is successfully sent.
+   MANUAL REPLY VERSION
+========================================================= */
 
-   It does NOT wait for a READ / SEEN webhook.
+function invalidatePendingAI(
+  senderId
+) {
+
+  const key =
+    String(
+      senderId
+    );
+
+
+  manualReplyVersion.set(
+    key,
+    (
+      manualReplyVersion.get(
+        key
+      ) || 0
+    ) + 1
+  );
+
+
+  cancelReminder(
+    key
+  );
+
+}
+
+
+function getManualReplyVersion(
+  senderId
+) {
+
+  return (
+    manualReplyVersion.get(
+      String(
+        senderId
+      )
+    ) || 0
+  );
+
+}
+
+
+function manualReplyStillValid(
+  senderId,
+  version
+) {
+
+  return (
+    getManualReplyVersion(
+      senderId
+    ) ===
+    version
+  );
+
+}
+/* =========================================================
+   SCHEDULE REMINDER
 ========================================================= */
 
 async function scheduleReminder(
   senderId,
   stage,
-  outgoingMessageId,
-  outgoingAt
+  messageId,
+  sentAt
 ) {
 
+  const delay =
+    REMINDER_DELAYS[
+      stage
+    ];
+
+
   if (
-    !REMINDER_TEXTS[stage]
+    !delay ||
+    !messageId
   ) {
 
     return;
@@ -1695,7 +2548,9 @@ async function scheduleReminder(
 
 
   const key =
-    String(senderId);
+    String(
+      senderId
+    );
 
 
   cancelReminder(
@@ -1709,60 +2564,39 @@ async function scheduleReminder(
     );
 
 
-  const delay =
-    REMINDER_DELAYS[
-      stage
-    ];
+  const version =
+    Number(
+      conversation.customerMessageVersion ||
+      0
+    );
 
 
-  if (
-    delay === undefined
-  ) {
+  const dueAt =
+    new Date(
+      Date.now() +
+      delay
+    ).toISOString();
 
-    return;
-
-  }
-
-
-  const messageId =
-    outgoingMessageId
-      ? String(outgoingMessageId)
-      : null;
-
-
-  /*
-     The reminder is considered active immediately.
-
-     We intentionally set seen=true because the reminder
-     no longer depends on Meta's READ event.
-  */
 
   conversation.reminder = {
 
-    stage,
+    stage:
+      stage,
 
-    messageId,
+    messageId:
+      String(
+        messageId
+      ),
 
     sentAt:
-      outgoingAt ||
+      sentAt ||
       nowISO(),
 
-    seen:
-      true,
-
     dueAt:
-      new Date(
-        Date.now() + delay
-      ).toISOString(),
-
-    triggered:
-      false,
+      dueAt,
 
     customerMessageVersion:
-      Number(
-        conversation.customerMessageVersion ||
-        0
-      )
+      version
 
   };
 
@@ -1773,10 +2607,6 @@ async function scheduleReminder(
   );
 
 
-  /*
-     Start timer immediately.
-  */
-
   const timer =
     setTimeout(
       () => {
@@ -1784,15 +2614,18 @@ async function scheduleReminder(
         processReminder(
           key,
           stage,
-          messageId,
-          conversation.customerMessageVersion
-        ).catch(
-          error =>
-            console.error(
-              "REMINDER ERROR:",
-              error
-            )
-        );
+          String(
+            messageId
+          ),
+          version
+        )
+          .catch(
+            error =>
+              console.error(
+                "REMINDER ERROR:",
+                error.message
+              )
+          );
 
       },
       delay
@@ -1802,185 +2635,6 @@ async function scheduleReminder(
   reminderTimers.set(
     key,
     timer
-  );
-
-
-  console.log(
-    "========================================"
-  );
-
-  console.log(
-    "REMINDER TIMER STARTED IMMEDIATELY"
-  );
-
-  console.log(
-    "CUSTOMER:",
-    conversation.clientUsername ||
-    key
-  );
-
-  console.log(
-    "STAGE:",
-    stage
-  );
-
-  console.log(
-    "MESSAGE ID:",
-    messageId
-  );
-
-  console.log(
-    "DELAY:",
-    delay,
-    "ms"
-  );
-
-  console.log(
-    "DUE AT:",
-    conversation.reminder.dueAt
-  );
-
-  console.log(
-    "========================================"
-  );
-
-}
-
-
-/* =========================================================
-   READ EVENT COMPATIBILITY
-========================================================= */
-
-async function startReminderAfterRead(
-  senderId,
-  readWatermark
-) {
-
-  /*
-     READ / SEEN webhook is no longer required.
-
-     This function remains only so an existing READ event
-     cannot break the webhook.
-
-     If a timer is already active, do nothing.
-  */
-
-  const key =
-    String(senderId);
-
-
-  if (
-    reminderTimers.has(key)
-  ) {
-
-    return;
-
-  }
-
-
-  const conversation =
-    await getConversation(
-      key
-    );
-
-
-  const reminder =
-    conversation.reminder;
-
-
-  if (
-    !reminder ||
-    reminder.triggered
-  ) {
-
-    return;
-
-  }
-
-
-  /*
-     If an old reminder exists in Supabase but has no active
-     timer, recreate it using the remaining time.
-  */
-
-  if (
-    !reminder.dueAt
-  ) {
-
-    return;
-
-  }
-
-
-  const dueAt =
-    new Date(
-      reminder.dueAt
-    ).getTime();
-
-
-  if (
-    !Number.isFinite(dueAt)
-  ) {
-
-    return;
-
-  }
-
-
-  const remaining =
-    Math.max(
-      1000,
-      dueAt - Date.now()
-    );
-
-
-  const page =
-    PAGE_CONFIGS[
-      conversation.pageKey
-    ];
-
-
-  if (
-    !page
-  ) {
-
-    return;
-
-  }
-
-
-  const timer =
-    setTimeout(
-      () => {
-
-        processReminder(
-          key,
-          reminder.stage,
-          reminder.messageId,
-          reminder.customerMessageVersion
-        ).catch(
-          error =>
-            console.error(
-              "REMINDER RESTORE ERROR:",
-              error
-            )
-        );
-
-      },
-      remaining
-    );
-
-
-  reminderTimers.set(
-    key,
-    timer
-  );
-
-
-  console.log(
-    "REMINDER RESTORED FROM EXISTING STATE:",
-    key,
-    remaining
   );
 
 }
@@ -1994,11 +2648,13 @@ async function processReminder(
   senderId,
   expectedStage,
   expectedMessageId,
-  expectedCustomerVersion
+  expectedVersion
 ) {
 
   const key =
-    String(senderId);
+    String(
+      senderId
+    );
 
 
   reminderTimers.delete(
@@ -2016,10 +2672,6 @@ async function processReminder(
     conversation.reminder;
 
 
-  /*
-     Reminder no longer exists.
-  */
-
   if (
     !reminder
   ) {
@@ -2030,60 +2682,7 @@ async function processReminder(
 
 
   /*
-     Already triggered.
-  */
-
-  if (
-    reminder.triggered
-  ) {
-
-    return;
-
-  }
-
-
-  /*
-     Make sure the reminder still belongs to the
-     exact outgoing message/stage.
-  */
-
-  if (
-    conversation.stage !==
-    expectedStage
-  ) {
-
-    conversation.reminder =
-      null;
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-    return;
-
-  }
-
-
-  if (
-    String(
-      reminder.messageId ||
-      ""
-    ) !==
-    String(
-      expectedMessageId ||
-      ""
-    )
-  ) {
-
-    return;
-
-  }
-
-
-  /*
-     If customer sent a newer message, this reminder
-     is obsolete.
+     A customer reply invalidates the reminder.
   */
 
   if (
@@ -2092,7 +2691,7 @@ async function processReminder(
       0
     ) !==
     Number(
-      expectedCustomerVersion ||
+      expectedVersion ||
       0
     )
   ) {
@@ -2100,20 +2699,41 @@ async function processReminder(
     conversation.reminder =
       null;
 
+
     await saveConversation(
       key,
       conversation
     );
+
 
     return;
 
   }
 
 
-  /*
-     Never send a payment reminder after payment is
-     confirmed.
-  */
+  if (
+    String(
+      reminder.messageId
+    ) !==
+    String(
+      expectedMessageId
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    conversation.stage !==
+    expectedStage
+  ) {
+
+    return;
+
+  }
+
 
   if (
     conversation.paymentConfirmed
@@ -2122,23 +2742,12 @@ async function processReminder(
     conversation.reminder =
       null;
 
+
     await saveConversation(
       key,
       conversation
     );
 
-    return;
-
-  }
-
-
-  const text =
-    REMINDER_TEXTS[
-      expectedStage
-    ];
-
-
-  if (!text) {
 
     return;
 
@@ -2151,33 +2760,122 @@ async function processReminder(
     ];
 
 
-  if (!page) {
+  if (
+    !page
+  ) {
 
-    console.log(
-      "REMINDER SKIPPED - PAGE UNKNOWN:",
-      key
+    conversation.reminder =
+      null;
+
+
+    await saveConversation(
+      key,
+      conversation
     );
+
 
     return;
 
   }
 
 
-  /*
-     Send reminder.
-  */
+  const text =
+    REMINDER_TEXTS[
+      expectedStage
+    ];
 
-  let data;
+
+  if (
+    !text
+  ) {
+
+    return;
+
+  }
+
+
+  const version =
+    getManualReplyVersion(
+      key
+    );
+
+
+  if (
+    !manualReplyStillValid(
+      key,
+      version
+    )
+  ) {
+
+    return;
+
+  }
 
 
   try {
 
-    data =
+    const data =
       await sendInstagramMessage(
         page,
         key,
         text
       );
+
+
+    const newMessageId =
+      data?.message_id ||
+      data?.id ||
+      null;
+
+
+    if (
+      newMessageId
+    ) {
+
+      outgoingMessages.add(
+        `${page.key}:${String(
+          newMessageId
+        )}`
+      );
+
+    }
+
+
+    saveMessage(
+      conversation,
+      "assistant",
+      text
+    );
+
+
+    conversation.lastOutgoingMessageId =
+      newMessageId
+        ? String(
+            newMessageId
+          )
+        : null;
+
+
+    conversation.lastOutgoingText =
+      text;
+
+
+    conversation.lastOutgoingStage =
+      expectedStage;
+
+
+    conversation.lastOutgoingAt =
+      nowISO();
+
+
+    conversation.reminder =
+      null;
+
+
+    await saveConversation(
+      key,
+      conversation
+    );
 
   }
 
@@ -2186,28 +2884,342 @@ async function processReminder(
   ) {
 
     console.error(
-      "REMINDER SEND FAILED:",
-      page.username,
-      key,
+      "REMINDER SEND ERROR:",
       error.message
     );
 
-    /*
-       Keep the reminder state so it can be inspected
-       instead of pretending it was successfully sent.
-    */
 
     conversation.reminder =
       null;
+
 
     await saveConversation(
       key,
       conversation
     );
 
-    return;
+  }
+
+}
+
+
+/* =========================================================
+   RESTORE REMINDERS AFTER RESTART
+========================================================= */
+
+async function restorePendingReminders() {
+
+  const rows =
+    await supabaseGetAllConversations();
+
+
+  for (
+    const row
+    of rows
+  ) {
+
+    const senderId =
+      String(
+        row?.id ||
+        ""
+      ).trim();
+
+
+    if (
+      !senderId
+    ) {
+
+      continue;
+
+    }
+
+
+    const conversation =
+      row?.messages;
+
+
+    if (
+      !conversation ||
+      typeof conversation !==
+        "object"
+    ) {
+
+      continue;
+
+    }
+
+
+    conversations.set(
+      senderId,
+      conversation
+    );
+
+
+    const reminder =
+      conversation.reminder;
+
+
+    if (
+      !reminder ||
+      !reminder.dueAt ||
+      !reminder.messageId
+    ) {
+
+      continue;
+
+    }
+
+
+    const dueTime =
+      new Date(
+        reminder.dueAt
+      ).getTime();
+
+
+    if (
+      !Number.isFinite(
+        dueTime
+      )
+    ) {
+
+      conversation.reminder =
+        null;
+
+
+      await saveConversation(
+        senderId,
+        conversation
+      );
+
+
+      continue;
+
+    }
+
+
+    const delay =
+      Math.max(
+        1000,
+        dueTime -
+        Date.now()
+      );
+
+
+    cancelReminder(
+      senderId
+    );
+
+
+    const timer =
+      setTimeout(
+        () => {
+
+          processReminder(
+            senderId,
+            reminder.stage,
+            reminder.messageId,
+            reminder.customerMessageVersion
+          )
+            .catch(
+              error =>
+                console.error(
+                  "RESTORED REMINDER ERROR:",
+                  error.message
+                )
+            );
+
+        },
+        delay
+      );
+
+
+    reminderTimers.set(
+      senderId,
+      timer
+    );
 
   }
+
+}
+
+
+/* =========================================================
+   INSTAGRAM SEND
+========================================================= */
+
+async function sendInstagramMessage(
+  page,
+  recipientId,
+  text
+) {
+
+  if (
+    !page ||
+    !page.token
+  ) {
+
+    throw new Error(
+      `Instagram page token missing for ${
+        page?.username ||
+        "unknown page"
+      }`
+    );
+
+  }
+
+
+  const url =
+    `https://graph.instagram.com/${INSTAGRAM_API_VERSION}` +
+    `/${page.id}/messages`;
+
+
+  const response =
+    await fetch(
+      url,
+      {
+
+        method:
+          "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json",
+
+          Authorization:
+            `Bearer ${page.token}`
+
+        },
+
+        body:
+          JSON.stringify({
+
+            recipient: {
+
+              id:
+                String(
+                  recipientId
+                )
+
+            },
+
+            message: {
+
+              text:
+                String(
+                  text
+                )
+
+            }
+
+          })
+
+      }
+    );
+
+
+  const data =
+    await response.json();
+
+
+  if (
+    !response.ok
+  ) {
+
+    throw new Error(
+      data?.error?.message ||
+      `Instagram API error ${response.status}`
+    );
+
+  }
+
+
+  return data;
+
+}
+
+
+/* =========================================================
+   SAFE AUTOMATIC SEND
+========================================================= */
+
+async function sendReplySafely(
+  page,
+  senderId,
+  conversation,
+  text,
+  version,
+  reminderStage = null
+) {
+
+  if (
+    !text
+  ) {
+
+    return null;
+
+  }
+
+
+  const key =
+    String(
+      senderId
+    );
+
+
+  /*
+     Small human-like delay.
+
+     IMPORTANT:
+     The first reminder is NOT here.
+     Reminder timing is controlled separately
+     by scheduleReminder().
+  */
+
+  await wait(
+    replyDelay()
+  );
+
+
+  if (
+    !manualReplyStillValid(
+      key,
+      version
+    )
+  ) {
+
+    return null;
+
+  }
+
+
+  const latest =
+    await getConversation(
+      key
+    );
+
+
+  /*
+     If the client replied while AI was waiting,
+     don't send the old AI answer.
+  */
+
+  if (
+    latest.customerMessageVersion !==
+    conversation.customerMessageVersion
+  ) {
+
+    return null;
+
+  }
+
+
+  const data =
+    await sendInstagramMessage(
+      page,
+      key,
+      text
+    );
 
 
   const messageId =
@@ -2221,7 +3233,164 @@ async function processReminder(
   ) {
 
     outgoingMessages.add(
-      `${page.key}:${String(messageId)}`
+      `${page.key}:${String(
+        messageId
+      )}`
+    );
+
+  }
+
+
+  latest.pageKey =
+    page.key;
+
+
+  saveMessage(
+    latest,
+    "assistant",
+    text
+  );
+
+
+  latest.lastOutgoingMessageId =
+    messageId
+      ? String(
+          messageId
+        )
+      : null;
+
+
+  latest.lastOutgoingText =
+    text;
+
+
+  latest.lastOutgoingStage =
+    latest.stage;
+
+
+  latest.lastOutgoingAt =
+    nowISO();
+
+
+  await saveConversation(
+    key,
+    latest
+  );
+
+
+  /*
+     Only schedule a reminder when the caller
+     explicitly requested one.
+  */
+
+  if (
+    reminderStage &&
+    messageId
+  ) {
+
+    await scheduleReminder(
+      key,
+      reminderStage,
+      messageId,
+      latest.lastOutgoingAt
+    );
+
+  }
+
+
+  return data;
+
+}
+
+
+/* =========================================================
+   ADMIN REPLY
+========================================================= */
+
+async function sendAdminReplyMessage(
+  senderId,
+  message,
+  requestedPage = null
+) {
+
+  const key =
+    String(
+      senderId
+    );
+
+
+  const conversation =
+    await getConversation(
+      key
+    );
+
+
+  if (
+    !conversation
+  ) {
+
+    throw new Error(
+      "Client conversation not found."
+    );
+
+  }
+
+
+  const pageKey =
+    requestedPage ||
+    conversation.pageKey;
+
+
+  const page =
+    PAGE_CONFIGS[
+      pageKey
+    ];
+
+
+  if (
+    !page
+  ) {
+
+    throw new Error(
+      "Client page is missing or invalid."
+    );
+
+  }
+
+
+  /*
+     Admin reply cancels:
+     1. reminder
+     2. pending delayed AI reply
+  */
+
+  invalidatePendingAI(
+    key
+  );
+
+
+  const data =
+    await sendInstagramMessage(
+      page,
+      key,
+      message
+    );
+
+
+  const messageId =
+    data?.message_id ||
+    data?.id ||
+    null;
+
+
+  if (
+    messageId
+  ) {
+
+    outgoingMessages.add(
+      `${page.key}:${String(
+        messageId
+      )}`
     );
 
   }
@@ -2230,35 +3399,33 @@ async function processReminder(
   saveMessage(
     conversation,
     "assistant",
-    text
+    message
   );
+
+
+  conversation.pageKey =
+    page.key;
 
 
   conversation.lastOutgoingMessageId =
     messageId
-      ? String(messageId)
+      ? String(
+          messageId
+        )
       : null;
 
 
   conversation.lastOutgoingText =
-    text;
+    message;
 
 
   conversation.lastOutgoingStage =
-    expectedStage;
+    conversation.stage;
 
 
   conversation.lastOutgoingAt =
     nowISO();
 
-
-  /*
-     The reminder has fired.
-
-     IMPORTANT:
-     Do not schedule another reminder automatically
-     from a reminder itself.
-  */
 
   conversation.reminder =
     null;
@@ -2270,138 +3437,184 @@ async function processReminder(
   );
 
 
-  console.log(
-    "========================================"
-  );
+  return {
 
-  console.log(
-    "REMINDER SENT"
-  );
+    success:
+      true,
 
-  console.log(
-    "PAGE:",
-    page.username
-  );
+    senderId:
+      key,
 
-  console.log(
-    "CUSTOMER:",
-    conversation.clientUsername ||
-    key
-  );
+    username:
+      conversation.clientUsername ||
+      null,
 
-  console.log(
-    "STAGE:",
-    expectedStage
-  );
+    page:
+      page.username,
 
-  console.log(
-    "TEXT:",
-    text
-  );
+    pageKey:
+      page.key,
 
-  console.log(
-    "========================================"
-  );
+    messageId:
+      messageId
+
+  };
 
 }
 
 
 /* =========================================================
-   CLIENT USERNAME LOOKUP
+   PROMOTION STATE
 ========================================================= */
 
-async function getInstagramUsername(
-  page,
-  instagramUserId
+function updatePromotionComplete(
+  conversation
 ) {
 
+  conversation.promotionComplete =
+    Boolean(
+
+      conversation.paymentConfirmed &&
+
+      conversation.promotionMediaReceived &&
+
+      (
+        conversation.promotionUsernameReceived ||
+        conversation.clientUsername
+      )
+
+    );
+
+
   if (
-    !page?.token ||
-    !instagramUserId
+    conversation.promotionComplete
   ) {
 
-    return null;
+    conversation.stage =
+      "PROMOTION_COMPLETE";
+
+  }
+
+}
+
+
+/* =========================================================
+   PROCESS USERNAME + MEDIA
+========================================================= */
+
+async function processUsernameAndMedia(
+  senderId,
+  conversation,
+  text,
+  attachmentInfo
+) {
+
+  let changed =
+    false;
+
+
+  /*
+     Username received from customer text.
+  */
+
+  const username =
+    extractInstagramUsername(
+      text
+    );
+
+
+  if (
+    username &&
+    conversation.clientUsername !==
+    username
+  ) {
+
+    conversation.clientUsername =
+      username;
+
+
+    conversation.promotionUsernameReceived =
+      true;
+
+
+    conversation.promotionUsernameRequested =
+      false;
+
+
+    changed =
+      true;
 
   }
 
 
-  try {
+  /*
+     IMPORTANT:
 
-    const url =
-      `https://graph.instagram.com/${INSTAGRAM_API_VERSION}` +
-      `/${encodeURIComponent(instagramUserId)}` +
-      `?fields=username`;
+     Media is promotion media ONLY after
+     payment is confirmed.
 
+     This fixes the previous problem where
+     sending a picture before payment caused
+     the bot to ask for the same picture again.
+  */
 
-    const response =
-      await fetch(
-        url,
-        {
-
-          method:
-            "GET",
-
-          headers: {
-
-            Authorization:
-              `Bearer ${page.token}`
-
-          }
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
+  if (
+    conversation.paymentConfirmed &&
+    hasMedia(
+      attachmentInfo
+    )
+  ) {
 
     if (
-      !response.ok
+      !conversation.promotionMediaReceived
     ) {
 
-      console.error(
-        "INSTAGRAM USERNAME LOOKUP ERROR:",
-        page.username,
-        data
-      );
+      conversation.promotionMediaReceived =
+        true;
 
-      return null;
+
+      changed =
+        true;
 
     }
 
-
-    return (
-      data?.username ||
-      null
-    );
-
   }
 
-  catch (
-    error
+
+  updatePromotionComplete(
+    conversation
+  );
+
+
+  if (
+    changed
   ) {
 
-    console.error(
-      "USERNAME LOOKUP EXCEPTION:",
-      error.message
+    await saveConversation(
+      senderId,
+      conversation
     );
 
-    return null;
-
   }
+
+
+  return changed;
 
 }
 
 
 /* =========================================================
-   RESTORE PENDING REMINDERS AFTER SERVER RESTART
+   NEXT PROMOTION STEP
 ========================================================= */
 
-async function restorePendingReminders() {
+async function sendPromotionNextStep(
+  page,
+  senderId,
+  conversation
+) {
 
   if (
-    !supabaseConfigured()
+    !conversation.paymentConfirmed
   ) {
 
     return;
@@ -2409,202 +3622,121 @@ async function restorePendingReminders() {
   }
 
 
-  try {
-
-    const response =
-      await fetch(
-
-        `${SUPABASE_URL.replace(/\/+$/, "")}` +
-        `/rest/v1/${encodeURIComponent(SUPABASE_TABLE)}` +
-        `?select=id,messages` +
-        `&limit=500`,
-
-        {
-
-          method:
-            "GET",
-
-          headers:
-            supabaseHeaders()
-
-        }
-
-      );
+  updatePromotionComplete(
+    conversation
+  );
 
 
-    const rows =
-      await response.json();
+  if (
+    conversation.promotionComplete
+  ) {
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
 
 
-    if (
-      !response.ok ||
-      !Array.isArray(rows)
-    ) {
-
-      console.error(
-        "REMINDER RESTORE ERROR:",
-        rows
-      );
-
-      return;
-
-    }
-
-
-    for (
-      const row
-      of rows
-    ) {
-
-      const senderId =
-        String(
-          row?.id ||
-          ""
-        ).trim();
-
-
-      const conversation =
-        row?.messages;
-
-
-      if (
-        !senderId ||
-        !conversation ||
-        typeof conversation !==
-        "object"
-      ) {
-
-        continue;
-
-      }
-
-
-      conversations.set(
-        senderId,
-        conversation
-      );
-
-
-      const reminder =
-        conversation.reminder;
-
-
-      if (
-        !reminder ||
-        !reminder.seen ||
-        reminder.triggered ||
-        !reminder.messageId ||
-        !reminder.dueAt
-      ) {
-
-        continue;
-
-      }
-
-
-      const page =
-        PAGE_CONFIGS[
-          conversation.pageKey
-        ];
-
-
-      if (
-        !page
-      ) {
-
-        continue;
-
-      }
-
-
-      const dueAt =
-        new Date(
-          reminder.dueAt
-        ).getTime();
-
-
-      if (
-        !Number.isFinite(dueAt)
-      ) {
-
-        continue;
-
-      }
-
-
-      const remaining =
-        Math.max(
-          1000,
-          dueAt -
-          Date.now()
-        );
-
-
-      const existingTimer =
-        reminderTimers.get(
-          senderId
-        );
-
-
-      if (
-        existingTimer
-      ) {
-
-        clearTimeout(
-          existingTimer
-        );
-
-      }
-
-
-      const timer =
-        setTimeout(
-          () => {
-
-            processReminder(
-              senderId,
-              reminder.stage,
-              reminder.messageId,
-              reminder.customerMessageVersion
-            ).catch(
-              error =>
-                console.error(
-                  "RESTORED REMINDER ERROR:",
-                  error
-                )
-            );
-
-          },
-          remaining
-        );
-
-
-      reminderTimers.set(
-        senderId,
-        timer
-      );
-
-
-      console.log(
-        "REMINDER RESTORED:",
-        page.username,
-        conversation.clientUsername ||
-        senderId,
-        "DUE:",
-        reminder.dueAt
-      );
-
-    }
+    return;
 
   }
 
-  catch (
-    error
+
+  let message =
+    null;
+
+
+  /*
+     Ask for pictures ONLY if payment is confirmed
+     and pictures have not already been received.
+  */
+
+  if (
+    !conversation.promotionMediaReceived
   ) {
 
-    console.error(
-      "REMINDER RESTORE EXCEPTION:",
-      error.message
+    message =
+      "Perfect dear ❤️ Please send me the pictures that you want to promote.";
+
+  }
+
+
+  /*
+     Ask for username ONLY if it isn't already saved.
+  */
+
+  else if (
+    !conversation.promotionUsernameReceived &&
+    !conversation.clientUsername
+  ) {
+
+    message =
+      "Perfect dear ❤️ Please send me your Instagram username.";
+
+
+    conversation.promotionUsernameRequested =
+      true;
+
+  }
+
+
+  if (
+    !message
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+     Don't repeat the exact same request.
+  */
+
+  if (
+    conversation.lastOutgoingText ===
+    message
+  ) {
+
+    await saveConversation(
+      senderId,
+      conversation
+    );
+
+
+    return;
+
+  }
+
+
+  const version =
+    getManualReplyVersion(
+      senderId
+    );
+
+
+  await sendReplySafely(
+    page,
+    senderId,
+    conversation,
+    message,
+    version
+  );
+
+
+  if (
+    message.includes(
+      "username"
+    )
+  ) {
+
+    conversation.promotionUsernameRequested =
+      true;
+
+
+    await saveConversation(
+      senderId,
+      conversation
     );
 
   }
@@ -2613,61 +3745,74 @@ async function restorePendingReminders() {
 
 
 /* =========================================================
-   AI RESPONSE EXTRACTION
+   PAYMENT CONFIRMATION HELPER
 ========================================================= */
 
-function extractAIText(
-  data
+function isSimplePaymentConfirmation(
+  text
 ) {
 
-  if (
-    typeof data?.output_text ===
-    "string"
-  ) {
-
-    return data.output_text.trim();
-
-  }
+  const t =
+    normalize(
+      text
+    );
 
 
-  let text =
-    "";
+  return (
 
+    /\bpaid\b/.test(t) ||
 
-  for (
-    const item of
-    data?.output || []
-  ) {
+    /payment\s+(is\s+)?done/.test(t) ||
 
-    for (
-      const part of
-      item.content || []
-    ) {
+    /payment\s+(is\s+)?completed/.test(t) ||
 
-      if (
-        part.type ===
-        "output_text" &&
-        part.text
-      ) {
+    /payment\s+sent/.test(t) ||
 
-        text +=
-          part.text;
+    /payment\s+made/.test(t) ||
 
-      }
+    /i\s+paid/.test(t) ||
 
-    }
+    /paid\s+already/.test(t) ||
 
-  }
+    /successfully\s+paid/.test(t)
 
-
-  return text.trim();
+  );
 
 }
 
 
 /* =========================================================
-   AI
+   AI FALLBACK
 ========================================================= */
+
+function buildAIHistory(
+  conversation
+) {
+
+  return conversation.history
+    .slice(-40)
+    .map(
+      item => {
+
+        const role =
+          item.role ===
+          "assistant"
+            ? "assistant"
+            : "client";
+
+
+        return (
+          `${role}: ${item.text}`
+        );
+
+      }
+    )
+    .join(
+      "\n"
+    );
+
+}
+
 
 async function getAIReply(
   page,
@@ -2676,48 +3821,45 @@ async function getAIReply(
   attachmentInfo
 ) {
 
-  if (!OPEN_AI) {
+  if (
+    !OPEN_AI
+  ) {
 
     return null;
 
   }
 
 
-  const history =
-    conversation.history
-      .slice(-35)
-      .map(
-        message =>
-          `${message.role}: ${message.text}`
-      )
-      .join("\n");
-
-
-  const packageInfo =
+  const packageSummary =
     Object.values(
       page.packages
     )
       .map(
-        p =>
-          `${p.name}: ${page.currency}${p.price} - ${p.details} - ${p.followers}`
+        item =>
+          `${item.name}: ${page.currency}${item.price} = ${item.details}; ${item.followers}`
       )
-      .join("\n");
+      .join(
+        "\n"
+      );
+
+
+  const history =
+    buildAIHistory(
+      conversation
+    );
 
 
   const prompt =
-`You are the customer-support and sales AI for Global Promote.
+`You are the Instagram sales assistant for Global Promote.
 
-CURRENT PAGE:
+PAGE:
 ${page.username}
-
-CURRENT PAGE PACKAGES:
-${packageInfo}
-
-CURRENT PAGE PAYMENT METHODS:
-${page.paymentMethods.join(", ")}
 
 CURRENT STAGE:
 ${conversation.stage}
+
+CLIENT USERNAME:
+${conversation.clientUsername || "not available"}
 
 SELECTED PACKAGE:
 ${conversation.selectedPackage || "none"}
@@ -2725,52 +3867,53 @@ ${conversation.selectedPackage || "none"}
 PAYMENT METHOD:
 ${conversation.paymentMethod || "none"}
 
-IMPORTANT:
+PACKAGES ALREADY SENT:
+${conversation.packagesSent ? "YES" : "NO"}
 
-This is an existing customer conversation.
+PAYMENT DETAILS ALREADY SENT:
+${conversation.paymentDetailsSent ? "YES" : "NO"}
 
-Remember the conversation history.
+PAYMENT CONFIRMED:
+${conversation.paymentConfirmed ? "YES" : "NO"}
 
-NEVER restart the conversation.
+PROMOTION MEDIA RECEIVED:
+${conversation.promotionMediaReceived ? "YES" : "NO"}
 
-NEVER send the first opening message again.
+PROMOTION USERNAME RECEIVED:
+${conversation.promotionUsernameReceived ? "YES" : "NO"}
 
-NEVER send the second fixed message again.
+STRICT RULES:
 
-NEVER randomly send the package list.
+1. Continue the existing conversation.
+2. NEVER restart the conversation.
+3. NEVER send the opening message again.
+4. NEVER send MESSAGE_TWO again.
+5. NEVER send the package list if packagesSent is YES.
+6. NEVER invent a package price.
+7. NEVER invent payment details.
+8. NEVER ask for promotion pictures before payment is confirmed.
+9. After payment is confirmed, never ask for pictures if they were already received.
+10. Never ask for the Instagram username if it is already saved.
+11. If the client asks a normal question, answer it naturally.
+12. Keep replies short and suitable for Instagram.
+13. Use the conversation history to understand what has already been discussed.
+14. Do not claim that payment is confirmed unless the conversation state says it is confirmed.
+15. Do not change conversation state yourself.
+16. Do not send the fixed opening, second message, or package list yourself.
 
-NEVER use another page's prices.
+AVAILABLE PACKAGES:
+${packageSummary}
 
-NEVER invent payment information.
-
-Only use payment methods available for the current page.
-
-If the customer asks how followers are guaranteed, explain that their content is promoted on our pages and promotion continues until the guaranteed followers are reached, according to the business guarantee policy.
-
-If the customer asks whether followers are real or organic, explain naturally that the followers are real and organic because they are achieved through promoting the customer's content on different pages until the guaranteed amount is reached.
-
-If the customer asks another reasonable business question, answer helpfully and naturally.
-
-Keep replies short, friendly and professional.
-
-Do not claim that payment has been verified unless the customer has confirmed that the payment is completed.
-
-Do not say that a screenshot proves payment was received.
-
-EXISTING CONVERSATION:
-
+CONVERSATION HISTORY:
 ${history}
 
 LATEST CUSTOMER MESSAGE:
-
-${clientMessage || "[media]"}
+${clientMessage || "[media received]"}
 
 ATTACHMENT:
-
 ${attachmentInfo || "none"}
 
-Return ONLY the customer-facing answer.`;
-
+Return ONLY the customer-facing reply.`;
 
   try {
 
@@ -2823,14 +3966,54 @@ Return ONLY the customer-facing answer.`;
         data
       );
 
+
       return null;
 
     }
 
 
-    return extractAIText(
-      data
-    );
+    if (
+      typeof data.output_text ===
+      "string"
+    ) {
+
+      return data.output_text.trim();
+
+    }
+
+
+    let output =
+      "";
+
+
+    for (
+      const item
+      of data.output || []
+    ) {
+
+      for (
+        const part
+        of item.content || []
+      ) {
+
+        if (
+          part.type ===
+            "output_text" &&
+          part.text
+        ) {
+
+          output +=
+            part.text;
+
+        }
+
+      }
+
+    }
+
+
+    return output.trim() ||
+      null;
 
   }
 
@@ -2839,417 +4022,18 @@ Return ONLY the customer-facing answer.`;
   ) {
 
     console.error(
-      "OPENAI ERROR:",
+      "OPENAI EXCEPTION:",
       error.message
     );
 
+
     return null;
 
   }
 
 }
-
-
 /* =========================================================
-   INSTAGRAM SEND
-========================================================= */
-
-async function sendInstagramMessage(
-  page,
-  recipientId,
-  text
-) {
-
-  if (
-    !page?.token
-  ) {
-
-    throw new Error(
-      `Instagram token missing for ${page?.username}`
-    );
-
-  }
-
-
-  const url =
-    `https://graph.instagram.com/${INSTAGRAM_API_VERSION}` +
-    `/${page.id}/messages`;
-
-
-  const response =
-    await fetch(
-      url,
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/json",
-
-          Authorization:
-            `Bearer ${page.token}`
-
-        },
-
-        body:
-          JSON.stringify({
-
-            recipient: {
-
-              id:
-                recipientId
-
-            },
-
-            message: {
-
-              text
-
-            }
-
-          })
-
-        }
-
-      );
-
-
-  const data =
-    await response.json();
-
-
-  if (
-    !response.ok
-  ) {
-
-    console.error(
-      "INSTAGRAM API ERROR:",
-      page.username,
-      data
-    );
-
-    throw new Error(
-      `Instagram message failed for ${page.username}`
-    );
-
-  }
-
-
-  return data;
-
-     }
-/* =========================================================
-   SAFE FIXED / AI REPLY
-========================================================= */
-
-async function sendReplySafely(
-  page,
-  senderId,
-  conversation,
-  reply,
-  version,
-  reminderStage = null
-) {
-
-  if (!reply) {
-
-    return null;
-
-  }
-
-
-  await wait(
-    replyDelay()
-  );
-
-
-  /*
-     If the owner manually replied while AI was waiting,
-     cancel this automatic response.
-  */
-
-  if (
-    (
-      manualReplyVersion.get(
-        String(senderId)
-      ) || 0
-    ) !== version
-  ) {
-
-    console.log(
-      "AI REPLY CANCELLED - MANUAL REPLY DETECTED"
-    );
-
-    return null;
-
-  }
-
-
-  /*
-     Reload the conversation before sending.
-
-     If the customer has already sent another message while
-     the AI was waiting, the old automatic reply is cancelled.
-  */
-
-  const latest =
-    await getConversation(
-      senderId
-    );
-
-
-  if (
-    latest.customerMessageVersion !==
-    conversation.customerMessageVersion
-  ) {
-
-    console.log(
-      "AI REPLY CANCELLED - NEW CUSTOMER MESSAGE"
-    );
-
-    return null;
-
-  }
-
-
-  /*
-     Make sure the conversation has not moved to another
-     stage while the AI was waiting.
-  */
-
-  if (
-    latest !== conversation &&
-    latest.lastSeenAt !==
-    conversation.lastSeenAt
-  ) {
-
-    return null;
-
-  }
-
-
-  const data =
-    await sendInstagramMessage(
-      page,
-      senderId,
-      reply
-    );
-
-
-  const messageId =
-    data?.message_id ||
-    data?.id ||
-    null;
-
-
-  if (
-    messageId
-  ) {
-
-    outgoingMessages.add(
-      `${page.key}:${String(messageId)}`
-    );
-
-  }
-
-
-  conversation.pageKey =
-    page.key;
-
-
-  conversation.lastOutgoingMessageId =
-    messageId
-      ? String(messageId)
-      : null;
-
-
-  conversation.lastOutgoingText =
-    reply;
-
-
-  conversation.lastOutgoingStage =
-    conversation.stage;
-
-
-  conversation.lastOutgoingAt =
-    nowISO();
-
-
-  saveMessage(
-    conversation,
-    "assistant",
-    reply
-  );
-
-
-  await saveConversation(
-    senderId,
-    conversation
-  );
-
-
-  /*
-     IMPORTANT:
-
-     Reminder starts immediately after the automated
-     message is successfully sent.
-
-     It DOES NOT wait for a READ event.
-  */
-
-  if (
-    reminderStage &&
-    messageId
-  ) {
-
-    await scheduleReminder(
-      senderId,
-      reminderStage,
-      messageId,
-      conversation.lastOutgoingAt
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-/* =========================================================
-   ADMIN REPLY
-========================================================= */
-
-async function sendAdminReply(
-  page,
-  senderId,
-  text
-) {
-
-  const key =
-    String(senderId);
-
-
-  const conversation =
-    await getConversation(
-      key
-    );
-
-
-  /*
-     Manual reply must cancel any reminder that is waiting.
-  */
-
-  cancelReminder(
-    key
-  );
-
-
-  /*
-     Cancel an AI response that may currently be waiting
-     during its 6–9 second delay.
-  */
-
-  manualReplyVersion.set(
-    key,
-    (
-      manualReplyVersion.get(
-        key
-      ) || 0
-    ) + 1
-  );
-
-
-  const data =
-    await sendInstagramMessage(
-      page,
-      key,
-      text
-    );
-
-
-  const messageId =
-    data?.message_id ||
-    data?.id ||
-    null;
-
-
-  if (
-    messageId
-  ) {
-
-    outgoingMessages.add(
-      `${page.key}:${String(messageId)}`
-    );
-
-  }
-
-
-  saveMessage(
-    conversation,
-    "assistant",
-    text
-  );
-
-
-  conversation.pageKey =
-    page.key;
-
-
-  conversation.lastOutgoingMessageId =
-    messageId
-      ? String(messageId)
-      : null;
-
-
-  conversation.lastOutgoingText =
-    text;
-
-
-  conversation.lastOutgoingStage =
-    conversation.stage;
-
-
-  conversation.lastOutgoingAt =
-    nowISO();
-
-
-  /*
-     Manual messages do not automatically create reminders.
-  */
-
-  conversation.reminder =
-    null;
-
-
-  await saveConversation(
-    key,
-    conversation
-  );
-
-
-  return {
-
-    messageId,
-
-    page:
-      page.key,
-
-    username:
-      conversation.clientUsername ||
-      null
-
-  };
-
-}
-
-
-/* =========================================================
-   CLIENT MESSAGE PROCESSOR
+   CUSTOMER MESSAGE PROCESSOR
 ========================================================= */
 
 async function processClientMessage(
@@ -3260,7 +4044,9 @@ async function processClientMessage(
 ) {
 
   const key =
-    String(senderId);
+    String(
+      senderId
+    );
 
 
   const conversation =
@@ -3269,9 +4055,18 @@ async function processClientMessage(
     );
 
 
+  if (
+    !conversation
+  ) {
+
+    return;
+
+  }
+
+
   /*
-     Every genuine customer message invalidates the
-     reminder belonging to the previous outgoing message.
+     Any genuine customer message cancels the
+     current reminder.
   */
 
   cancelReminder(
@@ -3282,8 +4077,8 @@ async function processClientMessage(
   /*
      Increment customer-message version.
 
-     This prevents an old reminder or delayed AI reply from
-     being sent after the customer has replied.
+     This prevents an old delayed AI response from
+     being sent after the customer has already replied.
   */
 
   conversation.customerMessageVersion =
@@ -3293,22 +4088,42 @@ async function processClientMessage(
     ) + 1;
 
 
+  conversation.lastCustomerMessageText =
+    String(
+      clientMessage ||
+      ""
+    );
+
+
+  conversation.lastCustomerMessageAt =
+    nowISO();
+
+
   conversation.pageKey =
     page.key;
 
 
   /*
-     Resolve Instagram username once.
+     Try to get username from the customer's message.
+  */
 
-     The webhook normally gives us the Instagram-scoped
-     user ID, not a username.
+  await processUsernameFromMessage(
+    key,
+    conversation,
+    clientMessage
+  );
+
+
+  /*
+     If username wasn't supplied in the message,
+     try Meta's username field.
   */
 
   if (
     !conversation.clientUsername
   ) {
 
-    const username =
+    const metaUsername =
       await getInstagramUsername(
         page,
         key
@@ -3316,18 +4131,15 @@ async function processClientMessage(
 
 
     if (
-      username
+      metaUsername
     ) {
 
       conversation.clientUsername =
-        `@${String(username).replace(/^@/, "")}`;
+        metaUsername;
 
 
-      console.log(
-        "CLIENT USERNAME FOUND:",
-        page.username,
-        conversation.clientUsername
-      );
+      conversation.promotionUsernameReceived =
+        true;
 
     }
 
@@ -3335,29 +4147,22 @@ async function processClientMessage(
 
 
   /*
-     Store customer's message BEFORE AI processing.
+     Save the incoming customer message BEFORE
+     processing it.
+
+     This is critical for AI memory.
   */
 
-  const combinedCustomerMessage =
+  saveMessage(
+    conversation,
+    "client",
     clientMessage ||
-    (
-      attachmentInfo
-        ? `[${attachmentInfo}]`
-        : ""
-    );
-
-
-  if (
-    combinedCustomerMessage
-  ) {
-
-    saveMessage(
-      conversation,
-      "client",
-      combinedCustomerMessage
-    );
-
-  }
+      (
+        attachmentInfo
+          ? `[${attachmentInfo}]`
+          : "[media]"
+      )
+  );
 
 
   await saveConversation(
@@ -3366,9 +4171,241 @@ async function processClientMessage(
   );
 
 
-  /*
-     Package selection.
-  */
+  /* =======================================================
+     PAYMENT CONFIRMED FLOW
+  ======================================================= */
+
+  if (
+    conversation.paymentConfirmed
+  ) {
+
+    await processUsernameAndMedia(
+      key,
+      conversation,
+      clientMessage,
+      attachmentInfo
+    );
+
+
+    /*
+       If both media and username are already available,
+       nothing else should be requested.
+    */
+
+    updatePromotionComplete(
+      conversation
+    );
+
+
+    await saveConversation(
+      key,
+      conversation
+    );
+
+
+    if (
+      conversation.promotionComplete
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+       Only ask for whatever is still missing.
+    */
+
+    await sendPromotionNextStep(
+      page,
+      key,
+      conversation
+    );
+
+
+    return;
+
+  }
+
+
+  /* =======================================================
+     PAYMENT DETAILS ALREADY SENT
+  ======================================================= */
+
+  if (
+    conversation.paymentDetailsSent
+  ) {
+
+    /*
+       Customer explicitly says payment is done.
+    */
+
+    if (
+      isSimplePaymentConfirmation(
+        clientMessage
+      )
+    ) {
+
+      conversation.paymentProofReceived =
+        true;
+
+
+      conversation.awaitingPaymentConfirmation =
+        true;
+
+
+      await saveConversation(
+        key,
+        conversation
+      );
+
+
+      const version =
+        getManualReplyVersion(
+          key
+        );
+
+
+      await sendReplySafely(
+        page,
+        key,
+        conversation,
+        "Thank you dear ❤️ Please confirm once the payment has been completed successfully so I can proceed with your promotion.",
+        version
+      );
+
+
+      return;
+
+    }
+
+
+    /*
+       If customer sends an attachment after payment
+       details, treat it as payment proof.
+
+       It is NOT promotion media until payment
+       has been confirmed.
+    */
+
+    if (
+      hasMedia(
+        attachmentInfo
+      )
+    ) {
+
+      conversation.paymentProofReceived =
+        true;
+
+
+      conversation.awaitingPaymentConfirmation =
+        true;
+
+
+      await saveConversation(
+        key,
+        conversation
+      );
+
+
+      const version =
+        getManualReplyVersion(
+          key
+        );
+
+
+      await sendReplySafely(
+        page,
+        key,
+        conversation,
+        "Thank you dear ❤️ Please confirm once the payment has been completed successfully so I can proceed with your promotion.",
+        version
+      );
+
+
+      return;
+
+    }
+
+
+    /*
+       If payment proof was received and the client
+       sends a simple confirmation, mark payment confirmed.
+    */
+
+    if (
+      conversation.awaitingPaymentConfirmation &&
+      (
+        normalize(
+          clientMessage
+        ) ===
+        "yes" ||
+
+        normalize(
+          clientMessage
+        ) ===
+        "done" ||
+
+        normalize(
+          clientMessage
+        ) ===
+        "completed" ||
+
+        normalize(
+          clientMessage
+        ) ===
+        "confirmed"
+      )
+    ) {
+
+      conversation.paymentConfirmed =
+        true;
+
+
+      conversation.awaitingPaymentConfirmation =
+        false;
+
+
+      conversation.stage =
+        "PAYMENT_CONFIRMED";
+
+
+      cancelReminder(
+        key
+      );
+
+
+      await saveConversation(
+        key,
+        conversation
+      );
+
+
+      /*
+         IMPORTANT:
+         After payment confirmation, the next step
+         is promotion media / username.
+
+         It will NOT ask for payment again.
+      */
+
+      await sendPromotionNextStep(
+        page,
+        key,
+        conversation
+      );
+
+
+      return;
+
+    }
+
+  }
+
+
+  /* =======================================================
+     PACKAGE SELECTION
+  ======================================================= */
 
   const packageKey =
     detectPackage(
@@ -3376,9 +4413,29 @@ async function processClientMessage(
     );
 
 
+  /*
+     A package number/name is only treated as a package
+     selection AFTER the package list was already sent.
+  */
+
   if (
-    packageKey
+    packageKey &&
+    conversation.packagesSent
   ) {
+
+    /*
+       Don't send the same package confirmation repeatedly.
+    */
+
+    if (
+      conversation.selectedPackage ===
+      packageKey
+    ) {
+
+      return;
+
+    }
+
 
     conversation.selectedPackage =
       packageKey;
@@ -3426,9 +4483,9 @@ async function processClientMessage(
     ) {
 
       const version =
-        manualReplyVersion.get(
+        getManualReplyVersion(
           key
-        ) || 0;
+        );
 
 
       await sendReplySafely(
@@ -3436,20 +4493,20 @@ async function processClientMessage(
         key,
         conversation,
         confirmation,
-        version,
-        "PACKAGE_SELECTED"
+        version
       );
 
-      return;
-
     }
+
+
+    return;
 
   }
 
 
-  /*
-     Payment method selection.
-  */
+  /* =======================================================
+     PAYMENT METHOD
+  ======================================================= */
 
   const paymentMethod =
     detectPaymentMethod(
@@ -3462,209 +4519,202 @@ async function processClientMessage(
     conversation.selectedPackage
   ) {
 
+    /*
+       Make sure this payment method is available
+       for this particular page.
+    */
+
     if (
-      paymentMethodAvailable(
+      !paymentMethodAvailable(
         page,
         paymentMethod
       )
     ) {
 
-      conversation.paymentMethod =
-        paymentMethod;
+      const version =
+        getManualReplyVersion(
+          key
+        );
 
 
-      conversation.paymentDetailsSent =
-        true;
-
-
-      conversation.stage =
-        "PAYMENT_PENDING";
-
-
-      conversation.awaitingPaymentConfirmation =
-        true;
-
-
-      await saveConversation(
+      await sendReplySafely(
+        page,
         key,
-        conversation
+        conversation,
+        `That payment method isn't available for this page ❤️
+
+Available payment methods:
+
+${page.paymentMethods.join(
+  "\n"
+)}
+
+Please choose one of these.`,
+        version
       );
 
 
-      const paymentMessage =
-        buildPaymentMessage(
-          page,
-          conversation.selectedPackage,
-          paymentMethod
-        );
-
-
-      if (
-        paymentMessage
-      ) {
-
-        const version =
-          manualReplyVersion.get(
-            key
-          ) || 0;
-
-
-        await sendReplySafely(
-          page,
-          key,
-          conversation,
-          paymentMessage,
-          version,
-          "PAYMENT_PENDING"
-        );
-
-
-        return;
-
-      }
+      return;
 
     }
+
+
+    /*
+       Do NOT send the same payment details again.
+    */
+
+    if (
+      conversation.paymentDetailsSent &&
+      conversation.paymentMethod ===
+      paymentMethod
+    ) {
+
+      return;
+
+    }
+
+
+    const paymentMessage =
+      buildPaymentMessage(
+        page,
+        conversation.selectedPackage,
+        paymentMethod
+      );
+
+
+    if (
+      !paymentMessage
+    ) {
+
+      return;
+
+    }
+
+
+    conversation.paymentMethod =
+      paymentMethod;
+
+
+    conversation.paymentDetailsSent =
+      true;
+
+
+    conversation.paymentConfirmed =
+      false;
+
+
+    conversation.paymentProofReceived =
+      false;
+
+
+    conversation.awaitingPaymentConfirmation =
+      true;
+
+
+    conversation.stage =
+      "PAYMENT_PENDING";
+
+
+    await saveConversation(
+      key,
+      conversation
+    );
+
+
+    const version =
+      getManualReplyVersion(
+        key
+      );
+
+
+    await sendReplySafely(
+      page,
+      key,
+      conversation,
+      paymentMessage,
+      version,
+      "PAYMENT_PENDING"
+    );
+
+
+    return;
 
   }
 
 
-  /*
-     Payment confirmation detection.
+  /* =======================================================
+     GUARANTEE QUESTION
+  ======================================================= */
 
-     If the customer says that payment has been made,
-     do NOT automatically consider it verified.
+  if (
+    isGuaranteeQuestion(
+      clientMessage
+    )
+  ) {
 
-     First ask for confirmation / screenshot.
-  */
+    const version =
+      getManualReplyVersion(
+        key
+      );
 
-  const normalized =
+
+    await sendReplySafely(
+      page,
+      key,
+      conversation,
+      GUARANTEE_MESSAGE,
+      version
+    );
+
+
+    return;
+
+  }
+
+
+  /* =======================================================
+     REAL / ORGANIC QUESTION
+  ======================================================= */
+
+  const normalizedMessage =
     normalize(
       clientMessage
     );
 
 
-  const saysPaid =
-    /\b(paid|payment\s*done|payment\s*completed|sent\s*payment|i\s*paid|done\s*payment)\b/
-      .test(
-        normalized
-      );
-
-
-  const hasScreenshot =
-    Boolean(
-      attachmentInfo &&
-      /image|photo|media/i.test(
-        attachmentInfo
-      )
-    );
-
-
   if (
-    saysPaid ||
-    hasScreenshot
-  ) {
+    /real followers/.test(
+      normalizedMessage
+    ) ||
 
-    conversation.paymentProofReceived =
-      true;
+    /organic followers/.test(
+      normalizedMessage
+    ) ||
 
+    /fake followers/.test(
+      normalizedMessage
+    ) ||
 
-    conversation.awaitingPaymentConfirmation =
-      true;
+    /bot followers/.test(
+      normalizedMessage
+    ) ||
 
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    const confirmationQuestion =
-      `Thank you dear ❤️ Did the payment get completed successfully? Please confirm yes so I can proceed with your promotion.`;
-
-
-    const version =
-      manualReplyVersion.get(
-        key
-      ) || 0;
-
-
-    await sendReplySafely(
-      page,
-      key,
-      conversation,
-      confirmationQuestion,
-      version
-    );
-
-
-    return;
-
-  }
-
-
-  /*
-     Customer confirms that payment is completed.
-
-     Only now do we mark it as confirmed.
-  */
-
-  const confirmsPayment =
-    /\b(yes|yeah|yep|yup|done|completed|successfully|it'?s done|payment is done|payment done)\b/
-      .test(
-        normalized
-      );
-
-
-  if (
-    confirmsPayment &&
-    (
-      conversation.paymentProofReceived ||
-      conversation.awaitingPaymentConfirmation
+    /^real$/.test(
+      normalizedMessage
     )
   ) {
 
-    conversation.paymentConfirmed =
-      true;
-
-
-    conversation.awaitingPaymentConfirmation =
-      false;
-
-
-    conversation.stage =
-      "PAYMENT_CONFIRMED";
-
-
-    conversation.reminder =
-      null;
-
-
-    cancelReminder(
-      key
-    );
-
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-
-    const nextMessage =
-      `Okay dear ❤️ Please send me the pictures that you want to promote and your username. I will upload it within 24 hours after verifying your payment. ❤️`;
-
-
     const version =
-      manualReplyVersion.get(
+      getManualReplyVersion(
         key
-      ) || 0;
+      );
 
 
     await sendReplySafely(
       page,
       key,
       conversation,
-      nextMessage,
+      REAL_FOLLOWERS_MESSAGE,
       version
     );
 
@@ -3674,14 +4724,49 @@ async function processClientMessage(
   }
 
 
-  /*
-     NEW CUSTOMER
-  */
+  /* =======================================================
+     NEGATIVE RESPONSE
+  ======================================================= */
 
   if (
-    conversation.stage ===
-    "NEW"
+    isNegative(
+      clientMessage
+    )
   ) {
+
+    conversation.stage =
+      "CLOSED";
+
+
+    await saveConversation(
+      key,
+      conversation
+    );
+
+
+    return;
+
+  }
+
+
+  /* =======================================================
+     FIRST OPENING MESSAGE
+  ======================================================= */
+
+  if (
+    !conversation.messageOneSent
+  ) {
+
+    /*
+       Mark BEFORE sending.
+
+       This prevents duplicate webhook events from
+       sending the opening message twice.
+    */
+
+    conversation.messageOneSent =
+      true;
+
 
     conversation.stage =
       "MESSAGE_ONE_SENT";
@@ -3694,9 +4779,9 @@ async function processClientMessage(
 
 
     const version =
-      manualReplyVersion.get(
+      getManualReplyVersion(
         key
-      ) || 0;
+      );
 
 
     await sendReplySafely(
@@ -3714,15 +4799,65 @@ async function processClientMessage(
   }
 
 
-  /*
-     If first message was already sent and the customer
-     replied positively, send the second fixed message.
-  */
+  /* =======================================================
+     SECOND MESSAGE
+  ======================================================= */
 
   if (
-    conversation.stage ===
-    "MESSAGE_ONE_SENT"
+    !conversation.messageTwoSent
   ) {
+
+    /*
+       Only send the second message after a positive
+       response.
+
+       It can NEVER be sent again after the flag is true.
+    */
+
+    if (
+      !isPositiveInterest(
+        clientMessage
+      )
+    ) {
+
+      const ai =
+        await getAIReply(
+          page,
+          conversation,
+          clientMessage,
+          attachmentInfo
+        );
+
+
+      if (
+        ai
+      ) {
+
+        const version =
+          getManualReplyVersion(
+            key
+          );
+
+
+        await sendReplySafely(
+          page,
+          key,
+          conversation,
+          ai,
+          version
+        );
+
+      }
+
+
+      return;
+
+    }
+
+
+    conversation.messageTwoSent =
+      true;
+
 
     conversation.stage =
       "MESSAGE_TWO_SENT";
@@ -3735,9 +4870,9 @@ async function processClientMessage(
 
 
     const version =
-      manualReplyVersion.get(
+      getManualReplyVersion(
         key
-      ) || 0;
+      );
 
 
     await sendReplySafely(
@@ -3755,23 +4890,29 @@ async function processClientMessage(
   }
 
 
-  /*
-     If second message was already sent and customer asks
-     for packages, send package list.
-  */
+  /* =======================================================
+     PACKAGE REQUEST
+  ======================================================= */
 
   const asksPackages =
-    /\b(package|packages|price|prices|price list|pricing|how much|cost)\b/
-      .test(
-        normalized
-      );
+    /\b(package|packages|price|prices|pricing|price list|how much|cost)\b/.test(
+      normalizedMessage
+    );
 
 
   if (
-    conversation.stage ===
-    "MESSAGE_TWO_SENT" &&
+    !conversation.packagesSent &&
     asksPackages
   ) {
+
+    /*
+       Mark BEFORE sending to prevent duplicate packages
+       from multiple webhook events.
+    */
+
+    conversation.packagesSent =
+      true;
+
 
     conversation.stage =
       "PACKAGES_SHOWN";
@@ -3790,9 +4931,9 @@ async function processClientMessage(
 
 
     const version =
-      manualReplyVersion.get(
+      getManualReplyVersion(
         key
-      ) || 0;
+      );
 
 
     await sendReplySafely(
@@ -3810,10 +4951,9 @@ async function processClientMessage(
   }
 
 
-  /*
-     If customer has already seen packages and asks another
-     normal question, use AI instead of restarting the sale.
-  */
+  /* =======================================================
+     AI FALLBACK
+  ======================================================= */
 
   const aiReply =
     await getAIReply(
@@ -3829,9 +4969,9 @@ async function processClientMessage(
   ) {
 
     const version =
-      manualReplyVersion.get(
+      getManualReplyVersion(
         key
-      ) || 0;
+      );
 
 
     await sendReplySafely(
@@ -3848,18 +4988,22 @@ async function processClientMessage(
   }
 
 
-  /*
-     Fallback.
-  */
+  /* =======================================================
+     FINAL FALLBACK
+  ======================================================= */
 
   const fallback =
-    `Sure dear ❤️ Please let me know what you would like to know about our promotion.`;
+    conversation.packagesSent
+
+      ? "Sure dear ❤️ Please let me know what you would like to know about our promotion."
+
+      : "Sure dear ❤️ Please let me know how I can help you.";
 
 
   const version =
-    manualReplyVersion.get(
+    getManualReplyVersion(
       key
-    ) || 0;
+    );
 
 
   await sendReplySafely(
@@ -3874,36 +5018,49 @@ async function processClientMessage(
 
 
 /* =========================================================
-   WEBHOOK VERIFICATION
+   WEBHOOK VERIFY
 ========================================================= */
 
 app.get(
   "/webhook",
-  (req, res) => {
+  (
+    req,
+    res
+  ) => {
 
     const mode =
-      req.query["hub.mode"];
+      req.query[
+        "hub.mode"
+      ];
+
 
     const token =
-      req.query["hub.verify_token"];
+      req.query[
+        "hub.verify_token"
+      ];
+
 
     const challenge =
-      req.query["hub.challenge"];
+      req.query[
+        "hub.challenge"
+      ];
 
 
     if (
-      mode === "subscribe" &&
-      token === VERIFY_TOKEN
+      mode ===
+      "subscribe" &&
+
+      token ===
+      VERIFY_TOKEN
     ) {
 
-      console.log(
-        "WEBHOOK VERIFIED"
-      );
-
-
       return res
-        .status(200)
-        .send(challenge);
+        .status(
+          200
+        )
+        .send(
+          challenge
+        );
 
     }
 
@@ -3917,46 +5074,141 @@ app.get(
 
 
 /* =========================================================
-   INSTAGRAM WEBHOOK
+   CLIENT QUEUE
+========================================================= */
+
+function queueForClient(
+  senderId,
+  task
+) {
+
+  const key =
+    String(
+      senderId
+    );
+
+
+  const previous =
+    clientQueues.get(
+      key
+    ) ||
+    Promise.resolve();
+
+
+  const next =
+    previous
+      .catch(
+        () => {}
+      )
+      .then(
+        task
+      );
+
+
+  clientQueues.set(
+    key,
+    next
+  );
+
+
+  next.finally(
+    () => {
+
+      if (
+        clientQueues.get(
+          key
+        ) ===
+        next
+      ) {
+
+        clientQueues.delete(
+          key
+        );
+
+      }
+
+    }
+  ).catch(
+    () => {}
+  );
+
+
+  return next;
+
+}
+
+
+/* =========================================================
+   WEBHOOK EVENT HELPERS
+========================================================= */
+
+function isReadEvent(
+  event
+) {
+
+  return Boolean(
+    event?.read
+  );
+
+}
+
+
+function isDeliveryEvent(
+  event
+) {
+
+  return Boolean(
+    event?.delivery
+  );
+
+}
+
+
+function isReactionEvent(
+  event
+) {
+
+  return Boolean(
+    event?.reaction
+  );
+
+}
+
+
+function isEchoMessage(
+  event
+) {
+
+  return (
+    event?.message?.is_echo ===
+    true
+  );
+
+}
+
+
+/* =========================================================
+   WEBHOOK POST
 ========================================================= */
 
 app.post(
   "/webhook",
-  async (req, res) => {
+  (
+    req,
+    res
+  ) => {
 
     /*
-       Meta must receive 200 immediately.
+       Always acknowledge Meta immediately.
     */
 
-    res.sendStatus(200);
+    res.sendStatus(
+      200
+    );
 
 
     const body =
       req.body;
-
-
-    console.log(
-      "========================================"
-    );
-
-
-    console.log(
-      "INSTAGRAM WEBHOOK RECEIVED"
-    );
-
-
-    console.log(
-      JSON.stringify(
-        body,
-        null,
-        2
-      )
-    );
-
-
-    console.log(
-      "========================================"
-    );
 
 
     if (
@@ -3971,7 +5223,7 @@ app.post(
 
     if (
       !Array.isArray(
-        body?.entry
+        body.entry
       )
     ) {
 
@@ -3981,13 +5233,9 @@ app.post(
 
 
     for (
-      const entry of
-      body.entry
+      const entry
+      of body.entry
     ) {
-
-      /*
-         The Instagram account that received the event.
-      */
 
       const page =
         getPageById(
@@ -3995,98 +5243,50 @@ app.post(
         );
 
 
-      if (!page) {
-
-        console.log(
-          "UNKNOWN INSTAGRAM PAGE:",
-          entry?.id
-        );
-
+      if (
+        !page
+      ) {
 
         continue;
 
       }
 
 
-      console.log(
-        "PAGE:",
-        page.username
-      );
+      const messaging =
+        Array.isArray(
+          entry?.messaging
+        )
+          ? entry.messaging
+          : [];
 
 
       for (
-        const event of
-        entry.messaging || []
+        const event
+        of messaging
       ) {
 
-        /* =================================================
-           READ / SEEN EVENT
-        ================================================= */
+        /*
+           NEVER reply to:
+           - read
+           - delivery
+           - reaction
+           - non-message events
+        */
 
         if (
-          event.read
-        ) {
+          isReadEvent(
+            event
+          ) ||
 
-          console.log(
-            "READ / SEEN EVENT RECEIVED - NO REMINDER ACTION REQUIRED"
-          );
+          isDeliveryEvent(
+            event
+          ) ||
 
+          isReactionEvent(
+            event
+          ) ||
 
-          /*
-             Reminders now start immediately after the
-             automated message is successfully sent.
-
-             READ events are therefore ignored.
-          */
-
-          continue;
-
-        }
-
-
-        /* =================================================
-           DELIVERY
-        ================================================= */
-
-        if (
-          event.delivery
-        ) {
-
-          console.log(
-            "DELIVERY EVENT IGNORED"
-          );
-
-
-          continue;
-
-        }
-
-
-        /* =================================================
-           REACTION / POSTBACK
-        ================================================= */
-
-        if (
-          event.reaction ||
-          event.postback
-        ) {
-
-          console.log(
-            "REACTION / POSTBACK IGNORED"
-          );
-
-
-          continue;
-
-        }
-
-
-        /* =================================================
-           NO MESSAGE
-        ================================================= */
-
-        if (
-          !event.message
+          !event?.message
         ) {
 
           continue;
@@ -4095,19 +5295,15 @@ app.post(
 
 
         const senderId =
-          event.sender?.id;
+          event?.sender?.id;
 
 
         const recipientId =
-          event.recipient?.id;
+          event?.recipient?.id;
 
 
         const messageId =
-          event.message?.mid;
-
-
-        const isEcho =
-          event.message?.is_echo === true;
+          event?.message?.mid;
 
 
         if (
@@ -4120,209 +5316,26 @@ app.post(
         }
 
 
-        console.log(
-          "---------- MESSAGE EVENT ----------"
-        );
+        const outgoingKey =
+          `${page.key}:${String(
+            messageId
+          )}`;
 
 
-        console.log(
-          "PAGE:",
-          page.username
-        );
-
-
-        console.log(
-          "SENDER:",
-          senderId
-        );
-
-
-        console.log(
-          "RECIPIENT:",
-          recipientId
-        );
-
-
-        console.log(
-          "MESSAGE:",
-          event.message?.text ||
-          "[NO TEXT]"
-        );
-
-
-        console.log(
-          "MESSAGE ID:",
-          messageId
-        );
-
-
-        console.log(
-          "IS ECHO:",
-          isEcho
-        );
-
-
-        /* =================================================
-           OUR OWN MESSAGE / MANUAL MESSAGE
-        ================================================= */
+        /*
+           Ignore messages that our own application
+           already knows it sent.
+        */
 
         if (
-          isEcho ||
-          String(senderId) ===
-          String(page.id)
+          outgoingMessages.has(
+            outgoingKey
+          )
         ) {
 
-          const outgoingKey =
-            `${page.key}:${String(messageId)}`;
-
-
-          /*
-             This is an AI message that our server sent.
-          */
-
-          if (
-            outgoingMessages.has(
-              outgoingKey
-            )
-          ) {
-
-            outgoingMessages.delete(
-              outgoingKey
-            );
-
-
-            console.log(
-              "OUR AI ECHO IGNORED"
-            );
-
-
-            continue;
-
-          }
-
-
-          /*
-             Otherwise treat it as a manual message from
-             the owner/admin.
-          */
-
-          if (
-            recipientId
-          ) {
-
-            const customerId =
-              String(recipientId);
-
-
-            cancelReminder(
-              customerId
-            );
-
-
-            manualReplyVersion.set(
-              customerId,
-              (
-                manualReplyVersion.get(
-                  customerId
-                ) || 0
-              ) + 1
-            );
-
-
-            const conversation =
-              await getConversation(
-                customerId
-              );
-
-
-            const ownText =
-              String(
-                event.message?.text ||
-                ""
-              ).trim();
-
-
-            if (
-              ownText
-            ) {
-
-              saveMessage(
-                conversation,
-                "assistant",
-                ownText
-              );
-
-
-              if (
-                normalize(ownText) ===
-                normalize(MESSAGE_ONE)
-              ) {
-
-                conversation.stage =
-                  "MESSAGE_ONE_SENT";
-
-              }
-
-              else if (
-                normalize(ownText) ===
-                normalize(MESSAGE_TWO)
-              ) {
-
-                conversation.stage =
-                  "MESSAGE_TWO_SENT";
-
-              }
-
-              else if (
-                normalize(ownText) ===
-                normalize(
-                  buildPackagesMessage(page)
-                )
-              ) {
-
-                conversation.stage =
-                  "PACKAGES_SHOWN";
-
-              }
-
-
-              conversation.pageKey =
-                page.key;
-
-
-              conversation.lastOutgoingText =
-                ownText;
-
-
-              conversation.lastOutgoingStage =
-                conversation.stage;
-
-
-              conversation.lastOutgoingMessageId =
-                String(messageId);
-
-
-              conversation.lastOutgoingAt =
-                nowISO();
-
-
-              conversation.reminder =
-                null;
-
-
-              await saveConversation(
-                customerId,
-                conversation
-              );
-
-            }
-
-
-            console.log(
-              "MANUAL MESSAGE SYNCHRONIZED"
-            );
-
-          }
+          outgoingMessages.delete(
+            outgoingKey
+          );
 
 
           continue;
@@ -4330,1474 +5343,190 @@ app.post(
         }
 
 
-   /* =========================================================
-   DUPLICATE PROTECTION
-========================================================= */
+        /*
+           Ignore Meta echo messages.
+        */
 
-const duplicateKey =
-  `${page.key}:${String(messageId)}`;
-
-
-if (
-  processedMessageIds.has(
-    duplicateKey
-  )
-) {
-
-  console.log(
-    "DUPLICATE MESSAGE IGNORED:",
-    messageId
-  );
-
-  continue;
-
-}
-
-
-processedMessageIds.set(
-  duplicateKey,
-  Date.now()
-);
-
-
-setTimeout(
-  () => {
-
-    processedMessageIds.delete(
-      duplicateKey
-    );
-
-  },
-  60 * 60 * 1000
-);
-
-
-/* =========================================================
-   CUSTOMER MESSAGE
-========================================================= */
-
-const clientMessage =
-  event.message?.text ||
-  "";
-
-
-const attachmentInfo =
-  (event.message?.attachments || [])
-    .map(
-      attachment =>
-        `type=${attachment.type || "unknown"}`
-    )
-    .join("\n");
-
-
-const hasMessage =
-  Boolean(
-    clientMessage ||
-    attachmentInfo ||
-    event.message?.share
-  );
-
-
-if (!hasMessage) {
-
-  console.log(
-    "EMPTY MESSAGE IGNORED"
-  );
-
-  continue;
-
-}
-
-
-/* =========================================================
-   CLIENT QUEUE
-========================================================= */
-
-queueForClient(
-  senderId,
-  async () => {
-
-    try {
-
-      const conversation =
-        await getConversation(
-          senderId
-        );
-
-
-      /*
-         Save the page immediately.
-
-         This is important because the same client
-         can interact with different pages.
-      */
-
-      conversation.pageKey =
-        page.key;
-
-
-      /*
-         Save Instagram username if Meta
-         has supplied it in the event.
-      */
-
-      const incomingUsername =
-        event.sender?.username ||
-        event.sender?.name ||
-        event.message?.sender?.username ||
-        null;
-
-
-      if (
-        incomingUsername
-      ) {
-
-        conversation.clientUsername =
-          String(
-            incomingUsername
+        if (
+          isEchoMessage(
+            event
           )
-            .replace(/^@/, "")
-            .trim();
+        ) {
 
-      }
+          continue;
 
+        }
 
-      await saveConversation(
-        senderId,
-        conversation
-      );
 
+        /* =================================================
+           DUPLICATE WEBHOOK PROTECTION
+        ================================================= */
 
-      await processClientMessage(
-        page,
-        senderId,
-        clientMessage,
-        attachmentInfo
-      );
-
-    }
-
-    catch (
-      error
-    ) {
-
-      console.error(
-        "CUSTOMER PROCESSING ERROR:",
-        error
-      );
-
-    }
-
-  }
-);
-         
- }
-
-  }
-
-  }
-);
-
-         /* =========================================================
-   MEMORY TEST
-========================================================= */
-
-app.get(
-  "/admin/memory-test",
-  async (req, res) => {
-
-    if (
-      !isAdmin(req)
-    ) {
-
-      return res.sendStatus(
-        403
-      );
-
-    }
-
-
-    const senderId =
-      String(
-        req.query.sender_id ||
-        ""
-      ).trim();
-
-
-    if (!senderId) {
-
-      return res.status(400).json({
-
-        success:
-          false,
-
-        error:
-          "sender_id is required"
-
-      });
-
-    }
-
-
-    const conversation =
-      await supabaseGetConversation(
-        senderId
-      );
-
-
-    if (!conversation) {
-
-      return res.json({
-
-        success:
-          true,
-
-        found:
-          false,
-
-        senderId,
-
-        message:
-          "No Supabase conversation found."
-
-      });
-
-    }
-
-
-    return res.json({
-
-      success:
-        true,
-
-      found:
-        true,
-
-      senderId,
-
-      pageKey:
-        conversation.pageKey ||
-        null,
-
-      clientUsername:
-        conversation.clientUsername ||
-        null,
-
-      stage:
-        conversation.stage,
-
-      selectedPackage:
-        conversation.selectedPackage,
-
-      paymentMethod:
-        conversation.paymentMethod,
-
-      paymentDetailsSent:
-        conversation.paymentDetailsSent,
-
-      paymentConfirmed:
-        conversation.paymentConfirmed,
-
-      paymentProofReceived:
-        conversation.paymentProofReceived,
-
-      awaitingPaymentConfirmation:
-        conversation.awaitingPaymentConfirmation,
-
-      reminder:
-        conversation.reminder,
-
-      historyLength:
-        Array.isArray(
-          conversation.history
-        )
-          ? conversation.history.length
-          : 0,
-
-      lastOutgoingText:
-        conversation.lastOutgoingText,
-
-      lastOutgoingStage:
-        conversation.lastOutgoingStage,
-
-      lastOutgoingAt:
-        conversation.lastOutgoingAt
-
-    });
-
-  }
-);
-
-
-/* =========================================================
-   HEALTH
-========================================================= */
-
-app.get(
-  "/health",
-  (req, res) => {
-
-    res.json({
-
-      status:
-        "ok",
-
-      ai:
-        Boolean(OPEN_AI),
-
-      supabase:
-        supabaseConfigured(),
-
-      pages:
-        Object.values(
-          PAGE_CONFIGS
-        ).map(
-          page => ({
-
-            username:
-              page.username,
-
-            id:
-              page.id,
-
-            token:
-              Boolean(page.token)
-
-          })
-        ),
-
-      conversations:
-        conversations.size,
-
-      activeReminders:
-        reminderTimers.size,
-
-      system:
-        "Global Promote 4-Page AI"
-
-    });
-
-  }
-);
-
-
-/* =========================================================
-   ADMIN AUTH
-========================================================= */
-
-function isAdmin(
-  req
-) {
-
-  return Boolean(
-
-    ADMIN_SECRET &&
-
-    req.headers[
-      "x-admin-secret"
-    ] ===
-    ADMIN_SECRET
-
-  );
-
-}
-
-
-/* =========================================================
-   ADMIN REPLY API
-========================================================= */
-
-app.post(
-  "/admin/reply",
-  async (req, res) => {
-
-    if (
-      !isAdmin(req)
-    ) {
-
-      return res.sendStatus(
-        403
-      );
-
-    }
-
-
-    const senderId =
-      String(
-        req.body?.sender_id ||
-        ""
-      ).trim();
-
-
-    const username =
-      String(
-        req.body?.username ||
-        ""
-      )
-        .trim()
-        .replace(/^@/, "")
-        .toLowerCase();
-
-
-    const requestedPage =
-      String(
-        req.body?.page ||
-        ""
-      )
-        .trim()
-        .toLowerCase();
-
-
-    const message =
-      String(
-        req.body?.text ||
-        ""
-      ).trim();
-
-
-    if (
-      !message
-    ) {
-
-      return res.status(400).json({
-
-        success:
-          false,
-
-        error:
-          "text is required"
-
-      });
-
-    }
-
-
-    let customerId =
-      senderId ||
-      null;
-
-
-    let conversation =
-      null;
-
-
-    /*
-       Sender ID is the safest identifier.
-    */
-
-    if (
-      customerId
-    ) {
-
-      conversation =
-        await getConversation(
-          customerId
-        );
-
-    }
-
-
-    /*
-       Username fallback.
-
-       This allows the admin to find a client by username
-       when sender_id is not supplied.
-    */
-
-    if (
-      !conversation &&
-      username
-    ) {
-
-      for (
-        const [
-          id,
-          item
-        ]
-        of conversations.entries()
-      ) {
-
-        const savedUsername =
-          String(
-            item?.clientUsername ||
-            ""
-          )
-            .replace(/^@/, "")
-            .toLowerCase();
-
-
-        const samePage =
-          !requestedPage ||
-          item?.pageKey ===
-            requestedPage;
+        const duplicateKey =
+          `${page.key}:${String(
+            messageId
+          )}`;
 
 
         if (
-          savedUsername ===
-            username &&
-          samePage
+          processedMessageIds.has(
+            duplicateKey
+          )
         ) {
 
-          customerId =
-            String(id);
-
-
-          conversation =
-            item;
-
-
-          break;
+          continue;
 
         }
 
-      }
 
-    }
-
-
-    if (
-      !conversation ||
-      !customerId
-    ) {
-
-      return res.status(404).json({
-
-        success:
-          false,
-
-        error:
-          "Client not found. Select the client from the Admin list so its sender_id is used."
-
-      });
-
-    }
-
-
-    const pageKey =
-      requestedPage ||
-      conversation.pageKey;
-
-
-    const page =
-      PAGE_CONFIGS[
-        pageKey
-      ];
-
-
-    if (
-      !page
-    ) {
-
-      return res.status(400).json({
-
-        success:
-          false,
-
-        error:
-          "Client page is missing or invalid."
-
-      });
-
-    }
-
-
-    try {
-
-      const result =
-        await sendAdminReply(
-          page,
-          customerId,
-          message
+        processedMessageIds.set(
+          duplicateKey,
+          Date.now()
         );
 
 
-      return res.json({
-
-        success:
-          true,
-
-        page:
-          result.page,
-
-        pageUsername:
-          page.username,
-
-        senderId:
-          customerId,
-
-        username:
-          result.username,
-
-        messageId:
-          result.messageId
-
-      });
-
-    }
-
-    catch (
-      error
-    ) {
-
-      console.error(
-        "ADMIN REPLY ERROR:",
-        error
-      );
-
-
-      return res.status(500).json({
-
-        success:
-          false,
-
-        error:
-          error.message
-
-      });
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   ADMIN STATUS
-========================================================= */
-
-app.get(
-  "/admin/status",
-  async (req, res) => {
-
-    if (
-      !isAdmin(req)
-    ) {
-
-      return res.sendStatus(
-        403
-      );
-
-    }
-
-
-    const clients =
-      [];
-
-
-    for (
-      const [
-        senderId,
-        conversation
-      ]
-      of conversations.entries()
-    ) {
-
-      clients.push({
-
-        senderId,
-
-        username:
-          conversation.clientUsername ||
-          null,
-
-        page:
-          conversation.pageKey ||
-          null,
-
-        stage:
-          conversation.stage,
-
-        selectedPackage:
-          conversation.selectedPackage,
-
-        paymentMethod:
-          conversation.paymentMethod,
-
-        paymentConfirmed:
-          conversation.paymentConfirmed,
-
-        paymentProofReceived:
-          conversation.paymentProofReceived,
-
-        reminder:
-          conversation.reminder,
-
-        messages:
-          Array.isArray(
-            conversation.history
-          )
-            ? conversation.history.length
-            : 0,
-
-        lastOutgoingText:
-          conversation.lastOutgoingText,
-
-        lastOutgoingAt:
-          conversation.lastOutgoingAt
-
-      });
-
-    }
-
-
-    res.json({
-
-      success:
-        true,
-
-      aiAlwaysOn:
-        true,
-
-      pages:
-        Object.values(
-          PAGE_CONFIGS
-        ).map(
-          page => ({
-
-            username:
-              page.username,
-
-            id:
-              page.id,
-
-            token:
-              Boolean(page.token)
-
-          })
-        ),
-
-      memory:
-        supabaseConfigured(),
-
-      activeReminders:
-        reminderTimers.size,
-
-      clients
-
-    });
-
-  }
-);
-
-
-/* =========================================================
-   ADMIN PAGE
-========================================================= */
-
-app.get(
-  "/admin",
-  (req, res) => {
-
-    res.send(`
-
-<!doctype html>
-
-<html>
-
-<head>
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
-
-<title>
-Global Promote Admin
-</title>
-
-<style>
-
-body{
-
-  font-family:Arial;
-
-  background:#f5f5f5;
-
-  padding:20px;
-
-}
-
-.card{
-
-  max-width:900px;
-
-  margin:auto;
-
-  background:white;
-
-  padding:20px;
-
-  border-radius:15px;
-
-  margin-bottom:15px;
-
-}
-
-input,
-textarea,
-select,
-button{
-
-  width:100%;
-
-  box-sizing:border-box;
-
-  padding:12px;
-
-  margin-top:10px;
-
-  border-radius:8px;
-
-}
-
-textarea{
-
-  min-height:100px;
-
-}
-
-button{
-
-  cursor:pointer;
-
-}
-
-pre{
-
-  white-space:pre-wrap;
-
-  word-break:break-word;
-
-}
-
-.client{
-
-  border:1px solid #ddd;
-
-  padding:12px;
-
-  margin-top:10px;
-
-  border-radius:10px;
-
-}
-
-.username{
-
-  font-size:17px;
-
-  font-weight:bold;
-
-}
-
-.meta{
-
-  color:#666;
-
-  font-size:13px;
-
-  margin-top:5px;
-
-}
-
-.tabs{
-
-  display:grid;
-
-  grid-template-columns:repeat(5,1fr);
-
-  gap:5px;
-
-}
-
-@media(max-width:650px){
-
-  .tabs{
-
-    grid-template-columns:1fr 1fr;
-
-  }
-
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-<div class="card">
-
-<h2>
-🤖 Global Promote Admin
-</h2>
-
-<p>
-4 PAGE AI SYSTEM
-</p>
-
-<p>
-Europe • Miami • Canada • Mentalxheal
-</p>
-
-<input
-  id="secret"
-  type="password"
-  placeholder="ADMIN_SECRET"
->
-
-<button
-  onclick="loadStatus()"
->
-🔄 Load Clients
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>
-Clients
-</h3>
-
-<div class="tabs">
-
-<button
-  onclick="setPage('all')"
->
-ALL
-</button>
-
-<button
-  onclick="setPage('europe')"
->
-EUROPE
-</button>
-
-<button
-  onclick="setPage('miami')"
->
-MIAMI
-</button>
-
-<button
-  onclick="setPage('canada')"
->
-CANADA
-</button>
-
-<button
-  onclick="setPage('mentalxheal')"
->
-MENTALXHEAL
-</button>
-
-</div>
-
-
-<div id="clients">
-
-Load clients first.
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h3>
-✉️ Admin Reply
-</h3>
-
-
-<input
-  id="replyUsername"
-  placeholder="@username"
->
-
-
-<select
-  id="replyPage"
->
-
-<option value="europe">
-@expl.europe
-</option>
-
-<option value="miami">
-@expl.miami
-</option>
-
-<option value="canada">
-@expl.canada
-</option>
-
-<option value="mentalxheal">
-@mentalxheal
-</option>
-
-</select>
-
-
-<input
-  id="replySenderId"
-  placeholder="Instagram client ID"
->
-
-
-<textarea
-  id="replyText"
-  placeholder="Write your reply..."
-></textarea>
-
-
-<button
-  onclick="sendReply()"
->
-📤 Send Reply
-</button>
-
-
-<div id="replyResult">
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h3>
-System Status
-</h3>
-
-<pre id="out"></pre>
-
-</div>
-
-
-<script>
-
-let allClients = [];
-
-let currentPage = "all";
-
-
-function getSecret(){
-
-  return document
-    .getElementById("secret")
-    .value;
-
-}
-
-
-function setPage(page){
-
-  currentPage =
-    page;
-
-  renderClients();
-
-}
-
-
-async function loadStatus(){
-
-  const response =
-    await fetch(
-      "/admin/status",
-      {
-
-        headers: {
-
-          "x-admin-secret":
-            getSecret()
-
-        }
-
-      }
-    );
-
-
-  const data =
-    await response.json();
-
-
-  if (
-    !response.ok
-  ){
-
-    document
-      .getElementById("out")
-      .textContent =
-        JSON.stringify(
-          data,
-          null,
-          2
-        );
-
-    return;
-
-  }
-
-
-  allClients =
-    Array.isArray(
-      data.clients
-    )
-      ? data.clients
-      : [];
-
-
-  document
-    .getElementById("out")
-    .textContent =
-      JSON.stringify(
-        {
-
-          success:
-            data.success,
-
-          memory:
-            data.memory,
-
-          activeReminders:
-            data.activeReminders,
-
-          clients:
-            allClients.length
-
-        },
-        null,
-        2
-      );
-
-
-  renderClients();
-
-}
-
-
-function renderClients(){
-
-  const box =
-    document
-      .getElementById("clients");
-
-
-  const filtered =
-    allClients.filter(
-      client =>
-        currentPage ===
-          "all" ||
-        client.page ===
-          currentPage
-    );
-
-
-  if (
-    !filtered.length
-  ){
-
-    box.innerHTML =
-      "<p>No clients found.</p>";
-
-    return;
-
-  }
-
-
-  box.innerHTML =
-    filtered
-      .map(
-        (client, index) => {
-
-          const username =
-            client.username ||
-            "Username not available";
-
-
-          const reminder =
-            client.reminder
-
-              ? (
-                  client.reminder.seen
-                    ? "Reminder active"
-                    : "Reminder pending"
-                )
-
-              : "No reminder";
-
-
-          return (
-  '<div class="client">' +
-
-  '<div class="username">' +
-  escapeHtml(username) +
-  '</div>' +
-
-  '<div class="meta">' +
-  'Page: ' +
-  escapeHtml(client.page || "") +
-  '</div>' +
-
-  '<div class="meta">' +
-  'Stage: ' +
-  escapeHtml(client.stage || "") +
-  '</div>' +
-
-  '<div class="meta">' +
-  'Package: ' +
-  escapeHtml(
-    client.selectedPackage || "none"
-  ) +
-  '</div>' +
-
-  '<div class="meta">' +
-  'Payment: ' +
-  escapeHtml(
-    client.paymentMethod || "none"
-  ) +
-  '</div>' +
-
-  '<div class="meta">' +
-  escapeHtml(reminder) +
-  '</div>' +
-
-  '<div class="meta">' +
-  'ID: ' +
-  escapeHtml(
-    client.senderId || ""
-  ) +
-  '</div>' +
-
-  '<button ' +
-  'onclick="selectClient(' +
-  index +
-  ')">' +
-  'Reply' +
-  '</button>' +
-
-  '</div>'
-);
-
-      }
-    )
-    .join("");
-
-}
-
-function selectClient(index){
-
-  const filtered =
-    allClients.filter(
-      client =>
-        currentPage ===
-          "all" ||
-        client.page ===
-          currentPage
-    );
-
-
-  const client =
-    filtered[index];
-
-
-  if (
-    !client
-  ){
-
-    return;
-
-  }
-
-
-  document
-    .getElementById(
-      "replyUsername"
-    )
-    .value =
-      client.username ||
-      "";
-
-
-  document
-    .getElementById(
-      "replyPage"
-    )
-    .value =
-      client.page ||
-      "europe";
-
-
-  document
-    .getElementById(
-      "replySenderId"
-    )
-    .value =
-      client.senderId ||
-      "";
-
-
-  document
-    .getElementById(
-      "replyText"
-    )
-    .focus();
-
-}
-
-
-async function sendReply(){
-
-  const username =
-    document
-      .getElementById(
-        "replyUsername"
-      )
-      .value
-      .trim();
-
-
-  const page =
-    document
-      .getElementById(
-        "replyPage"
-      )
-      .value;
-
-
-  const senderId =
-    document
-      .getElementById(
-        "replySenderId"
-      )
-      .value
-      .trim();
-
-
-  const text =
-    document
-      .getElementById(
-        "replyText"
-      )
-      .value
-      .trim();
-
-
-  const result =
-    document
-      .getElementById(
-        "replyResult"
-      );
-
-
-  if (
-    !text
-  ){
-
-    result.textContent =
-      "Please write a message.";
-
-    return;
-
-  }
-
-
-  result.textContent =
-    "Sending...";
-
-
-  try{
-
-    const response =
-      await fetch(
-        "/admin/reply",
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "x-admin-secret":
-              getSecret()
+        setTimeout(
+          () => {
+
+            processedMessageIds.delete(
+              duplicateKey
+            );
 
           },
+          60 * 60 * 1000
+        );
 
-          body:
-            JSON.stringify({
 
-              username,
+        /* =================================================
+           MESSAGE CONTENT
+        ================================================= */
 
-              page,
+        const clientMessage =
+          String(
+            event.message?.text ||
+            ""
+          ).trim();
 
-              sender_id:
-                senderId,
 
-              text
+        const attachments =
+          Array.isArray(
+            event.message?.attachments
+          )
+            ? event.message.attachments
+            : [];
 
-            })
+
+        const attachmentInfo =
+          attachments
+            .map(
+              attachment =>
+                `type=${
+                  attachment?.type ||
+                  "unknown"
+                }`
+            )
+            .join(
+              "\n"
+            );
+
+
+        const hasShare =
+          Boolean(
+            event.message?.share
+          );
+
+
+        if (
+          !clientMessage &&
+          !attachmentInfo &&
+          !hasShare
+        ) {
+
+          continue;
 
         }
-      );
 
 
-    const data =
-      await response.json();
+        /* =================================================
+           CUSTOMER QUEUE
+        ================================================= */
+
+        queueForClient(
+          senderId,
+          async () => {
+
+            try {
+
+              const conversation =
+                await getConversation(
+                  senderId
+                );
 
 
-    result.textContent =
-      JSON.stringify(
-        data,
-        null,
-        2
-      );
+              conversation.pageKey =
+                page.key;
 
 
-    if (
-      response.ok &&
-      data.success
-    ){
+              /*
+                 Meta may provide the username directly.
+              */
 
-      document
-        .getElementById(
-          "replyText"
-        )
-        .value =
-          "";
+              const incomingUsername =
+                event?.sender?.username ||
+                null;
 
 
-      await loadStatus();
+              if (
+                incomingUsername
+              ) {
+
+                conversation.clientUsername =
+                  normalizeInstagramUsername(
+                    incomingUsername
+                  );
+
+
+                conversation.promotionUsernameReceived =
+                  true;
+
+              }
+
+
+              await saveConversation(
+                senderId,
+                conversation
+              );
+
+
+              await processClientMessage(
+                page,
+                senderId,
+                clientMessage,
+                attachmentInfo
+              );
+
+            }
+
+            catch (
+              error
+            ) {
+
+              console.error(
+                "CUSTOMER PROCESSING ERROR:",
+                error
+              );
+
+            }
+
+          }
+        );
+
+      }
 
     }
 
   }
-
-  catch(error){
-
-    result.textContent =
-      error.message;
-
-  }
-
-}
-
-
-function escapeHtml(
-  value
-){
-
-  return String(
-    value ?? ""
-  )
-    .replaceAll(
+);
       "&",
       "&amp;"
     )
@@ -5827,7 +5556,6 @@ function escapeHtml(
 </html>
 
 `);
-
   }
 );
 
@@ -5901,7 +5629,6 @@ app.listen(
     ) {
 
       console.log(
-
         page.username,
         "|",
         page.id,
@@ -5909,7 +5636,6 @@ app.listen(
         page.token
           ? "CONNECTED"
           : "MISSING"
-
       );
 
     }
@@ -5926,7 +5652,7 @@ app.listen(
 
 
     console.log(
-      "REMINDERS: START IMMEDIATELY AFTER AUTOMATED SEND"
+      "FIRST REMINDER: 1 MINUTE AFTER AUTOMATED OPENING"
     );
 
 
