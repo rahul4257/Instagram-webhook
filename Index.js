@@ -5981,7 +5981,7 @@ app.post(
 );
   
 /* =========================================================
-   ADMIN PAGE — SIMPLE UI VERSION 2
+   ADMIN PAGE — SIMPLE VERSION 2
    - Page filters
    - Search
    - Client list
@@ -5997,6 +5997,7 @@ app.get(
     res.send(`
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
@@ -6047,7 +6048,7 @@ button {
   width: 100%;
   max-width: 850px;
   margin: auto;
-  padding: 12px;
+  padding: 10px;
 }
 
 .title {
@@ -6055,11 +6056,6 @@ button {
   font-weight: 700;
   margin: 5px 0 14px;
 }
-
-
-/* =========================================================
-   COMMON CARD
-========================================================= */
 
 .section {
   background: #fff;
@@ -6087,7 +6083,7 @@ button {
 
 .login-row button {
   background: #1683ff;
-  color: white;
+  color: #fff;
   border: 0;
   border-radius: 10px;
   padding: 0 18px;
@@ -6103,7 +6099,7 @@ select {
   padding: 12px;
   font-size: 15px;
   outline: none;
-  background: white;
+  background: #fff;
 }
 
 input:focus,
@@ -6140,7 +6136,7 @@ select:focus {
   flex: 0 0 auto;
   border: 0;
   border-radius: 9px;
-  background: #eeeeef;
+  background: #eee;
   color: #1683ff;
   padding: 10px 14px;
   font-size: 13px;
@@ -6149,7 +6145,7 @@ select:focus {
 
 .page-button.active {
   background: #1683ff;
-  color: white;
+  color: #fff;
 }
 
 
@@ -6162,7 +6158,7 @@ select:focus {
   border: 0;
   border-radius: 10px;
   padding: 12px;
-  background: #eeeeef;
+  background: #eee;
   color: #1683ff;
   font-size: 15px;
   font-weight: 600;
@@ -6189,7 +6185,7 @@ select:focus {
   border-radius: 10px;
   padding: 13px;
   background: #1683ff;
-  color: white;
+  color: #fff;
   font-size: 15px;
   font-weight: 600;
 }
@@ -6213,7 +6209,7 @@ select:focus {
   flex: 0 0 auto;
   border: 0;
   border-radius: 10px;
-  background: #eeeeef;
+  background: #eee;
   color: #1683ff;
   padding: 12px 14px;
   font-size: 14px;
@@ -6246,7 +6242,7 @@ select:focus {
   border-radius: 14px;
   padding: 13px;
   margin-bottom: 9px;
-  background: white;
+  background: #fff;
 }
 
 .client-name {
@@ -6267,7 +6263,7 @@ select:focus {
   margin-top: 9px;
   border: 0;
   border-radius: 9px;
-  background: #eeeeef;
+  background: #eee;
   color: #1683ff;
   padding: 10px;
   font-size: 14px;
@@ -6283,14 +6279,16 @@ select:focus {
 
 
 /* =========================================================
-   SLIDE-UP CHAT OVERLAY
+   SLIDE-UP CHAT
 ========================================================= */
 
 .chat-overlay {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0,0,0,.42);
+
+  background:
+    rgba(0,0,0,.42);
 
   display: flex;
   align-items: flex-end;
@@ -6357,9 +6355,13 @@ select:focus {
 .drag-line {
   width: 38px;
   height: 4px;
+
   border-radius: 10px;
+
   background: #ccc;
-  margin: 0 auto 10px;
+
+  margin:
+    0 auto 10px;
 }
 
 .chat-header-row {
@@ -6388,7 +6390,7 @@ select:focus {
 
 .close-chat {
   border: 0;
-  background: #eeeeef;
+  background: #eee;
   color: #333;
   border-radius: 9px;
   padding: 9px 12px;
@@ -6402,21 +6404,30 @@ select:focus {
 
 .chat-messages {
   flex: 1;
+
   overflow-y: auto;
+
   padding: 14px;
+
   background: #f7f7f8;
 }
 
 .chat-message {
   max-width: 85%;
-  padding: 10px 12px;
+
+  padding:
+    10px 12px;
+
   border-radius: 13px;
+
   margin-bottom: 9px;
 
   white-space: pre-wrap;
+
   word-break: break-word;
 
   font-size: 14px;
+
   line-height: 1.4;
 }
 
@@ -6432,8 +6443,11 @@ select:focus {
 
 .chat-time {
   display: block;
+
   margin-top: 5px;
+
   font-size: 10px;
+
   color: #777;
 }
 
@@ -6444,15 +6458,21 @@ select:focus {
 
 .chat-reply {
   flex: 0 0 auto;
+
   padding: 10px;
-  border-top: 1px solid #ddd;
+
+  border-top:
+    1px solid #ddd;
+
   background: #fff;
 }
 
 .chat-reply textarea {
   min-height: 65px;
   max-height: 130px;
+
   resize: vertical;
+
   margin-bottom: 7px;
 }
 
@@ -6463,19 +6483,29 @@ select:focus {
 
 .chat-send {
   flex: 1;
+
   border: 0;
+
   border-radius: 9px;
+
   background: #1683ff;
+
   color: white;
+
   padding: 11px;
+
   font-weight: 600;
 }
 
 .chat-refresh {
   border: 0;
+
   border-radius: 9px;
-  background: #eeeeef;
+
+  background: #eee;
+
   color: #1683ff;
+
   padding: 11px 13px;
 }
 
@@ -6509,6 +6539,7 @@ select:focus {
 
 <body>
 
+
 <div class="container">
 
 
@@ -6539,6 +6570,7 @@ select:focus {
 
     </div>
 
+
     <div
       id="status"
       class="status"
@@ -6559,6 +6591,7 @@ select:focus {
       Pages
     </div>
 
+
     <div class="page-buttons">
 
       <button
@@ -6569,6 +6602,7 @@ select:focus {
         ALL
       </button>
 
+
       <button
         id="page-europe"
         class="page-button"
@@ -6576,6 +6610,7 @@ select:focus {
       >
         EUROPE
       </button>
+
 
       <button
         id="page-miami"
@@ -6585,6 +6620,7 @@ select:focus {
         MIAMI
       </button>
 
+
       <button
         id="page-canada"
         class="page-button"
@@ -6592,6 +6628,7 @@ select:focus {
       >
         CANADA
       </button>
+
 
       <button
         id="page-mentalxheal"
@@ -6631,12 +6668,17 @@ select:focus {
         placeholder="Client ID"
       >
 
+
       <select
         id="adminPage"
       >
 
         <option value="europe">
           @expl.europe
+        </option>
+
+        <option value="miami">
+          @expl.miami
         </option>
 
         <option value="canada">
@@ -6647,16 +6689,14 @@ select:focus {
           @mentalxheal
         </option>
 
-        <option value="miami">
-          @expl.miami
-        </option>
-
       </select>
+
 
       <textarea
         id="adminMessage"
         placeholder="Write your reply..."
       ></textarea>
+
 
       <button
         class="send-button"
@@ -6671,7 +6711,7 @@ select:focus {
 
 
   <!-- =====================================================
-       SEARCH + CLIENTS
+       SEARCH
   ====================================================== -->
 
   <div class="section">
@@ -6683,6 +6723,7 @@ select:focus {
         placeholder="🔎 Search username or client ID"
         oninput="renderClients()"
       >
+
 
       <button
         class="refresh-button"
@@ -6696,6 +6737,10 @@ select:focus {
   </div>
 
 
+  <!-- =====================================================
+       CLIENTS
+  ====================================================== -->
+
   <div class="section">
 
     <div class="clients-header">
@@ -6703,6 +6748,7 @@ select:focus {
       <div class="clients-title">
         Clients
       </div>
+
 
       <div
         id="clientCount"
@@ -6739,6 +6785,7 @@ select:focus {
   onclick="overlayClick(event)"
 >
 
+
   <div
     class="chat-panel"
     onclick="event.stopPropagation()"
@@ -6755,9 +6802,7 @@ select:focus {
         <div
           id="chatTitle"
           class="chat-title"
-        >
-
-        </div>
+        ></div>
 
 
         <button
@@ -6775,9 +6820,7 @@ select:focus {
     <div
       id="chatMessages"
       class="chat-messages"
-    >
-
-    </div>
+    ></div>
 
 
     <div class="chat-reply">
@@ -6815,6 +6858,7 @@ select:focus {
 
 
 <script>
+
 
 /* =========================================================
    STATE
@@ -6897,24 +6941,31 @@ function escapeHtml(
 ) {
 
   return String(
-    value || ""
+    value == null
+      ? ""
+      : value
   )
+
     .replace(
       /&/g,
       "&amp;"
     )
+
     .replace(
       /</g,
       "&lt;"
     )
+
     .replace(
       />/g,
       "&gt;"
     )
+
     .replace(
       /"/g,
       "&quot;"
     )
+
     .replace(
       /'/g,
       "&#039;"
@@ -7000,7 +7051,11 @@ async function loadClients() {
         "/admin/clients?secret=" +
         encodeURIComponent(
           adminSecret
-        )
+        ),
+        {
+          cache:
+            "no-store"
+        }
       );
 
 
@@ -7041,9 +7096,18 @@ async function loadClients() {
 
       const updated =
         allClients.find(
-          client =>
-            client.senderId ===
-            selectedClient.senderId
+          function(client) {
+
+            return (
+              String(
+                client.senderId
+              ) ===
+              String(
+                selectedClient.senderId
+              )
+            );
+
+          }
         );
 
 
@@ -7096,10 +7160,13 @@ function selectPage(
       ".page-button"
     )
     .forEach(
-      button =>
+      function(button) {
+
         button.classList.remove(
           "active"
-        )
+        );
+
+      }
     );
 
 
@@ -7125,7 +7192,7 @@ function selectPage(
 
 
 /* =========================================================
-   FILTER
+   FILTER CLIENTS
 ========================================================= */
 
 function getFilteredClients() {
@@ -7141,12 +7208,17 @@ function getFilteredClients() {
 
     result =
       result.filter(
-        client =>
-          String(
-            client.page ||
-            ""
-          ).toLowerCase() ===
-          selectedPage.toLowerCase()
+        function(client) {
+
+          return (
+            String(
+              client.page ||
+              ""
+            ).toLowerCase() ===
+            selectedPage.toLowerCase()
+          );
+
+        }
       );
 
   }
@@ -7165,7 +7237,7 @@ function getFilteredClients() {
 
     result =
       result.filter(
-        client => {
+        function(client) {
 
           const username =
             String(
@@ -7232,8 +7304,8 @@ function renderClients() {
 
     container.innerHTML =
       '<div class="empty">' +
-      "No clients found." +
-      "</div>";
+      'No clients found.' +
+      '</div>';
 
     return;
 
@@ -7241,108 +7313,112 @@ function renderClients() {
 
 
   container.innerHTML =
-    clients
-      .map(
-        client => {
+    clients.map(
+      function(client) {
 
-          const username =
-            client.username ||
-            "Username not available";
-
-
-          const packageName =
-            client.selectedPackage ||
-            "none";
+        const username =
+          client.username ||
+          "Username not available";
 
 
-          const payment =
-            client.paymentMethod ||
-            "none";
+        const packageName =
+          client.selectedPackage ||
+          "none";
 
 
-          const stage =
-            client.stage ||
-            "NEW";
+        const payment =
+          client.paymentMethod ||
+          "none";
 
 
-          const reminder =
-            client.reminder
-              ? "Active"
-              : "No reminder";
+        const stage =
+          client.stage ||
+          "NEW";
 
 
-          return `
-
-<div class="client-card">
-
-  <div class="client-name">
-    ${escapeHtml(
-      username
-    )}
-  </div>
-
-  <div class="client-details">
-
-    Page:
-    ${escapeHtml(
-      client.page ||
-      "unknown"
-    )}
-
-    <br>
-
-    Stage:
-    ${escapeHtml(
-      stage
-    )}
-
-    <br>
-
-    Package:
-    ${escapeHtml(
-      packageName
-    )}
-
-    <br>
-
-    Payment:
-    ${escapeHtml(
-      payment
-    )}
-
-    <br>
-
-    Reminder:
-    ${escapeHtml(
-      reminder
-    )}
-
-    <br>
-
-    ID:
-    ${escapeHtml(
-      client.senderId
-    )}
-
-  </div>
+        const reminder =
+          client.reminder
+            ? "Active"
+            : "No reminder";
 
 
-  <button
-    class="open-chat"
-    onclick="openChat('${escapeHtml(
-      client.senderId
-    )}')"
-  >
-    💬 Open Chat
-  </button>
+        const id =
+          escapeHtml(
+            client.senderId ||
+            ""
+          );
 
-</div>
 
-`;
+        return (
 
-        }
-      )
-      .join("");
+          '<div class="client-card">' +
+
+            '<div class="client-name">' +
+              escapeHtml(
+                username
+              ) +
+            '</div>' +
+
+            '<div class="client-details">' +
+
+              'Page: ' +
+              escapeHtml(
+                client.page ||
+                "unknown"
+              ) +
+
+              '<br>' +
+
+              'Stage: ' +
+              escapeHtml(
+                stage
+              ) +
+
+              '<br>' +
+
+              'Package: ' +
+              escapeHtml(
+                packageName
+              ) +
+
+              '<br>' +
+
+              'Payment: ' +
+              escapeHtml(
+                payment
+              ) +
+
+              '<br>' +
+
+              'Reminder: ' +
+              escapeHtml(
+                reminder
+              ) +
+
+              '<br>' +
+
+              'ID: ' +
+              id +
+
+            '</div>' +
+
+            '<button ' +
+              'class="open-chat" ' +
+              'onclick="openChat(\\'' +
+                id +
+              '\\')">' +
+
+              '💬 Open Chat' +
+
+            '</button>' +
+
+          '</div>'
+
+        );
+
+      }
+    )
+    .join("");
 
 }
 
@@ -7357,9 +7433,18 @@ function openChat(
 
   selectedClient =
     allClients.find(
-      client =>
-        client.senderId ===
-        senderId
+      function(client) {
+
+        return (
+          String(
+            client.senderId
+          ) ===
+          String(
+            senderId
+          )
+        );
+
+      }
     ) ||
     null;
 
@@ -7372,9 +7457,8 @@ function openChat(
 
 
   /*
-     Save exact page scroll position.
-     When chat closes we restore it.
-  */
+   * Save exact page position.
+   */
 
   savedScrollPosition =
     window.scrollY;
@@ -7416,35 +7500,41 @@ function renderChat() {
     "Username not available";
 
 
+  const page =
+    selectedClient.page ||
+    "unknown";
+
+
+  const stage =
+    selectedClient.stage ||
+    "NEW";
+
+
   document.getElementById(
     "chatTitle"
-  ).innerHTML = `
+  ).innerHTML =
 
-<strong>
-  ${escapeHtml(
-    username
-  )}
-</strong>
+    '<strong>' +
+      escapeHtml(
+        username
+      ) +
+    '</strong>' +
 
-<span>
+    '<span>' +
 
-  Page:
-  ${escapeHtml(
-    selectedClient.page ||
-    "unknown"
-  )}
+      'Page: ' +
+      escapeHtml(
+        page
+      ) +
 
-  &nbsp; | &nbsp;
+      ' &nbsp; | &nbsp; ' +
 
-  Stage:
-  ${escapeHtml(
-    selectedClient.stage ||
-    "NEW"
-  )}
+      'Stage: ' +
+      escapeHtml(
+        stage
+      ) +
 
-</span>
-
-`;
+    '</span>';
 
 
   const messages =
@@ -7465,8 +7555,8 @@ function renderChat() {
 
     messages.innerHTML =
       '<div class="empty">' +
-      "No messages found." +
-      "</div>";
+      'No messages found.' +
+      '</div>';
 
     return;
 
@@ -7474,47 +7564,55 @@ function renderChat() {
 
 
   messages.innerHTML =
-    history
-      .map(
-        item => {
+    history.map(
+      function(item) {
 
-          const role =
-            item.role ===
-            "client"
-              ? "client"
-              : "assistant";
+        const role =
+          item.role ===
+          "client"
+            ? "client"
+            : "assistant";
 
 
-          return `
+        let html =
+          '<div class="chat-message ' +
+          role +
+          '">' +
 
-<div class="chat-message ${role}">
+          escapeHtml(
+            item.text ||
+            ""
+          );
 
-  ${escapeHtml(
-    item.text ||
-    ""
-  )}
 
-  ${
-    item.timestamp
-      ? `
-        <span class="chat-time">
-          ${escapeHtml(
-            formatTime(
-              item.timestamp
-            )
-          )}
-        </span>
-      `
-      : ""
-  }
+        if (
+          item.timestamp
+        ) {
 
-</div>
+          html +=
 
-`;
+            '<span class="chat-time">' +
+
+              escapeHtml(
+                formatTime(
+                  item.timestamp
+                )
+              ) +
+
+            '</span>';
 
         }
-      )
-      .join("");
+
+
+        html +=
+          '</div>';
+
+
+        return html;
+
+      }
+    )
+    .join("");
 
 
   messages.scrollTop =
@@ -7542,13 +7640,12 @@ function closeChat() {
     "";
 
 
-  /*
-     Restore the exact position where
-     the client was selected.
-  */
+  selectedClient =
+    null;
+
 
   setTimeout(
-    () => {
+    function() {
 
       window.scrollTo(
         0,
@@ -7559,15 +7656,11 @@ function closeChat() {
     30
   );
 
-
-  selectedClient =
-    null;
-
 }
 
 
 /* =========================================================
-   CLICK OUTSIDE CHAT
+   CLOSE BY CLICKING OUTSIDE
 ========================================================= */
 
 function overlayClick(
@@ -7593,7 +7686,9 @@ function overlayClick(
 async function refreshSelectedClient() {
 
   const senderId =
-    selectedClient?.senderId;
+    selectedClient
+      ? selectedClient.senderId
+      : null;
 
 
   await loadClients();
@@ -7608,9 +7703,18 @@ async function refreshSelectedClient() {
 
   const updated =
     allClients.find(
-      client =>
-        client.senderId ===
-        senderId
+      function(client) {
+
+        return (
+          String(
+            client.senderId
+          ) ===
+          String(
+            senderId
+          )
+        );
+
+      }
     );
 
 
@@ -7893,12 +7997,12 @@ async function sendChatReply() {
       "";
 
 
-    await refreshSelectedClient();
-
-
     setStatus(
       "Reply sent successfully."
     );
+
+
+    await refreshSelectedClient();
 
   }
 
@@ -7916,8 +8020,7 @@ async function sendChatReply() {
 
 
 /* =========================================================
-   ENTER TO SEND
-   Ctrl + Enter / Command + Enter
+   CTRL/CMD + ENTER TO SEND
 ========================================================= */
 
 document
@@ -7948,7 +8051,7 @@ document
 
 
 /* =========================================================
-   LOAD SAVED ADMIN SECRET
+   LOAD SAVED SECRET
 ========================================================= */
 
 (function() {
@@ -7978,15 +8081,16 @@ document
 
 })();
 
+
 </script>
 
 </body>
+
 </html>
     `);
 
   }
 );
-
 /* =========================================================
    HEALTH CHECK
 ========================================================= */
