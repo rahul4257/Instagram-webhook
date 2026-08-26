@@ -2848,16 +2848,31 @@ function isThinkingResponse(
     /\bi'll think\b/.test(t) ||
     /\bi will think\b/.test(t) ||
     /\bi think about it\b/.test(t) ||
+    /\bthink about it\b/.test(t) ||
     /\blet me think\b/.test(t) ||
     /\blet me see\b/.test(t) ||
+    /\blet me consider\b/.test(t) ||
+    /\blet me check\b/.test(t) ||
+    /\blet me check and tell you\b/.test(t) ||
     /\bi will get back to you\b/.test(t) ||
     /\bi'll get back to you\b/.test(t) ||
     /\bget back to you\b/.test(t) ||
     /\bi'll let you know\b/.test(t) ||
     /\bi will let you know\b/.test(t) ||
-    /\blet me consider\b/.test(t) ||
-    /\bi need some time\b/.test(t) ||
+    /\bcan i let you know\b/.test(t) ||
+    /\bcould i let you know\b/.test(t) ||
+    /\bcan i tell you later\b/.test(t) ||
+    /\bcould i tell you later\b/.test(t) ||
+    /\bcan i let you know later\b/.test(t) ||
+    /\bcould i let you know later\b/.test(t) ||
+    /\bcan i let you know tomorrow\b/.test(t) ||
+    /\bcould i let you know tomorrow\b/.test(t) ||
+    /\bi'll let you know tomorrow\b/.test(t) ||
+    /\bi will let you know tomorrow\b/.test(t) ||
+    /\bdecide later\b/.test(t) ||
+    /\bdecide tomorrow\b/.test(t) ||
     /\bneed some time\b/.test(t) ||
+    /\bi need some time\b/.test(t) ||
     /\bnot sure yet\b/.test(t)
   );
 
@@ -2865,8 +2880,7 @@ function isThinkingResponse(
 
 
 const THINKING_RESPONSE =
-`Okay dear ❤️ take your time. But this is the best time to start because around 85% of our audience is active right now, so you can get the best and fastest results if you start now.`;
-
+`Okay dear but this is our best pickup time as 85% of our audience are active now , so you will get best results if you start now`;
 
 function isQuestion(
   text
