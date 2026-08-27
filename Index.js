@@ -1005,6 +1005,12 @@ const MESSAGE_TWO =
 
 I will upload your post on these pages and from that you will gain 1k to 15k guaranteed followers according to your package. Can I show you our packages ?`;
 
+/* =========================================================
+   NEGATIVE / NOT INTERESTED RESPONSE
+========================================================= */
+
+const NEGATIVE_RESPONSE =
+`No worries ❤️ If you change your mind later, just let us know. We’ll be happy to help.`;
 
 /* =========================================================
    GUARANTEE
@@ -1121,6 +1127,9 @@ const conversations =
 
 
 const clientQueues =
+  new Map();
+
+const pendingClientMessages =
   new Map();
 
 
@@ -5230,7 +5239,45 @@ async function processClientMessage(
     return;
   }
 
+/* =======================================================
+   NEGATIVE RESPONSE — STOP EVERYTHING
+======================================================= */
 
+if (
+  isNegative(
+    clientMessage
+  )
+) {
+  conversation.stage =
+    "CLOSED";
+
+  cancelReminder(
+    key
+  );
+
+  conversation.reminder =
+    null;
+
+  await saveConversation(
+    key,
+    conversation
+  );
+
+  const version =
+    getManualReplyVersion(
+      key
+    );
+
+  await sendReplySafely(
+    page,
+    key,
+    conversation,
+    NEGATIVE_RESPONSE,
+    version
+  );
+
+  return;
+}
   /* =======================================================
      CLOSED / NEGATIVE CONVERSATION
      A negative response is the ONLY hard stop.
@@ -5636,31 +5683,7 @@ async function processClientMessage(
      Normal conversation starts here.
   ======================================================= */
 
-  if (
-    isNegative(
-      clientMessage
-    )
-  ) {
-
-    conversation.stage =
-      "CLOSED";
-
-    cancelReminder(
-      key
-    );
-
-    conversation.reminder =
-      null;
-
-    await saveConversation(
-      key,
-      conversation
-    );
-
-    return;
-
-  }
-
+  
   if (
     isThinkingResponse(
       clientMessage
@@ -5962,74 +5985,112 @@ function enqueueClientMessage(
   attachmentInfo,
   incomingMessageId = null
 ) {
-
   const key =
-    String(
-      senderId
+    String(senderId);
+
+  const existing =
+    pendingClientMessages.get(key) || {
+      page,
+      messages: [],
+      timer: null
+    };
+
+  existing.page =
+    page;
+
+  existing.messages.push({
+    text:
+      String(
+        clientMessage || ""
+      ).trim(),
+
+    attachmentInfo:
+      attachmentInfo || "",
+
+    incomingMessageId
+  });
+
+  if (
+    existing.timer
+  ) {
+    clearTimeout(
+      existing.timer
     );
+  }
 
+  /*
+     WAIT FOR THE CLIENT TO FINISH SENDING
+     MULTIPLE QUICK MESSAGES.
 
-  const previous =
-    clientQueues.get(
-      key
-    ) ||
-    Promise.resolve();
+     Example:
 
+     Client:
+     [photo]
 
-  const next =
-    previous
-      .catch(
-        () => {}
-      )
-      .then(
-        () =>
-          processClientMessage(
-            page,
-            key,
-            clientMessage,
-            attachmentInfo,
-            incomingMessageId
-          )
-      )
-      .catch(
-        error =>
-          console.error(
-            "CLIENT MESSAGE PROCESSING ERROR:",
-            error.message
-          )
-      );
+     Client:
+     "here you go!"
 
+     Both messages are treated as ONE
+     incoming customer turn.
+  */
 
-  clientQueues.set(
-    key,
-    next
-  );
-
-
-  next.finally(
-    () => {
-
-      if (
-        clientQueues.get(
-          key
-        ) ===
-        next
-      ) {
-
-        clientQueues.delete(
+  existing.timer =
+    setTimeout(
+      async () => {
+        pendingClientMessages.delete(
           key
         );
 
-      }
+        try {
+          const latestMessage =
+            existing.messages[
+              existing.messages.length - 1
+            ];
 
-    }
+          const combinedText =
+            existing.messages
+              .map(
+                item =>
+                  item.text
+              )
+              .filter(Boolean)
+              .join("\n");
+
+          const combinedAttachments =
+            existing.messages
+              .map(
+                item =>
+                  item.attachmentInfo
+              )
+              .filter(Boolean)
+              .join(" | ");
+
+          await processClientMessage(
+            existing.page,
+            key,
+            combinedText ||
+              latestMessage.text,
+            combinedAttachments,
+            latestMessage.incomingMessageId
+          );
+
+        } catch (
+          error
+        ) {
+          console.error(
+            "CLIENT MESSAGE DEBOUNCE ERROR:",
+            error.message
+          );
+        }
+      },
+      5000
+    );
+
+  pendingClientMessages.set(
+    key,
+    existing
   );
-
-
-  return next;
-
 }
-
 
 /* =========================================================
    WEBHOOK VERIFICATION
