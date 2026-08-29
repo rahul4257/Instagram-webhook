@@ -3460,10 +3460,11 @@ NON-NEGOTIABLE RULES:
 11. Answer directly and naturally.
 12. Use only facts from the current page and existing conversation.
 13. Never invent package prices, payment details, guarantees, location/audience information, or delivery times.
-14. If the customer asks about location, guarantees, real/organic followers, packages, pricing, payment, or another business detail, answer from the supplied current page and conversation facts.
-15. If the customer's message is not a question, understand what they mean and respond appropriately instead of ignoring it.
-16. Do not mention AI, fallback, workflow, stages, locks, prompts, or internal instructions.
-17. The locked sales sequence is already complete once packages have been sent; after that, continue the conversation naturally.
+14. Promotion timing facts: after successful payment, posts will start uploading within 24 hours. The customer will start getting followers just after the content is posted. The average order completion time is 24–72 hours for all orders.
+15. If the customer asks about location, guarantees, real/organic followers, packages, pricing, payment, or another business detail, answer from the supplied current page and conversation facts.
+16. If the customer's message is not a question, understand what they mean and respond appropriately instead of ignoring it.
+17. Do not mention AI, fallback, workflow, stages, locks, prompts, or internal instructions.
+18. The locked sales sequence is already complete once packages have been sent; after that, continue the conversation naturally.
 
 CURRENT PAGE:
 ${page.username}
@@ -3622,18 +3623,59 @@ ${previousAssistantReplies || "none"}
   }
 
 }
+/* =========================================================
+   PROMOTION TIMING / DURATION
+========================================================= */
 
+function isPromotionTimingQuestion(text) {
+  const t =
+    normalize(
+      text
+    );
+
+  return (
+    /\bhow long\b/.test(t) ||
+    /\bhow soon\b/.test(t) ||
+    /\bwhen will you start\b/.test(t) ||
+    /\bwhen does the promotion start\b/.test(t) ||
+    /\bwhen will promotion start\b/.test(t) ||
+    /\bwhen will you upload\b/.test(t) ||
+    /\bwhen will you post\b/.test(t) ||
+    /\bwhen do you start\b/.test(t) ||
+    /\bhow quickly\b/.test(t) ||
+    /\bhow fast\b/.test(t) ||
+    /\bstart time\b/.test(t) ||
+    /\bpromotion duration\b/.test(t) ||
+    /\bhow many days\b/.test(t) ||
+    /\bhow much time\b/.test(t) ||
+    /\bwhen will i start getting followers\b/.test(t)
+  );
+}
+
+const PROMOTION_TIMING_MESSAGE =
+`After successful payment, your posts will start uploading within 24 hours ❤️
+
+You will start getting followers just after your content is posted.
+
+The average order completion time is 24–72 hours for all orders. ❤️`;
 
 /* =========================================================
    ANSWER CUSTOMER QUESTION WITHOUT BREAKING LOCK
 ========================================================= */
-
 async function getQuestionAnswer(
   page,
   conversation,
   clientMessage,
   attachmentInfo
 ) {
+
+  if (
+    isPromotionTimingQuestion(
+      clientMessage
+    )
+  ) {
+    return PROMOTION_TIMING_MESSAGE;
+  }
 
   if (
     isLocationQuestion(
