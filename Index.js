@@ -1125,13 +1125,14 @@ function getPagePaymentDetails(page, method) {
 const conversations =
   new Map();
 
-
 const clientQueues =
   new Map();
 
 const pendingClientMessages =
   new Map();
 
+const clientProcessingLocks =
+  new Set();
 
 const processedMessageIds =
   new Map();
@@ -6125,7 +6126,7 @@ function enqueueClientMessage(
           );
         }
       },
-      5000
+      15000
     );
 
   pendingClientMessages.set(
