@@ -6028,18 +6028,22 @@ function enqueueClientMessage(
   attachmentInfo,
   incomingMessageId = null
 ) {
-  const key =
-    String(senderId);
+  const clientKey =
+    `${String(page?.key || "unknown")}:${String(senderId)}`;
 
   const existing =
-    pendingClientMessages.get(key) || {
+    pendingClientMessages.get(clientKey) || {
       page,
+      senderId: String(senderId),
       messages: [],
       timer: null
     };
 
   existing.page =
     page;
+
+  existing.senderId =
+    String(senderId);
 
   existing.messages.push({
     text:
@@ -6062,26 +6066,28 @@ function enqueueClientMessage(
   }
 
   /*
-     WAIT FOR THE CLIENT TO FINISH SENDING
-     MULTIPLE QUICK MESSAGES.
+     WAIT 15 SECONDS FOR THIS CLIENT ONLY.
 
-     Example:
+     IMPORTANT:
+     The queue is identified by:
+       PAGE + SENDER ID
 
-     Client:
-     [photo]
+     Therefore:
+       Client A → separate queue
+       Client B → separate queue
 
-     Client:
-     "here you go!"
-
-     Both messages are treated as ONE
-     incoming customer turn.
+     Messages from different clients can NEVER
+     be combined together.
   */
 
   existing.timer =
     setTimeout(
       async () => {
+        /*
+           Remove ONLY this client's queue.
+        */
         pendingClientMessages.delete(
-          key
+          clientKey
         );
 
         try {
@@ -6110,7 +6116,7 @@ function enqueueClientMessage(
 
           await processClientMessage(
             existing.page,
-            key,
+            existing.senderId,
             combinedText ||
               latestMessage.text,
             combinedAttachments,
@@ -6130,11 +6136,11 @@ function enqueueClientMessage(
     );
 
   pendingClientMessages.set(
-    key,
+    clientKey,
     existing
   );
 }
-
+     
 /* =========================================================
    WEBHOOK VERIFICATION
 ========================================================= */
